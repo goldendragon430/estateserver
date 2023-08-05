@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends AppBar {
-  CustomAppBar({Key? key, required String title})
+  CustomAppBar({Key? key, required String title, required BuildContext context})
       : super(
     key: key,
+    automaticallyImplyLeading: false,
     title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -51,6 +52,10 @@ class CustomAppBar extends AppBar {
       IconButton(
         icon: Icon(Icons.logout),
         onPressed: () {
+          Navigator.pushNamed(
+            context,
+            '/',
+          );
           // Perform settings action
         },
       )

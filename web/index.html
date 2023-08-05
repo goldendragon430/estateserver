@@ -40,7 +40,24 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
-  <script>
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+<!-- Firebase Auth SDK -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+<script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCJ8bsqT6b2gk3nME7GhLoSLSOQwECeGsw",
+        authDomain: "assetmanager-3e6ce.firebaseapp.com",
+        projectId: "assetmanager-3e6ce",
+        storageBucket: "assetmanager-3e6ce.appspot.com",
+        messagingSenderId: "47315598483",
+        appId: "1:47315598483:web:09c4164ed0747d54ad2166",
+        measurementId: "G-WH8TKJMLJ0"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig)
+</script>
+<script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({

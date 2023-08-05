@@ -1,5 +1,14 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:assetmamanger/apis/tenants.dart';
+import 'package:assetmamanger/models/folders.dart';
+import 'package:assetmamanger/models/groups.dart';
+import 'package:assetmamanger/models/tenants.dart';
+import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 
 class TenantSettings extends StatefulWidget {
   TenantSettings({super.key});
@@ -7,12 +16,63 @@ class TenantSettings extends StatefulWidget {
   _TenantSettings createState() => _TenantSettings();
 }
 class  _TenantSettings extends State<TenantSettings> {
+
   int hoveredIndex = -1;
-  bool account_active = false;
-  bool unlimited_folder = false;
-  bool unlimited_group = false;
+  Tenant tenant_data = Tenant(name: '', email: '', active: false, unlimited_folder: false, unlimited_group: false, address: '', phone: '', fax: '', landline: '', office: '', renewal_date: DateTime(2023,1,1), folders: [], user_id: '',logo : 'https://coinscipher.com/wp-content/uploads/2023/07/file-48.jpg');
+  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  String folder = '';
+  String group = '';
+
+  Uint8List? logo_image = null;
+
+  void loadData () async{
+    Tenant? result =  await TenantService().getTenantDetails(userid);
+    if(result != null){
+      setState(() {
+        tenant_data = result;
+      });
+    }else{
+      setState(() {
+        tenant_data.user_id = userid;
+      });
+    }
+  }
+
+  @override
+  void initState(){
+    // TODO: implement initState
+    super.initState();
+    loadData();
+
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
+  }
+
+  void onSave() async{
+    if(logo_image != null) {
+      String url =  await uploadFile(logo_image);
+      tenant_data.logo = url;
+    }
+    Group groupdata =  Group(id : generateID(), name: group, active: false, assetTypes: [] );
+    Folder folderdata = Folder(id : generateID(), name : folder, active: false, unlimited_group: false, groups: [groupdata]);
+    tenant_data.folders = [folderdata];
+    bool isOk = await TenantService().createTenantDetails(tenant_data);
+    if(isOk){
+      showSuccess('Success');
+    }else{
+      showError('Error');
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final double textfield_width = (screenWidth - 600)/2 > 450? 450: (screenWidth - 600)/2;
+    final double renewal_width = textfield_width * 2 - 610;
+
     return  Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(left:30),
@@ -26,34 +86,62 @@ class  _TenantSettings extends State<TenantSettings> {
                children: [
                  Row(
                    children: [
-                     Image.asset('assets/images/home.jpg',width: 300,height: 200),
+                     // Image.asset('assets/images/home.jpg',width: 200,height: 150),
+                     GestureDetector(
+                       onTap:() async{
+                         // Image? fromPicker = await ImagePickerWeb.getImageAsWidget();
+                         Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
+                         setState(() {
+                          logo_image = data!;
+                         });
+                       },
+                       child:  Container(
+                           width:200,
+                           height: 150,
+                           child: logo_image != null? Image.memory(logo_image!) : Image.network(tenant_data.logo!)
+                       )
+
+                     ),
+
                      Expanded(child: Column(
                        children: [
                          Row(
                            children: [
                              SizedBox(
                                  height: 35,
-                                 width: 350,
+                                 width: textfield_width,
                                  child:
                                  Container(
                                      margin:EdgeInsets.only(left:20),
-                                     child: TextField(
+                                     child: TextFormField(
+                                       initialValue: tenant_data.name,
                                          decoration: InputDecoration(
                                            hintText: 'Tenant Name',
-                                         )
+                                         ),
+                                         onChanged: (value){
+                                            setState(() {
+                                              tenant_data.name = value;
+                                            });
+                                       },
                                      )
                                  )
 
                              ),
                              SizedBox(
                                height: 35,
-                               width: 350,
+                               width: textfield_width,
                                child:  Container(
                                    margin:EdgeInsets.only(left:20),
-                                   child: TextField(
+                                   child: TextFormField(
+                                       initialValue: tenant_data.address,
                                        decoration: InputDecoration(
                                          hintText: 'POSTAL ADDRESS',
-                                       )
+                                       ),
+                                       onChanged: (value){
+                                         setState(() {
+                                           tenant_data.address = value;
+                                         });
+                                       }
                                    )
                                ),
                              )
@@ -64,27 +152,39 @@ class  _TenantSettings extends State<TenantSettings> {
                            children: [
                              SizedBox(
                                  height: 35,
-                                 width: 350,
+                                 width: textfield_width,
                                  child:
                                  Container(
                                      margin:EdgeInsets.only(left:20),
-                                     child: TextField(
+                                     child: TextFormField(
+                                         initialValue: tenant_data.email,
                                          decoration: InputDecoration(
                                            hintText: 'Tenant Email',
-                                         )
+                                         ),
+                                         onChanged: (value){
+                                           setState(() {
+                                             tenant_data.email = value;
+                                           });
+                                         }
                                      )
                                  )
 
                              ),
                              SizedBox(
                                height: 35,
-                               width: 350,
+                               width: textfield_width,
                                child:  Container(
                                    margin:EdgeInsets.only(left:20),
-                                   child: TextField(
+                                   child: TextFormField(
+                                       initialValue: folder,
                                        decoration: InputDecoration(
                                          hintText: 'Folder Name',
-                                       )
+                                       ),
+                                       onChanged: (value){
+                                         setState(() {
+                                           folder = value;
+                                         });
+                                       }
                                    )
                                ),
                              )
@@ -95,27 +195,39 @@ class  _TenantSettings extends State<TenantSettings> {
                            children: [
                              SizedBox(
                                  height: 35,
-                                 width: 350,
+                                 width: textfield_width,
                                  child:
                                  Container(
                                      margin:EdgeInsets.only(left:20),
-                                     child: TextField(
+                                     child: TextFormField(
+                                         initialValue: tenant_data.landline,
                                          decoration: InputDecoration(
                                            hintText: 'Tenant Landline',
-                                         )
+                                         ),
+                                         onChanged: (value){
+                                           setState(() {
+                                             tenant_data.landline = value;
+                                           });
+                                         }
                                      )
                                  )
 
                              ),
                              SizedBox(
                                height: 35,
-                               width: 350,
+                               width: textfield_width,
                                child:  Container(
                                    margin:EdgeInsets.only(left:20),
-                                   child: TextField(
+                                   child: TextFormField(
+                                       initialValue: group,
                                        decoration: InputDecoration(
                                          hintText: 'Group Name',
-                                       )
+                                       ),
+                                       onChanged: (value){
+                                         setState(() {
+                                           group = value;
+                                         });
+                                       }
                                    )
                                ),
                              )
@@ -128,27 +240,39 @@ class  _TenantSettings extends State<TenantSettings> {
                                children: [
                                  SizedBox(
                                      height: 35,
-                                     width: 350,
+                                     width: textfield_width,
                                      child:
                                      Container(
                                          margin:EdgeInsets.only(left:20),
-                                         child: TextField(
+                                         child: TextFormField(
+                                              initialValue: tenant_data.phone,
                                              decoration: InputDecoration(
                                                hintText: 'Tenant Mobile',
-                                             )
+                                             ),
+                                             onChanged: (value){
+                                               setState(() {
+                                                 tenant_data.phone = value;
+                                               });
+                                             }
                                          )
                                      )
 
                                  ),
                                  SizedBox(
                                    height: 35,
-                                   width: 350,
+                                   width: textfield_width,
                                    child:  Container(
                                        margin:EdgeInsets.only(left:20),
-                                       child: TextField(
+                                       child: TextFormField(
+                                           initialValue: tenant_data.fax,
                                            decoration: InputDecoration(
                                              hintText: 'Faxline',
-                                           )
+                                           ),
+                                           onChanged: (value){
+                                             setState(() {
+                                               tenant_data.fax = value;
+                                             });
+                                           }
                                        )
                                    ),
                                  )
@@ -156,68 +280,93 @@ class  _TenantSettings extends State<TenantSettings> {
                              ),
                              SizedBox(
                                  height: 70,
-                                 width: 350,
+                                 width: textfield_width,
                                  child:
                                  Container(
                                      margin:EdgeInsets.only(left:20,top:5),
-                                     child: TextField(
+                                     child: TextFormField(
+                                         initialValue: tenant_data.office,
                                          maxLines: 5,
                                          decoration: InputDecoration(
                                            hintText: 'Office location',
                                            border: OutlineInputBorder(),
-                                         )
+                                         ),
+                                         onChanged: (value){
+                                           setState(() {
+                                             tenant_data.office = value;
+                                           });
+                                         }
                                      )
                                  )
 
                              )
                            ],
-                         )
+                         ),
+                         Row(children: [
+                           SizedBox(width:textfield_width * 2 - 100),
+                           Container(
+                                padding: EdgeInsets.only(top:10),
+                               width: 100, // Set the desired width here
+                               child: ElevatedButton(
+                                   style: ButtonStyle(
+                                       backgroundColor: MaterialStateProperty.all(Colors.green),
+                                       padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                                       textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                                   onPressed: onSave,
+                                   child: const Text('Save'))
+                           )
+                         ],)
                        ],
                      )
 
                      )
                    ],
                  ),
-                 SizedBox(height: 50),
+                 SizedBox(height: 30),
                  Row(
                    children: [
-                     SizedBox(width:300),
+                     SizedBox(width:220),
                      TitledContainer(titleText: 'Account Status and Settings',
                          child: Row(
                            children: [
                              Row(
                                children: [
                                  SizedBox(
-                                     width:15
+                                     width:5
                                  ),
                                  Checkbox(
-                                   value: this.account_active,
+                                   value: tenant_data?.active,
                                    onChanged: (bool? value) {
-                                     setState(() {
-                                       this.account_active = value!;
-                                     });
+
                                    },
                                  ),
                                  SizedBox(
-                                     width:10
+                                     width:3
                                  ),
                                  Text('Account Active')
-
                                ],
                              ),
-                             SizedBox(width: 15),
+                             SizedBox(width: 25),
                              Row(children: [
                                Text('Renewal Date'),
                                SizedBox(
                                    height: 35,
-                                   width: 150,
+                                   width: renewal_width,
                                    child:
                                    Container(
-                                       margin:EdgeInsets.only(left:20,bottom:5),
-                                       child: TextField(
+                                       margin:EdgeInsets.only(left:20,bottom:3),
+                                       child: TextFormField(
+                                           style: TextStyle(fontSize: 16),
+                                           initialValue: tenant_data.renewal_date.toString(),
                                            decoration: InputDecoration(
                                              hintText: '',
-                                           )
+
+                                           ),
+                                         onChanged: (value){
+
+                                         },
+                                         enabled: false,
                                        )
                                    )
 
@@ -226,18 +375,16 @@ class  _TenantSettings extends State<TenantSettings> {
                              Row(
                                children: [
                                  SizedBox(
-                                     width:15
+                                     width:25
                                  ),
                                  Checkbox(
-                                   value: this.unlimited_folder,
+                                   value: tenant_data?.unlimited_folder,
                                    onChanged: (bool? value) {
-                                     setState(() {
-                                       this.unlimited_folder = value!;
-                                     });
+
                                    },
                                  ),
                                  SizedBox(
-                                     width:10
+                                     width:3
                                  ),
                                  Text('Unlimited Folders')
 
@@ -247,25 +394,22 @@ class  _TenantSettings extends State<TenantSettings> {
                              Row(
                                children: [
                                  SizedBox(
-                                     width:15
+                                     width:20
                                  ),
                                  Checkbox(
-                                   value: this.unlimited_group,
+                                   value: tenant_data?.unlimited_group,
                                    onChanged: (bool? value) {
-                                     setState(() {
-                                       this.unlimited_group = value!;
-                                     });
+
                                    },
                                  ),
                                  SizedBox(
-                                     width:10
+                                     width:3
                                  ),
                                  Text('Unlimited Groups')
 
                                ],
 
                              ),
-
                            ],
                          ) )
                    ],

@@ -1,0 +1,46 @@
+import 'package:assetmamanger/utils/global.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:assetmamanger/models/tenants.dart';
+class TenantService {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<Tenant?> getTenantDetails(String userId) async{
+    try {
+      CollectionReference usersCollection = firestore.collection('tenants');
+      QuerySnapshot querySnapshot = await usersCollection.where('user_id', isEqualTo: userId).get();
+      List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+      Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
+
+      Tenant result = Tenant();
+      result.fromJson(data);
+      return result;
+
+    } catch (e) {
+      print('$e');
+      return null;
+      throw Exception('$e');
+    }
+
+  }
+
+  Future<bool> createTenantDetails(Tenant tenant) async{
+    try {
+      CollectionReference usersCollection = firestore.collection('tenants');
+      QuerySnapshot querySnapshot = await usersCollection.where('user_id', isEqualTo: tenant.user_id).get();
+      if(querySnapshot.docs.length > 0){
+
+      }
+      else{
+        CollectionReference tenantsCollection = firestore.collection('tenants');
+        await tenantsCollection.add(tenant.toJson());
+      }
+      return true;
+
+    } catch (e) {
+      return false;
+      throw Exception('$e');
+    }
+
+  }
+
+}
