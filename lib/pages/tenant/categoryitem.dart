@@ -14,7 +14,7 @@ class  _CategoryItem extends State<CategoryItem> {
     return
       SizedBox(width:330,height:200,child: Column(
         children: [
-          Image.asset('assets/images/home.jpg',width: 120,height: 80),
+          Image.asset('assets/images/category.png',width: 94,height: 94),
           SizedBox(
               height: 35,
               width: 150,

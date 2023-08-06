@@ -28,7 +28,11 @@ class TenantService {
       CollectionReference usersCollection = firestore.collection('tenants');
       QuerySnapshot querySnapshot = await usersCollection.where('user_id', isEqualTo: tenant.user_id).get();
       if(querySnapshot.docs.length > 0){
-
+        QueryDocumentSnapshot document = querySnapshot.docs[0];
+        DocumentReference documentReference = document.reference;
+        await documentReference.update(
+          tenant.toJson()
+        );
       }
       else{
         CollectionReference tenantsCollection = firestore.collection('tenants');

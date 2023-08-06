@@ -1,3 +1,7 @@
+import 'package:assetmamanger/apis/tenants.dart';
+import 'package:assetmamanger/models/folders.dart';
+import 'package:assetmamanger/models/tenants.dart';
+import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/tenant/folderitem.dart';
@@ -9,17 +13,81 @@ class TenantFolders extends StatefulWidget {
   _TenantFolders createState() => _TenantFolders();
 }
 class  _TenantFolders extends State<TenantFolders> {
+  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  List<Folder> folders = [] ;
+  List<Folder> search_folders = [] ;
 
+  Tenant DB_instance = Tenant();
+  void getFolders()async{
+    Tenant? result =  await TenantService().getTenantDetails(userid);
+    if(result != null){
+      setState(() {
+        folders = result.folders!;
+        search_folders = List.from(folders);
+        DB_instance = result;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getFolders();
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
+  }
   void searchItems(String val){
+    setState(() {
+      search_folders = List.from(folders);
+      search_folders.removeWhere((folder) => !folder.name!.contains(val));
+    });
+  }
 
+  void onChangeItem(String id, String name, bool active, bool unlimited_group){
+    setState(() {
+      for(Folder folder in folders){
+        if(folder.id == id){
+          folder.name = name;
+          folder.active = active;
+          folder.unlimited_group = unlimited_group;
+        }
+      }
+      search_folders = List.from(folders);
+    });
+
+  }
+  void onDeleteItem(String id) async{
+    setState(() {
+      folders.removeWhere((folder) => folder.id == id);
+      search_folders = List.from(folders);
+    });
+  }
+  void onSave() async{
+    DB_instance.folders = folders;
+    bool isOk = await TenantService().createTenantDetails(DB_instance);
+    if(isOk){
+      showSuccess('Success');
+    }else{
+      showError('Error');
+    }
+  }
+  void onAdd() async{
+      setState(() {
+        Folder folder = Folder(id : generateID(),name:'New Folder',active: false, unlimited_group: false,groups: []);
+        folders.add(folder);
+      });
   }
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final tile_width = (screenWidth - 300 - 100)/3;
     final items_count = 10;
-
     List<TrackSize> Rows = List<TrackSize>.filled((items_count/3).ceil(), 170.px);
+
     return   Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(left:30),
@@ -71,10 +139,7 @@ class  _TenantFolders extends State<TenantFolders> {
                               padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
 
                               textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: () {
-                            setState(() {
-                            });
-                          },
+                          onPressed: onAdd,
                           child: const Text('Add')),
                       SizedBox(width:20),
                       ElevatedButton(
@@ -82,34 +147,26 @@ class  _TenantFolders extends State<TenantFolders> {
                               backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
                               padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
                               textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: () {
-                            setState(() {
-                            });
-                          },
-                          child: const Text('Delete')),
+                          onPressed:  onSave,
+                          child: const Text('Save Changes')),
                     ],
                   ),
                   SizedBox(height: 30),
                   Expanded(child: ListView(
                     children: [
-                    LayoutGrid(
-                      columnSizes: [tile_width.px,tile_width.px,tile_width.px],
-                      rowSizes: Rows,
-                      columnGap: 2,
-                      rowGap: 2,
-                      children: [
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                        Center(child:FolderItem()),
-                      ],
-                    )
+                      LayoutGrid(
+                        columnSizes: [tile_width.px,tile_width.px,tile_width.px],
+                        rowSizes: Rows,
+                        columnGap: 2,
+                        rowGap: 2,
+                        children:
+                                [
+                                    for (Folder folder in search_folders)
+                                      Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))
+                                  ]
+
+
+                      )
                     ],
                   ))
                 ],

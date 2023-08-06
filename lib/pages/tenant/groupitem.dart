@@ -18,7 +18,7 @@ class  _GroupItem extends State<GroupItem> {
           idden: 10,
           child: Row(
             children: [
-              Image.asset('assets/images/home.jpg',width: 130,height: 100),
+              Image.asset('assets/images/group.png',width: 94,height: 94),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

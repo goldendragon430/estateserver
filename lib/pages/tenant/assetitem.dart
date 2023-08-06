@@ -14,7 +14,7 @@ class  _AssetItem extends State<AssetItem> {
     return
       SizedBox(width:330,height:170,child: Column(
             children: [
-              Image.asset('assets/images/home.jpg',width: 120,height: 80),
+              Image.asset('assets/images/asset.png',width: 94,height: 94),
               SizedBox(
                   height: 35,
                   width: 150,

@@ -20,10 +20,20 @@ class  _TenantSettings extends State<TenantSettings> {
   int hoveredIndex = -1;
   Tenant tenant_data = Tenant(name: '', email: '', active: false, unlimited_folder: false, unlimited_group: false, address: '', phone: '', fax: '', landline: '', office: '', renewal_date: DateTime(2023,1,1), folders: [], user_id: '',logo : 'https://coinscipher.com/wp-content/uploads/2023/07/file-48.jpg');
   String userid = 'bdMg1tPZwEUZA1kimr8b';
-  String folder = '';
   String group = '';
-
+  String folder = '';
   Uint8List? logo_image = null;
+
+  //------------------Controllers For TextField-----------------------------------//
+  TextEditingController nameEditController = TextEditingController();
+  TextEditingController emailEditController = TextEditingController();
+  TextEditingController addressEditController = TextEditingController();
+  TextEditingController landlineEditController = TextEditingController();
+  TextEditingController folderEditController = TextEditingController();
+  TextEditingController groupEditController = TextEditingController();
+  TextEditingController phoneEditController = TextEditingController();
+  TextEditingController officeEditController = TextEditingController();
+  TextEditingController faxEditController = TextEditingController();
 
   void loadData () async{
     Tenant? result =  await TenantService().getTenantDetails(userid);
@@ -36,6 +46,17 @@ class  _TenantSettings extends State<TenantSettings> {
         tenant_data.user_id = userid;
       });
     }
+
+    nameEditController.text = tenant_data.name!;
+    emailEditController.text = tenant_data.email!;
+    addressEditController.text = tenant_data.address!;
+    landlineEditController.text = tenant_data.landline!;
+    folderEditController.text = tenant_data.folders![0].name!;
+    groupEditController.text = tenant_data.folders![0].groups![0].name!;
+    phoneEditController.text = tenant_data.phone!;
+    officeEditController.text = tenant_data.office!;
+    faxEditController.text = tenant_data.fax!;
+
   }
 
   @override
@@ -52,6 +73,7 @@ class  _TenantSettings extends State<TenantSettings> {
   }
 
   void onSave() async{
+
     if(logo_image != null) {
       String url =  await uploadFile(logo_image);
       tenant_data.logo = url;
@@ -114,7 +136,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                  Container(
                                      margin:EdgeInsets.only(left:20),
                                      child: TextFormField(
-                                       initialValue: tenant_data.name,
+                                       controller: nameEditController,
                                          decoration: InputDecoration(
                                            hintText: 'Tenant Name',
                                          ),
@@ -133,7 +155,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                child:  Container(
                                    margin:EdgeInsets.only(left:20),
                                    child: TextFormField(
-                                       initialValue: tenant_data.address,
+                                       controller: addressEditController,
                                        decoration: InputDecoration(
                                          hintText: 'POSTAL ADDRESS',
                                        ),
@@ -157,7 +179,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                  Container(
                                      margin:EdgeInsets.only(left:20),
                                      child: TextFormField(
-                                         initialValue: tenant_data.email,
+                                         controller: emailEditController,
                                          decoration: InputDecoration(
                                            hintText: 'Tenant Email',
                                          ),
@@ -176,7 +198,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                child:  Container(
                                    margin:EdgeInsets.only(left:20),
                                    child: TextFormField(
-                                       initialValue: folder,
+                                       controller: folderEditController,
                                        decoration: InputDecoration(
                                          hintText: 'Folder Name',
                                        ),
@@ -200,7 +222,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                  Container(
                                      margin:EdgeInsets.only(left:20),
                                      child: TextFormField(
-                                         initialValue: tenant_data.landline,
+                                         controller: landlineEditController,
                                          decoration: InputDecoration(
                                            hintText: 'Tenant Landline',
                                          ),
@@ -219,7 +241,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                child:  Container(
                                    margin:EdgeInsets.only(left:20),
                                    child: TextFormField(
-                                       initialValue: group,
+                                       controller: groupEditController,
                                        decoration: InputDecoration(
                                          hintText: 'Group Name',
                                        ),
@@ -245,7 +267,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                      Container(
                                          margin:EdgeInsets.only(left:20),
                                          child: TextFormField(
-                                              initialValue: tenant_data.phone,
+                                             controller: phoneEditController,
                                              decoration: InputDecoration(
                                                hintText: 'Tenant Mobile',
                                              ),
@@ -264,7 +286,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                    child:  Container(
                                        margin:EdgeInsets.only(left:20),
                                        child: TextFormField(
-                                           initialValue: tenant_data.fax,
+                                           controller: faxEditController,
                                            decoration: InputDecoration(
                                              hintText: 'Faxline',
                                            ),
@@ -285,7 +307,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                  Container(
                                      margin:EdgeInsets.only(left:20,top:5),
                                      child: TextFormField(
-                                         initialValue: tenant_data.office,
+                                         controller: officeEditController,
                                          maxLines: 5,
                                          decoration: InputDecoration(
                                            hintText: 'Office location',
