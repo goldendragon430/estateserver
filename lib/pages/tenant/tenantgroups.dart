@@ -28,7 +28,6 @@ class  _TenantGroups extends State<TenantGroups> {
   //--------------------Main Variables--------------------------------//
   List<Map<String, dynamic>> groups = [] ;
   List<Folder> m_folders = [];
-  List<String> m_folder_ids = [];
   Tenant DB_instance = Tenant();
 
   //-------------------Search Features-------------------------------//
@@ -40,6 +39,7 @@ class  _TenantGroups extends State<TenantGroups> {
   String selectedValue  = '';
   bool   active_group = false;
   String group_name = '';
+  List<String> m_folder_ids = [];
 
   void getGroups()async{
     Tenant? result =  await TenantService().getTenantDetails(userid);

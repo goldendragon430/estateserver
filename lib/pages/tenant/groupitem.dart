@@ -150,6 +150,7 @@ class  _GroupItem extends State<GroupItem> {
                                       )
                                   ]
 
-                  )));
+                  ))
+    );
   }
 }

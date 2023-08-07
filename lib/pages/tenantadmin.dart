@@ -15,7 +15,7 @@ class  _TenantAdminView extends State<TenantAdminView> {
   int tab_index = 0;
   Widget getTabContentWidget(int index){
     switch(index){
-      case 0: return TenantGroups();
+      case 0: return TenantSettings();
       case 1: return TenantFolders();
       case 2: return TenantGroups();
       case 3: return TenantAssets();
