@@ -64,11 +64,11 @@ class  _TenantFolders extends State<TenantFolders> {
         }
       }
       search_folders = List.from(folders);
+      searchItems(search_str);
     });
 
   }
   void onDeleteItem(String id) async{
-
     setState(() {
       folders.removeWhere((folder) => folder.id == id);
       search_folders = [];

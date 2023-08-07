@@ -6,12 +6,13 @@ class GroupItem extends StatefulWidget {
 
   String? groupID;
   String? folderName;
+  String? folderID;
   String? groupName;
   bool? groupActive;
-  Function(String groupID,String groupName,bool groupActive)? onChange;
-  Function(String id)? onDelete;
+  Function(String folderID, String groupID,String groupName,bool groupActive)? onChange;
+  Function(String folder_id, String id)? onDelete;
 
-  GroupItem({super.key, this.groupID,this.folderName, this.groupName, this.groupActive, this.onChange, this.onDelete});
+  GroupItem({super.key, this.groupID, this.folderName,this.folderID, this.groupName, this.groupActive, this.onChange, this.onDelete});
   @override
   _GroupItem createState() => _GroupItem();
 }
@@ -25,7 +26,7 @@ class  _GroupItem extends State<GroupItem> {
   TextEditingController groupNameEditController = TextEditingController();
 
   void update(){
-    widget.onChange!(widget.groupID!,group_name,active);
+    widget.onChange!(widget.folderID!, widget.groupID!,group_name,active);
   }
 
   @override
@@ -141,7 +142,7 @@ class  _GroupItem extends State<GroupItem> {
                                                     child: IconButton(
                                                     icon: Image.asset('assets/images/delete.png'),
                                                         onPressed: () {
-                                                          widget.onDelete!(widget.groupID!);
+                                                          widget.onDelete!(widget.folderID!, widget.groupID!);
                                                         // Add your button functionality here
                                                         },
                                                     )
