@@ -3,77 +3,152 @@ import 'package:assetmamanger/pages/titledcontainer.dart';
 
 
 class GroupItem extends StatefulWidget {
-  GroupItem({super.key});
+
+  String? groupID;
+  String? folderName;
+  String? groupName;
+  bool? groupActive;
+  Function(String groupID,String groupName,bool groupActive)? onChange;
+  Function(String id)? onDelete;
+
+  GroupItem({super.key, this.groupID,this.folderName, this.groupName, this.groupActive, this.onChange, this.onDelete});
   @override
   _GroupItem createState() => _GroupItem();
 }
 class  _GroupItem extends State<GroupItem> {
-  bool folder_active = false;
-  bool group_active = false;
+  bool active = false;
+
+  String group_name = '';
+  bool is_focus = false;
+
+  TextEditingController folderNameEditController = TextEditingController();
+  TextEditingController groupNameEditController = TextEditingController();
+
+  void update(){
+    widget.onChange!(widget.groupID!,group_name,active);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      active = widget.groupActive!;
+
+      group_name = widget.groupName!;
+      folderNameEditController.text = widget.folderName!;
+
+      groupNameEditController.text = group_name;
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    return
-      SizedBox(width:330,height:150,child:TitledContainer(
-          titleText: '',
-          idden: 10,
-          child: Row(
-            children: [
-              Image.asset('assets/images/group.png',width: 94,height: 94),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      height: 35,
-                      width: 150,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Folder Name',
-                              )
-                          )
-                      )
-
-                  ),
-                  SizedBox(
-                      height: 35,
-                      width: 150,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Group Name',
-                              )
-                          )
-                      )
-
-                  ),
-                  SizedBox(height:5),
-                  Row(
-                    children: [
-                      SizedBox(
-                          width:15
-                      ),
-                      Checkbox(
-                        value: this.folder_active,
-                        onChanged: (bool? value) {
+    return  SizedBox(width:300,height:150,
+              child: MouseRegion(
+                        onEnter: (event){
                           setState(() {
-                            this.folder_active = value!;
+                            is_focus = true;
                           });
                         },
-                      ),
-                      SizedBox(
-                          width:10
-                      ),
-                      Text('Group Active')
-                    ],
-                  ),
+                        onExit: (eve){
+                          setState(() {
+                          is_focus = false;
+                          });
+                        },
+                        child: Stack(
+                              children:
+                                  [
+                                      TitledContainer(
+                                            titleText: '',
+                                            idden: 10,
+                                            child: Row(
+                                              children: [
+                                                Image.asset('assets/images/group.png',width: 94,height: 94),
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(
+                                                        height: 35,
+                                                        width: 150,
+                                                        child:
+                                                        Container(
+                                                            margin:EdgeInsets.only(left:20),
+                                                            child: TextField(
+                                                              readOnly: true,
+                                                              controller: folderNameEditController,
+                                                                decoration: InputDecoration(
+                                                                  hintText: 'Folder Name',
+                                                                ),
+                                                              onChanged: (value){
 
-                ],)
-            ],
-          )
-      ));
+                                                              },
+                                                            )
+                                                        )
+
+                                                    ),
+                                                    SizedBox(
+                                                        height: 35,
+                                                        width: 150,
+                                                        child:
+                                                        Container(
+                                                            margin:EdgeInsets.only(left:20),
+                                                            child: TextField(
+                                                                controller: groupNameEditController,
+                                                                decoration: InputDecoration(
+                                                                  hintText: 'Group Name',
+                                                                ),
+                                                                onChanged: (value){
+                                                                  setState(() {
+                                                                    group_name = value;
+                                                                    update();
+                                                                  });
+                                                                },
+                                                            )
+                                                        )
+
+                                                    ),
+                                                    SizedBox(height:5),
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(
+                                                            width:15
+                                                        ),
+                                                        Checkbox(
+                                                          value: this.active,
+                                                          onChanged: (bool? value) {
+                                                            setState(() {
+                                                              this.active = value!;
+                                                              update();
+                                                            });
+                                                          },
+                                                        ),
+                                                        SizedBox(
+                                                            width:10
+                                                        ),
+                                                        Text('Group Active')
+                                                      ],
+                                                    ),
+
+                                                  ],)
+                                              ],
+                                            )
+                                        ),
+                                      if(is_focus)
+                                        Container(
+                                            margin: EdgeInsets.only(top:15,right:5),
+                                                child: Align(
+                                                    alignment: Alignment.topRight,
+                                                    child: IconButton(
+                                                    icon: Image.asset('assets/images/delete.png'),
+                                                        onPressed: () {
+                                                          widget.onDelete!(widget.groupID!);
+                                                        // Add your button functionality here
+                                                        },
+                                                    )
+                                                )
+                                      )
+                                  ]
+
+                  )));
   }
 }

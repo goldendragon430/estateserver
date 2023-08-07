@@ -16,8 +16,9 @@ class  _TenantFolders extends State<TenantFolders> {
   String userid = 'bdMg1tPZwEUZA1kimr8b';
   List<Folder> folders = [] ;
   List<Folder> search_folders = [] ;
-
+  String search_str = '';
   Tenant DB_instance = Tenant();
+  TextEditingController searchEditController = TextEditingController();
   void getFolders()async{
     Tenant? result =  await TenantService().getTenantDetails(userid);
     if(result != null){
@@ -42,9 +43,15 @@ class  _TenantFolders extends State<TenantFolders> {
   }
   void searchItems(String val){
     setState(() {
-      search_folders = List.from(folders);
-      search_folders.removeWhere((folder) => !folder.name!.contains(val));
+      search_folders = [];
     });
+    Future.delayed(const Duration(milliseconds: 50), () {
+      setState(() {
+        search_folders = List.from(folders);
+        search_folders.removeWhere((folder) => !folder.name!.contains(val));
+      });
+    });
+
   }
 
   void onChangeItem(String id, String name, bool active, bool unlimited_group){
@@ -61,9 +68,13 @@ class  _TenantFolders extends State<TenantFolders> {
 
   }
   void onDeleteItem(String id) async{
+
     setState(() {
       folders.removeWhere((folder) => folder.id == id);
-      search_folders = List.from(folders);
+      search_folders = [];
+    });
+    Future.delayed(const Duration(milliseconds: 50), () {
+      setState(() => search_folders.addAll(folders));
     });
   }
   void onSave() async{
@@ -78,7 +89,11 @@ class  _TenantFolders extends State<TenantFolders> {
   void onAdd() async{
       setState(() {
         Folder folder = Folder(id : generateID(),name:'New Folder',active: false, unlimited_group: false,groups: []);
-        folders.add(folder);
+        searchEditController.clear();
+        setState(() {
+          folders.add(folder);
+          search_folders = folders;
+        });
       });
   }
   @override
@@ -86,7 +101,6 @@ class  _TenantFolders extends State<TenantFolders> {
     final screenWidth = MediaQuery.of(context).size.width;
     final tile_width = (screenWidth - 300 - 100)/3;
     final items_count = 10;
-    List<TrackSize> Rows = List<TrackSize>.filled((items_count/3).ceil(), 170.px);
 
     return   Container(
       padding: const EdgeInsets.all(10),
@@ -110,9 +124,11 @@ class  _TenantFolders extends State<TenantFolders> {
                             Container(
                                 margin:EdgeInsets.only(left:20),
                                 child: TextField(
+                                  controller: searchEditController,
                                   onChanged: (value) {
+                                    searchItems(value);
                                     setState(() {
-                                      searchItems(value);
+                                      search_str = value;
                                     });
                                   },
                                   decoration: InputDecoration(
@@ -137,7 +153,6 @@ class  _TenantFolders extends State<TenantFolders> {
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(Colors.green),
                               padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-
                               textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
                           onPressed: onAdd,
                           child: const Text('Add')),
@@ -152,23 +167,26 @@ class  _TenantFolders extends State<TenantFolders> {
                     ],
                   ),
                   SizedBox(height: 30),
-                  Expanded(child: ListView(
-                    children: [
-                      LayoutGrid(
-                        columnSizes: [tile_width.px,tile_width.px,tile_width.px],
-                        rowSizes: Rows,
-                        columnGap: 2,
-                        rowGap: 2,
-                        children:
-                                [
-                                    for (Folder folder in search_folders)
-                                      Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))
-                                  ]
+                  Expanded(child:
 
+                        ListView.builder(
+                          itemCount:  (search_folders.length/3).ceil(),
+                          shrinkWrap: true, ///////////////////////Use This Line
+                          itemBuilder: (BuildContext context, int index) {
+                            Folder folder = search_folders[3 * index];
+                            Folder? folder2 = 3 * index + 1 >= search_folders.length ? null: search_folders[3 * index + 1];
+                            Folder? folder3 = 3 * index + 2 >= search_folders.length ? null: search_folders[3 * index + 2];
 
-                      )
-                    ],
-                  ))
+                            return Row(children: [
+                              SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                              if(folder2 != null) SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                              if(folder3 != null) SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder3.id, foldername : folder3.name,active :  folder3.active, ugroups : folder3.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                            ]);
+
+                          },
+                        )
+
+                  )
                 ],
               )
 
