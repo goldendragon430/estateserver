@@ -6,8 +6,8 @@ class TenantService {
 
   Future<Tenant?> getTenantDetails(String userId) async{
     try {
-      CollectionReference usersCollection = firestore.collection('tenants');
-      QuerySnapshot querySnapshot = await usersCollection.where('user_id', isEqualTo: userId).get();
+      CollectionReference tenantsCollection = firestore.collection('tenants');
+      QuerySnapshot querySnapshot = await tenantsCollection.where('user_id', isEqualTo: userId).get();
       List<QueryDocumentSnapshot> documents = querySnapshot.docs;
       Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
 
@@ -47,4 +47,21 @@ class TenantService {
 
   }
 
+  Future<List<Tenant>> getAllTenant() async{
+    List<Tenant> result = [];
+    try {
+      CollectionReference tenantsCollection = firestore.collection('tenants');
+      QuerySnapshot querySnapshot = await tenantsCollection.get();
+      List<DocumentSnapshot> documents = querySnapshot.docs;
+      for(DocumentSnapshot document in documents){
+        Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
+        Tenant temp = Tenant();
+        temp.fromJson(data);
+        result.add(temp);
+      }
+    } catch (e) {
+      print('$e');
+    }
+    return result;
+  }
 }

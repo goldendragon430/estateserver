@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/folders.dart';
 import 'package:assetmamanger/models/tenants.dart';
@@ -34,12 +36,12 @@ class  _TenantFolders extends State<TenantFolders> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     getFolders();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
   }
   void searchItems(String val){
     setState(() {
@@ -63,8 +65,8 @@ class  _TenantFolders extends State<TenantFolders> {
           folder.unlimited_group = unlimited_group;
         }
       }
-      search_folders = List.from(folders);
-      searchItems(search_str);
+      // search_folders = List.from(folders);
+      // searchItems(search_str);
     });
 
   }

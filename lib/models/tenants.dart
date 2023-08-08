@@ -1,20 +1,21 @@
 import 'folders.dart';
 class Tenant {
    // String? id ;
-   String? name ;
-   String? email;
-   String? address ;
-   String? phone ;
-   String? fax ;
-   String? landline ;
-   String? office ;
-   DateTime? renewal_date ;
-   bool? active ;
-   bool? unlimited_folder ;
-   bool? unlimited_group ;
-   List<Folder>? folders ;
-   String? user_id ;
-   String? logo ;
+   String? name  = '';
+   String? email = '';
+   String? address = '' ;
+   String? phone = '' ;
+   String? fax = '' ;
+   String? landline = '' ;
+   String? office = '' ;
+   DateTime? renewal_date = DateTime(2023,1,1) ;
+   bool? active  = false;
+   bool? unlimited_folder = false ;
+   bool? unlimited_group = false ;
+   List<Folder>? folders = [] ;
+   String? user_id = '' ;
+   String? logo = '' ;
+   DateTime? created_date = DateTime(2023,1,1) ;
 
    Map<String,dynamic> toJson(){
      List<Map<String,dynamic>> folder_data = [];
@@ -31,6 +32,7 @@ class Tenant {
        'landline' : landline,
        'office' : office,
        'renewal_date' : renewal_date.toString(),
+       'created_date' : created_date.toString(),
        'active' : active,
        'unlimited_folder' : unlimited_folder,
        'unlimited_group' : unlimited_group,
@@ -50,6 +52,10 @@ class Tenant {
      landline = data?['landline'];
      office = data?['office'];
      renewal_date = DateTime.parse(data?['renewal_date']) ;
+     if(data?['created_date'] != null)
+        created_date = DateTime.parse(data?['created_date']);
+     else
+       created_date = DateTime(2023,1,1);
      active = data?['active'];
      unlimited_folder = data?['unlimited_folder'];
      unlimited_group = data?['unlimited_group'];
@@ -62,7 +68,6 @@ class Tenant {
        newFolder.fromJson(folder);
        folderData.add(newFolder);
      }
-
      folders = folderData;
    }
   Tenant({
@@ -80,7 +85,8 @@ class Tenant {
      this.renewal_date,
      this.folders,
      this.user_id,
-     this.logo
+     this.logo,
+     this.created_date
   });
 
 }

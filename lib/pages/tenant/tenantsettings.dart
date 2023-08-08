@@ -63,13 +63,14 @@ class  _TenantSettings extends State<TenantSettings> {
   void initState(){
     // TODO: implement initState
     super.initState();
+
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     loadData();
 
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
   }
 
   void onSave() async{
@@ -80,7 +81,8 @@ class  _TenantSettings extends State<TenantSettings> {
     }
     Group groupdata =  Group(id : generateID(), name: group, active: false, assetTypes: [] );
     Folder folderdata = Folder(id : generateID(), name : folder, active: false, unlimited_group: false, groups: [groupdata]);
-    tenant_data.folders = [folderdata];
+    if(tenant_data.folders!.length == 0)
+          tenant_data.folders = [folderdata];
     bool isOk = await TenantService().createTenantDetails(tenant_data);
     if(isOk){
       showSuccess('Success');

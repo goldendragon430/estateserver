@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/pages/tenant/categoryitem.dart';
 import 'package:flutter/material.dart';
@@ -269,6 +271,11 @@ class  _TenantCategory extends State<TenantCategory> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     getCategories();
   }
   @override

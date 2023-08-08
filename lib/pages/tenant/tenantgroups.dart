@@ -7,6 +7,8 @@
 * m_folders is db and groups is for displaying.
 * */
 
+import 'dart:convert';
+
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/folders.dart';
 import 'package:assetmamanger/models/groups.dart';
@@ -185,6 +187,12 @@ class  _TenantGroups extends State<TenantGroups> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
+
     getGroups();
   }
 

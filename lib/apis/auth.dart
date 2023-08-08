@@ -1,3 +1,4 @@
+import 'package:assetmamanger/models/tenants.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -35,13 +36,32 @@ class LoginService {
       ) async {
     try {
       CollectionReference usersCollection = firestore.collection('users');
-      await usersCollection.add({
+      DocumentReference newDocumentRef = await usersCollection.add({
         'email' : email,
         'landline' : landline,
         'role' : 1,
         'state' : true,
         'username' : username
       });
+      CollectionReference tenantsCollection = firestore.collection('tenants');
+      await tenantsCollection.add(Tenant(
+        name : username,
+        email: email,
+        active: false,
+        unlimited_folder: false,
+        unlimited_group: false,
+        address : '',
+        phone:'',
+        landline: landline,
+        folders: [],
+        office: '',
+        fax : '',
+        renewal_date: DateTime(2023,1,1),
+        created_date: DateTime.now(),
+        logo : '',
+        user_id: newDocumentRef.id
+        ).toJson()
+      );
       return true;
     } catch (e) {
       throw Exception('$e');

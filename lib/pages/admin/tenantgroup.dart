@@ -1,19 +1,41 @@
 import 'package:flutter/material.dart';
 class TenantGroupItem extends StatefulWidget {
-  TenantGroupItem({super.key});
+  String? folderID = '';
+  String? groupID = '';
+  String? folderName = '';
+  String? groupName = '';
+  String? registeredDate = '';
+  bool? active = false;
+  final Function(String folder_id,String group_id,bool active)? onChange;
+  TenantGroupItem({super.key,this.folderID,this.groupID,this.folderName,this.groupName,this.registeredDate,this.active,this.onChange});
   @override
   _TenantGroupItem createState() => _TenantGroupItem();
 }
 
 class  _TenantGroupItem extends State<TenantGroupItem> {
 
+  String registeredDate = '';
   bool active_value = false;
+  TextEditingController folderNameController = TextEditingController();
+  TextEditingController groupNameController  = TextEditingController();
   @override
   void initState() {
     super.initState();
-
+    setState(() {
+      if(widget.folderName!= null)
+          folderNameController.text = widget.folderName!;
+      if(widget.groupName!= null)
+          groupNameController.text = widget.groupName!;
+      if(widget.active!= null)
+        active_value = widget.active!;
+      if(widget.registeredDate!= null)
+        registeredDate = widget.registeredDate!;
+    });
   }
+  void update(){
 
+    widget.onChange!(widget.folderID!,widget.groupID!,active_value);
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +43,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
         child: Row(
             children: [
               SizedBox(width:10),
-              Image.asset('assets/images/home.jpg',width: 80,height: 50,),
+              Image.asset('assets/images/group.png',width: 80,height: 50,),
               SizedBox(
                   height: 35,
                   width: 250,
@@ -29,9 +51,11 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                   Container(
                       margin:EdgeInsets.only(left:20),
                       child: TextField(
+                        controller: folderNameController,
                           decoration: InputDecoration(
                             hintText: 'Folder Name',
-                          )
+                          ),
+                        readOnly: true,
                       )
                   )
               ),
@@ -42,9 +66,11 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                   Container(
                       margin:EdgeInsets.only(left:20),
                       child: TextField(
+                        controller: groupNameController,
                           decoration: InputDecoration(
                             hintText: 'Group Name',
-                          )
+                          ),
+                        readOnly: true,
                       )
                   )
               ),
@@ -54,10 +80,12 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
-                      child: TextField(
+                      child: TextFormField(
+                           initialValue: registeredDate,
                           decoration: InputDecoration(
                             hintText: 'Date registered',
-                          )
+                          ),
+                        readOnly: true,
                       )
                   )
               ),
@@ -71,6 +99,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                     onChanged: (bool? value) {
                       setState(() {
                         this.active_value = value!;
+                        update();
                       });
                     },
                   ),

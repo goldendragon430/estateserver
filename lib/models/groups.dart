@@ -4,7 +4,7 @@ class Group {
    String? name;
    bool? active;
    List<AssetType>? assetTypes;
-
+   DateTime? created_date;
 
    Map<String,dynamic> toJson(){
      List<Map<String,dynamic>> type_data = [];
@@ -15,7 +15,8 @@ class Group {
        'id' : id,
        'name' : name,
        'active' : active,
-       'assetTypes': type_data
+       'assetTypes': type_data,
+       'created_date' : created_date.toString()
      };
    }
 
@@ -23,6 +24,11 @@ class Group {
      id = data?['id'];
      name = data?['name'];
      active = data?['active'];
+     if(data?['created_date'] != null) {
+       created_date = data?['created_date'];
+     }else{
+       created_date = DateTime(2023,1,1);
+     }
      List<dynamic> asset_type_data = data?['assetTypes'];
      List<AssetType> assetTypeData = [];
      for(dynamic atype in asset_type_data){
@@ -37,6 +43,7 @@ class Group {
      this.id,
      this.name,
      this.active,
-     this.assetTypes
+     this.assetTypes,
+     this.created_date
   });
 }
