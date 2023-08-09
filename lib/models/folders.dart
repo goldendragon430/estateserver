@@ -8,6 +8,7 @@ class Folder {
     DateTime? created_date;
   Map<String,dynamic> toJson(){
     List<Map<String,dynamic>> group_data = [];
+
     for (Group group in groups!){
       group_data.add(group.toJson());
     }
@@ -26,7 +27,7 @@ class Folder {
     name = data?['name'];
     active = data?['active'];
     if(data?['created_date'] != null){
-      created_date = data?['created_date'];
+      created_date = DateTime.parse(data?['created_date']) ;
     }else{
       created_date = DateTime(2023,1,1);
     }

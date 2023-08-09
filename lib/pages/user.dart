@@ -1,42 +1,34 @@
+import 'dart:html';
+
+import 'package:assetmamanger/apis/tenants.dart';
+import 'package:assetmamanger/models/assetTypes.dart';
+import 'package:assetmamanger/models/assets.dart';
+import 'package:assetmamanger/models/folders.dart';
+import 'package:assetmamanger/models/groups.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/user/userassetitem.dart';
+import 'package:assetmamanger/utils/global.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:math';
 
+import '../models/category.dart';
+import '../models/tenants.dart';
+
 class UserView extends StatefulWidget {
   UserView({super.key});
   @override
   _UserView createState() => _UserView();
 }
- class User {
-   final String asset;
-   final String category;
-   final String name;
-   final String registered;
-   final String lastInspected;
-   final String status;
 
-   User({
-     required this.asset,
-     required this.category,
-     required this.name,
-     required this.registered,
-     required this.lastInspected,
-     required this.status,
-   });
- }
 class  _UserView extends State<UserView> {
+
+//------------------UI Effect---------------------------//
   int hoveredIndex = -1;
   int hoveredIndex2 = -1;
   int hoveredIndex3 = -1;
-  String selectedValue = 'Folder 1';
-  String selectedValue2 = 'Category 1';
-  List<String> groups = <String>['Group1', 'Group2', 'Group3', 'Group4'];
-  List<String> assets = <String>['Asset1', 'Asset2', 'Asset3', 'Asset4'];
-
   List<String> actions = <String>['Gallery View', 'Grid View', 'Stats View', 'Export'];
   List<Icon> acionIcons = <Icon>[Icon(Icons.calendar_month),Icon(Icons.grid_4x4_outlined),Icon(Icons.show_chart),Icon(Icons.file_copy)];
   List<PlutoColumn> columns = [
@@ -61,69 +53,226 @@ class  _UserView extends State<UserView> {
     PlutoColumn(
       title: 'Registered',
       field: 'registered',
-      type: PlutoColumnType.date(),
+      type: PlutoColumnType.text(),
     ),
     PlutoColumn(
       title: 'Last Inspected',
       field: 'inspected',
-      type: PlutoColumnType.date(),
+      type: PlutoColumnType.text(),
     ),
     PlutoColumn(
-    title: 'Status',
-    field: 'status',
-    type: PlutoColumnType.text(),
-    ),
-  ];
-  List<PlutoRow> rows = [
-    PlutoRow(
-      cells: {
-        'asset': PlutoCell(value: 'Type A'),
-        'category': PlutoCell(value: '1'),
-        'name': PlutoCell(value: 'Cruiser 901'),
-        'registered': PlutoCell(value: '2020-08-06'),
-        'inspected': PlutoCell(value: ''),
-        'status': PlutoCell(value: '')
-      },
-    ),
-    PlutoRow(
-      cells: {
-        'asset': PlutoCell(value: 'Type A'),
-        'category': PlutoCell(value: '1'),
-        'name': PlutoCell(value: 'Cruiser 901'),
-        'registered': PlutoCell(value: '2020-08-06'),
-        'inspected': PlutoCell(value: ''),
-        'status': PlutoCell(value: '')
-      },
-    ),
-    PlutoRow(
-      cells: {
-        'asset': PlutoCell(value: 'Type A'),
-        'category': PlutoCell(value: '1'),
-        'name': PlutoCell(value: 'Cruiser 901'),
-        'registered': PlutoCell(value: '2020-08-06'),
-        'inspected': PlutoCell(value: ''),
-        'status': PlutoCell(value: '')
-      },
+      title: 'Comment',
+      field: 'comment',
+      type: PlutoColumnType.text(),
     )
   ];
+
+  List<PlutoRow> rows = [];
+//-------------------Dropdown values------------------//
+
+  String selected_folder_id = '';
+  String selected_group_id = '';
+  String selected_asset_type_id = '';
+  String selected_category_id = '';
+
+//-------------------Search Variable--------------------//
+
+//-------------------Listview variables----------------//
+
+  String user_id = 'bdMg1tPZwEUZA1kimr8b'; // parent user's id
+  Tenant m_tenant = Tenant(); // Parent DB's Data
+  List<Folder> m_folders = [];
+  List<Group>  m_groups = [];
+  List<AssetType> m_asset_types = [];
+  List<Category> m_categories = [];
+  List<Asset>  m_assets = [];
+
+  List<String> m_folder_ids = [];
+  List<String> m_category_ids = [];
+  late final PlutoGridStateManager stateManager;
+
+  void fetchData() async{
+    Tenant? result =  await TenantService().getTenantDetails(user_id);
+
+    if(result != null){
+      setState(() {
+        m_tenant = result;
+        m_folder_ids = [];
+        m_folders = result.folders!;
+        for (Folder folder in m_folders){
+          m_folder_ids.add(folder.id!);
+        }
+        if(m_folder_ids.length > 0) {
+          selected_folder_id = m_folder_ids[0];
+          onChangeFolder(m_folder_ids[0]);
+        }
+      });
+    }
+  }
+  String getFolderName(String folder_id){
+    for(Folder folder in m_folders){
+      if(folder.id == folder_id) return folder.name!;
+    }
+    return 'No Selected';
+  }
+  String getGroupName(String group_id){
+    for(Group group in m_groups){
+      if(group.id == group_id) return group.name!;
+    }
+    return 'No Selected';
+  }
+  String getAssetTypeName(String asset_type_id){
+    for(AssetType type in m_asset_types){
+      if(type.id == asset_type_id) return type.type!;
+    }
+    return 'No Selected';
+  }
+  String getCategoryName(String category_id){
+    for(Category category in m_categories){
+      if(category.id == category_id) return category.name!;
+    }
+    return 'No Selected';
+  }
+  void onChangeFolder(String new_folder_id){
+    for(Folder folder in m_folders){
+      if(folder.id == new_folder_id){
+        setState(() {
+          m_groups = folder.groups!;
+          if(m_groups.length > 0){
+            selected_group_id = m_groups[0].id!;
+            m_asset_types = m_groups[0]!.assetTypes!;
+          }
+          if(m_asset_types.length > 0){
+            selected_asset_type_id = m_asset_types[0].id!;
+            m_categories = m_asset_types[0]!.categories!;
+            m_category_ids = [];
+            for(Category category in m_categories){
+              m_category_ids.add(category.id!);
+            }
+            if(m_category_ids.length > 0) {
+              selected_category_id = m_category_ids[0];
+              m_assets = m_categories![0].assets!;
+              updateAssetsView();
+            } else
+              selected_category_id = '';
+          }
+        });
+        break;
+      }
+    }
+  }
+  void onChangeGroup(String new_group_id){
+    for(Group group in m_groups){
+      if(group.id == new_group_id){
+        setState(() {
+          m_asset_types = group.assetTypes!;
+          if(m_asset_types.length > 0){
+            selected_asset_type_id = m_asset_types[0].id!;
+            m_categories = m_asset_types[0].categories!;
+            m_category_ids = [];
+            for(Category category in m_categories){
+              m_category_ids.add(category.id!);
+            }
+            if(m_category_ids.length > 0) {
+              selected_category_id = m_category_ids[0];
+              m_assets = m_categories![0].assets!;
+              updateAssetsView();
+            } else
+              selected_category_id = '';
+          }
+        });
+        break;
+      }
+    }
+  }
+  void onChangeAssetType(String new_asset_type_id){
+    for(AssetType type in m_asset_types){
+      if(type.id == new_asset_type_id){
+        setState(() {
+          m_categories = type.categories!;
+          m_category_ids = [];
+          for(Category category in m_categories){
+            m_category_ids.add(category.id!);
+          }
+          m_assets = [];
+          if(m_category_ids.length > 0) {
+            selected_category_id = m_category_ids[0];
+            m_assets = m_categories![0].assets!;
+            updateAssetsView();
+          } else {
+            selected_category_id = '';
+            stateManager.removeAllRows();
+          }
+        });
+        break;
+      }
+    }
+  }
+  void onChangeCategory(String category_id){
+
+    for(Category category in m_categories){
+      if(category.id == category_id){
+        setState(() {
+          m_assets = category.assets!;
+          updateAssetsView();
+        });
+        break;
+      }
+    }
+  }
+  void onAdd(){
+    // setState(() {
+    //   for(Category category in m_categories){
+    //     if(category.id == selected_category_id){
+    //       Asset asset = Asset(id: generateID(), name : 'New Asset',acquired_date: DateTime(2023,1,1),last_inspection_date: DateTime(2023,1,1),comment: '',inspections: []);
+    //       category.assets!.add(asset);
+    //       break;
+    //     }
+    //   }
+    // });
+  }
+  void onSave() async{
+    // bool isOk = await TenantService().createTenantDetails(m_tenant);
+    // if(isOk){
+    //   showSuccess('Success');
+    // }else{
+    //   showError('Error');
+    // }
+  }
+  void updateAssetsView(){
+    setState(() {
+      rows = [];
+      stateManager.removeAllRows();
+
+      for(Asset asset in m_assets){
+        rows.add(PlutoRow(cells: {
+                'asset': PlutoCell(value: getAssetTypeName(selected_asset_type_id)),
+                'category': PlutoCell(value: getCategoryName(selected_category_id)),
+                'name': PlutoCell(value: asset.name),
+                'registered': PlutoCell(value: asset.created_date),
+                'inspected': PlutoCell(value: ''),
+                'comment'  : PlutoCell(value: asset.comment)
+              }));
+      }
+      stateManager.insertRows(0, rows);
+    });
+  }
   @override
   void initState() {
     super.initState();
-
+    fetchData();
   }
+
   @override
   Widget build(BuildContext context) {
+    
     final screenWidth = MediaQuery.of(context).size.width;
-    final tile_width = (screenWidth - 650 - 50)/2;
-    final items_count = 5;
-    List<TrackSize> Rows = List<TrackSize>.filled((items_count/2).ceil(), 220.px);
-
     return   Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-            width : 250,
+            width : 200,
             color:Colors.white,
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -140,36 +289,40 @@ class  _UserView extends State<UserView> {
                   width: 250,
                   margin: EdgeInsets.only(top: 10,bottom: 20),
                   child: DropdownButton<String>(
-                    value: selectedValue,
+                    value: selected_folder_id,
                     isExpanded: true,
                     onChanged: (String? newValue) {
                       if (newValue != null) {
                         setState(() {
-                          selectedValue = newValue;
+                          selected_folder_id = newValue;
+                          onChangeFolder(newValue);
                         });
                       }
                     },
-                    items: <String>[
-                      'Folder 1',
-                      'Folder 2',
-                      'Folder 3',
-                      'Folder 4',
-                    ].map<DropdownMenuItem<String>>((String value) {
+                    items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value),
+                        child: Row(
+                          children: [
+                            Image.asset('assets/images/folder.png',width: 30, height: 30),
+                            SizedBox(width: 10),
+                            Text(getFolderName(value))
+                          ]
+                        )
                       );
                     }).toList(),
                   )
                 ),
                 Expanded(child: ListView.builder(
                   padding: const EdgeInsets.only(top: 0),
-                  itemCount: groups.length,
+                  itemCount: m_groups.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                        // Handle mouse press event
-                        print('Item pressed: ${groups[index]}');
+                         setState(() {
+                           selected_group_id = m_groups[index].id!;
+                           onChangeGroup(m_groups[index].id!);
+                         });
                       },
                       child: MouseRegion(
                         onEnter: (event) {
@@ -189,13 +342,10 @@ class  _UserView extends State<UserView> {
                           color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
                           child: Row(
                             children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage: AssetImage('assets/images/home.jpg'),
-                              ),
+                               Image.asset('assets/images/group.png'),
                               Container(
                                 margin: const EdgeInsets.only(left: 10),
-                                child: Text('${groups[index]}'),
+                                child: Text('${m_groups[index].name}'),
                               ),
                             ],
                           ),
@@ -208,28 +358,46 @@ class  _UserView extends State<UserView> {
             )
         ),
         Container(
-            width : 250,
-            color:Color.fromRGBO(0, 113,255,0.1),
+            width : 200,
+            color:Colors.white,
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
                 Container(
                   margin: EdgeInsets.only(top:10),
-                  child:  Text('Assets',
+                  child:  Text('Asset Types',
                     style: TextStyle(
                       fontSize: 20,
                     ),
                   ),
                 ),
+                SizedBox(height: 16),
+                SizedBox(
+                    height: 35,
+                    width: 250,
+                    child:
+                    Container(
+                        margin:EdgeInsets.only(left:0),
+                        child: TextField(
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            hintText: 'Search Asset Type',
+                          ),
+                        )
+                    )
+
+                ),
                 Expanded(child: ListView.builder(
-                  padding: const EdgeInsets.only(top: 0),
-                  itemCount: assets.length,
+                  padding: const EdgeInsets.only(top: 25),
+                  itemCount: m_asset_types.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                        // Handle mouse press event
-                        print('Item pressed: ${assets[index]}');
-                      },
+                        setState(() {
+                          selected_asset_type_id = m_asset_types[index].id!;
+                          onChangeAssetType(m_asset_types[index].id!);
+                        });
+                       },
                       child: MouseRegion(
                         onEnter: (event) {
                           setState(() {
@@ -241,20 +409,16 @@ class  _UserView extends State<UserView> {
                             hoveredIndex2 = -1;
                           });
                         },
-
                         child: Container(
                           margin: const EdgeInsets.only(top: 10),
                           height: 40,
-                          color: hoveredIndex2 == index ? Color.fromRGBO(0, 113,255,0.4) : Color.fromRGBO(0, 113,255,0),
+                          color: hoveredIndex2 == index ? Color.fromRGBO(150, 150,150,0.2) : Colors.white,
                           child: Row(
                             children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage: AssetImage('assets/images/home.jpg'),
-                              ),
+                              Image.asset('assets/images/asset.png'),
                               Container(
                                 margin: const EdgeInsets.only(left: 10),
-                                child: Text('${assets[index]}'),
+                                child: Text('${m_asset_types[index].type}'),
                               ),
                             ],
                           ),
@@ -279,36 +443,48 @@ class  _UserView extends State<UserView> {
                       child: Row(
                         children: [
                           Container(
-                              width: 250,
+                              width: 200,
                               margin: EdgeInsets.only(top: 10,bottom: 10),
                               child: DropdownButton<String>(
-                                value: selectedValue2,
+                                value: selected_category_id,
                                 isExpanded: true,
                                 onChanged: (String? newValue) {
                                   if (newValue != null) {
                                     setState(() {
-                                      selectedValue2 = newValue;
+                                      selected_category_id = newValue;
+                                      onChangeCategory(selected_category_id);
                                     });
                                   }
                                 },
-                                items: <String>[
-                                  'Category 1',
-                                  'Category 2',
-                                  'Category 3',
-                                  'Category 4',
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
+                                items:  m_category_ids.length > 0 ?
+                                            m_category_ids.map<DropdownMenuItem<String>>((String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Row(children: [
+                                                  Image.asset('assets/images/category.png',width: 30, height: 30),
+                                                  SizedBox(width: 10),
+                                                  Text(getCategoryName(value))
+                                                ]),
+                                              );
+                                            }).toList():
+                                          [
+                                            DropdownMenuItem<String>(
+                                              value: '',
+                                              child: Row(children: [
+                                                Image.asset('assets/images/category.png',width: 30, height: 30),
+                                                SizedBox(width: 10),
+                                                Text('No Category')
+                                              ]),
+                                            )
+                                          ]
+
                               )
                           ),
                           Container(
                               margin: EdgeInsets.only(top: 10,bottom:10),
                               child: SizedBox(
                                   height: 45,
-                                  width: 400,
+                                  width: screenWidth - 1070,
                                   child:
                                   Container(
                                     margin:EdgeInsets.only(left:20),
@@ -342,10 +518,7 @@ class  _UserView extends State<UserView> {
                                   padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
 
                                   textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                              onPressed: () {
-                                setState(() {
-                                });
-                              },
+                              onPressed: onAdd,
                               child: const Text('Add')),
                           SizedBox(width:20),
                           ElevatedButton(
@@ -353,12 +526,8 @@ class  _UserView extends State<UserView> {
                                   backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
                                   padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
                                   textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                              onPressed: () {
-                                setState(() {
-                                });
-                              },
-                              child: const Text('Delete')),
-
+                              onPressed: onSave,
+                              child: const Text('Save Changes')),
                         ],
                       )
                   ),
@@ -372,9 +541,12 @@ class  _UserView extends State<UserView> {
                           onChanged: (PlutoGridOnChangedEvent event) {
                             print(event);
                           },
-                          onLoaded: (PlutoGridOnLoadedEvent event) {
-                            print(event);
-                          }
+                        onLoaded: (PlutoGridOnLoadedEvent event) {
+                          setState(() {
+                            stateManager = event.stateManager;
+                            stateManager.setShowColumnFilter(false);
+                          });
+                          },
                       )
                   )
                   ),
@@ -382,23 +554,24 @@ class  _UserView extends State<UserView> {
                   Expanded(child: TitledContainer(
                           titleText: 'Gallery View',
                           idden: 10,
-                          child: ListView(
-                            children: [
-                              LayoutGrid(
-                                columnSizes: [tile_width.px,tile_width.px],
-                                rowSizes: Rows,
-                                columnGap: 2,
-                                rowGap: 2,
-                                children: [
-                                  UserAssetItem(),
-                                  UserAssetItem(),
-                                  UserAssetItem(),
-                                  UserAssetItem(),
-                                  UserAssetItem(),
-                                ],
+                          child : ListView.builder(
+                                itemCount:  (m_assets.length/2).ceil(),
+                                shrinkWrap: true, ///////////////////////Use This Line
+                                itemBuilder: (BuildContext context, int index) {
+                                  Asset asset = m_assets[2 * index];
+                                  Asset? asset_2 = 2 * index + 1 > m_assets.length ? null: m_assets[2 * index + 1];
+                                  return Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          UserAssetItem(asset_name: asset.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset.last_inspection_date.toString()),
+                                          if(asset_2 != null)
+                                            UserAssetItem(asset_name: asset_2.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset_2.last_inspection_date.toString()),
+                                        ],
+                                      );
+
+                                },
                               )
-                            ],
-                          )
+
                   )
                   ),
                 ],
@@ -421,17 +594,17 @@ class  _UserView extends State<UserView> {
                 ),
                 Expanded(child: ListView.builder(
                   padding: const EdgeInsets.only(top: 0),
-                  itemCount: assets.length,
+                  itemCount: actions.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
                         // Handle mouse press event
-                        print('Item pressed: ${assets[index]}');
+                        print('Item pressed: ${actions[index]}');
                       },
                       child: MouseRegion(
                         onEnter: (event) {
                           setState(() {
-                            hoveredIndex3 = index;
+                              hoveredIndex3 = index;
                           });
                         },
                         onExit: (event) {

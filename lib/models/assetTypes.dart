@@ -6,6 +6,8 @@ class AssetType {
 
   Map<String,dynamic> toJson(){
     List<Map<String,dynamic>> category_data = [];
+
+
     for (Category category in categories!){
       category_data.add(category.toJson());
     }

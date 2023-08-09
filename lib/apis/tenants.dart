@@ -10,7 +10,6 @@ class TenantService {
       QuerySnapshot querySnapshot = await tenantsCollection.where('user_id', isEqualTo: userId).get();
       List<QueryDocumentSnapshot> documents = querySnapshot.docs;
       Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
-
       Tenant result = Tenant();
       result.fromJson(data);
       return result;

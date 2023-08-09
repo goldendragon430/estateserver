@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
               MaterialApp(
                 debugShowCheckedModeBanner: false,
                 routes: {
-                  '/': (context) => Scaffold(body:AdminView()) ,
+                  '/': (context) => Scaffold(body:UserView()) ,
                   '/admin': (context) => Scaffold(body:AdminView()) ,
                   '/tenant': (context) => Scaffold(body:TenantAdminView()) ,
                   '/user': (context) => Scaffold(body:UserView()) ,

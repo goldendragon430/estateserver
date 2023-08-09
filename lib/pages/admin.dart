@@ -424,7 +424,6 @@ class  _AdminViewState extends State<AdminView> {
                             itemBuilder: (BuildContext context, int index) {
                               return  new TenantGroupItem(folderID: m_groups[index]['folderID'],groupID: (m_groups[index]['data'] as Group).id,folderName: m_groups[index]['folderName'],registeredDate:(m_groups[index]['data'] as Group).created_date.toString() ,groupName: (m_groups[index]['data'] as Group).name, active:(m_groups[index]['data'] as Group).active ,onChange: onChangeGroupItem, );
                             })
-
                     )),
 
                   ],

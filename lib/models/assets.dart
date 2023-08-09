@@ -7,28 +7,22 @@ class Asset {
   String? name;
   DateTime? acquired_date;
   DateTime? last_inspection_date;
+  DateTime? created_date;
   String? comment;
-  List<String>? images;
   List<Inspection>? inspections;
   Map<String,dynamic> toJson(){
-    List<Map<String,dynamic>> image_data = [];
-    for (String image in images!){
-      image_data.add({'path' : image});
-    }
     List<Map<String,dynamic>> inspect_data = [];
-
     for (Inspection ins in inspections!){
       inspect_data.add(ins.toJson());
     }
-
     return {
       'id' : id,
       'name' : name,
       'acquired_date' : acquired_date.toString(),
       'last_inspection_date' : last_inspection_date.toString(),
       'comment' : comment.toString(),
-      'images' : image_data,
-      'inspections' : inspect_data
+      'inspections' : inspect_data,
+      'created_date' : created_date == null ? DateTime(2023,1,1).toString() : created_date.toString()
     };
   }
   void fromJson(Map<String,dynamic>? data){
@@ -38,15 +32,11 @@ class Asset {
     last_inspection_date = DateTime.parse(data?['last_inspection_date']);
     comment = data?['comment'];
 
-
-    List<dynamic> image_data = data?['images'];
-    List<String> imageData = [];
-    for(dynamic img in image_data){
-      Map<String,String> dd = img;
-      imageData.add(dd['path']!);
+    if(data?['created_date'] != null && data?['created_date'] != 'null'){
+      created_date = DateTime.parse(data?['created_date']);
+    }else{
+      created_date  = DateTime(2023,1,1);
     }
-    images = imageData;
-
     List<dynamic> inspection_data = data?['inspections'];
     List<Inspection> inspectionData = [];
     for(dynamic ins in inspection_data){
@@ -63,7 +53,7 @@ class Asset {
     this.acquired_date,
     this.last_inspection_date,
     this.comment,
-    this.images,
-    this.inspections
+    this.inspections,
+    this.created_date
   });
 }

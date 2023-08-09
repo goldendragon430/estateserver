@@ -22,6 +22,8 @@ class Tenant {
      for (Folder folder in folders!){
        folder_data.add(folder.toJson());
      }
+
+
      return {
        // 'id' : id,
        'name' : name,

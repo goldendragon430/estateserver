@@ -8,6 +8,8 @@ class Group {
 
    Map<String,dynamic> toJson(){
      List<Map<String,dynamic>> type_data = [];
+
+
      for (AssetType atype in assetTypes!){
        type_data.add(atype.toJson());
      }
@@ -25,7 +27,7 @@ class Group {
      name = data?['name'];
      active = data?['active'];
      if(data?['created_date'] != null) {
-       created_date = data?['created_date'];
+       created_date = DateTime.parse(data?['created_date']) ;
      }else{
        created_date = DateTime(2023,1,1);
      }
