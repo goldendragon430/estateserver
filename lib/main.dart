@@ -42,13 +42,47 @@ class MyApp extends StatelessWidget {
               Expanded(child:
               MaterialApp(
                 debugShowCheckedModeBanner: false,
-                routes: {
-                  '/': (context) => Scaffold(body:UserView()) ,
-                  '/admin': (context) => Scaffold(body:AdminView()) ,
-                  '/tenant': (context) => Scaffold(body:TenantAdminView()) ,
-                  '/user': (context) => Scaffold(body:UserView()) ,
-                  '/register': (context) => Scaffold(body:RegisterView()) ,
+                onGenerateRoute: (settings) {
+                  switch(settings.name){
+                    case '/':
+                          return MaterialPageRoute(
+                            builder: (context) {
+                                return Scaffold(body:LoginView());
+                            });
+                    case 'admin':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(body:AdminView());
+                          });
+                    case 'tenant':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(body:TenantAdminView());
+                          });
+                    case 'user':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(body:UserView());
+                          });
+                    case 'userdetail':
+                      final args = settings.arguments as Map<String, dynamic>;
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(body:AssetDetailView(data: args));
+                          });
+                    case 'register':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(body:RegisterView());
+                          });
+                    default:
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(body:Text('Not Found'));
+                          });
+                  }
                 },
+
               )),
               Container(
                 color:Color.fromRGBO(0, 113, 255, 1),

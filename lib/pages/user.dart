@@ -7,13 +7,8 @@ import 'package:assetmamanger/models/folders.dart';
 import 'package:assetmamanger/models/groups.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/user/userassetitem.dart';
-import 'package:assetmamanger/utils/global.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
-
-import 'dart:math';
-
 import '../models/category.dart';
 import '../models/tenants.dart';
 
@@ -510,24 +505,25 @@ class  _UserView extends State<UserView> {
                                   )
 
                               )
-                          ),
-                          SizedBox(width:20),
-                          ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.green),
-                                  padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-
-                                  textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                              onPressed: onAdd,
-                              child: const Text('Add')),
-                          SizedBox(width:20),
-                          ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                                  padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                                  textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                              onPressed: onSave,
-                              child: const Text('Save Changes')),
+                          )
+                          // ,
+                          // SizedBox(width:20),
+                          // ElevatedButton(
+                          //     style: ButtonStyle(
+                          //         backgroundColor: MaterialStateProperty.all(Colors.green),
+                          //         padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                          //
+                          //         textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                          //     onPressed: onAdd,
+                          //     child: const Text('Add')),
+                          // SizedBox(width:20),
+                          // ElevatedButton(
+                          //     style: ButtonStyle(
+                          //         backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                          //         padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                          //         textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                          //     onPressed: onSave,
+                          //     child: const Text('Save Changes')),
                         ],
                       )
                   ),
@@ -559,7 +555,7 @@ class  _UserView extends State<UserView> {
                                 shrinkWrap: true, ///////////////////////Use This Line
                                 itemBuilder: (BuildContext context, int index) {
                                   Asset asset = m_assets[2 * index];
-                                  Asset? asset_2 = 2 * index + 1 > m_assets.length ? null: m_assets[2 * index + 1];
+                                  Asset? asset_2 = 2 * index + 1 >= m_assets.length ? null: m_assets[2 * index + 1];
                                   return Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                                         children: [
@@ -598,8 +594,19 @@ class  _UserView extends State<UserView> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                        // Handle mouse press event
-                        print('Item pressed: ${actions[index]}');
+                        if(index == 2){
+                          Navigator.pushNamed(
+                            context,
+                            'userdetail',
+                              arguments: {
+                                'folder_id' : selected_folder_id,
+                                'user_id'   : user_id,
+                                'group_id'  : selected_group_id,
+                                'asset_type_id' : selected_asset_type_id,
+                                'category_id'  : selected_category_id
+                              }
+                          );
+                        }
                       },
                       child: MouseRegion(
                         onEnter: (event) {

@@ -122,9 +122,8 @@ class  _TenantSettings extends State<TenantSettings> {
                        child:  Container(
                            width:200,
                            height: 150,
-                           child: logo_image != null? Image.memory(logo_image!) : Image.network(tenant_data.logo!)
+                           child: logo_image != null? Image.memory(logo_image!) : (tenant_data.logo == '' ? Image.asset('assets/images/home.jpg') : Image.network(tenant_data.logo!))
                        )
-
                      ),
 
                      Expanded(child: Column(

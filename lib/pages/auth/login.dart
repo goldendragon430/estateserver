@@ -40,19 +40,19 @@ class  _LoginView extends State<LoginView> {
         case 0: //admin
           Navigator.pushNamed(
             context,
-            '/admin',
+            'admin',
           );
           break;
         case 1: //tenant
           Navigator.pushNamed(
             context,
-            '/tenant',
+            'tenant',
           );
           break;
         case 2: //user
           Navigator.pushNamed(
             context,
-            '/user',
+            'user',
           );
           break;
         default:
@@ -157,7 +157,7 @@ class  _LoginView extends State<LoginView> {
                       onTap: () {
                         Navigator.pushNamed(
                           context,
-                          '/register',
+                          'register',
                         );
                       },
                       child:  Container(
