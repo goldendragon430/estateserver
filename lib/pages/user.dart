@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:assetmamanger/apis/tenants.dart';
@@ -7,6 +8,7 @@ import 'package:assetmamanger/models/folders.dart';
 import 'package:assetmamanger/models/groups.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/user/userassetitem.dart';
+import 'package:assetmamanger/utils/global.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:flutter/material.dart';
 import '../models/category.dart';
@@ -87,6 +89,19 @@ class  _UserView extends State<UserView> {
   late final PlutoGridStateManager stateManager;
 
   void fetchData() async{
+
+    String? val =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(val!);
+    print(data);
+    if(data?['parent_user'] != null) {
+      setState(() {
+        user_id = data?['parent_user'];
+      });
+    }
+    else{
+      return;
+    }
+
     Tenant? result =  await TenantService().getTenantDetails(user_id);
 
     if(result != null){

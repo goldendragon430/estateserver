@@ -56,6 +56,7 @@ class CustomAppBar extends AppBar {
             context,
             '/',
           );
+          // Navigator.pop(context);
           // Perform settings action
         },
       )

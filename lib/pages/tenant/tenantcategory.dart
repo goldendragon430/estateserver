@@ -81,7 +81,8 @@ class  _TenantCategory extends State<TenantCategory> {
         }
       }
     }
-    selected_group_id = m_group_ids[0];
+    if(m_group_ids.length > 0)
+        selected_group_id = m_group_ids[0];
   }
   void updateAssetTypeID(String group_id){
     m_asset_type_ids = [];
@@ -92,7 +93,8 @@ class  _TenantCategory extends State<TenantCategory> {
         }
       }
     }
-    selected_asset_type_id = m_asset_type_ids[0];
+    if(m_asset_type_ids.length > 0)
+        selected_asset_type_id = m_asset_type_ids[0];
   }
 
   //-----------------update Asset Type data-----------------------------//
@@ -101,7 +103,7 @@ class  _TenantCategory extends State<TenantCategory> {
       categories.clear();
     });
     Future.delayed(const Duration(milliseconds: 20), () {
-      setState(() {
+
         for (Folder folder in m_folders){
           List<Group> groups = folder.groups!;
           for (Group group in groups){
@@ -109,11 +111,13 @@ class  _TenantCategory extends State<TenantCategory> {
             for(AssetType type in m_asset_types){
               List<Category> m_categories = type.categories!;
               for(Category category in m_categories){
-                categories.add({
+                setState(() {
+                  categories.add({
                   'folderID'    : folder.id,
                   'groupID'     : group.id,
                   'assetTypeID' : type.id,
                   'categoryData': category
+                });
                 });
               }
             }
@@ -121,7 +125,7 @@ class  _TenantCategory extends State<TenantCategory> {
         }
         searchItems(search_str);
       });
-    });
+
   }
 
   //-----------------search feature-------------------------------//
@@ -312,7 +316,8 @@ class  _TenantCategory extends State<TenantCategory> {
                                   break;
                                 }
                               }
-                              selected_group_id = m_group_ids[0];
+                              if(m_group_ids.length > 0)
+                                  selected_group_id = m_group_ids[0];
 
                               m_asset_type_ids = [];
                               for(Group group in m_groups){
@@ -323,7 +328,8 @@ class  _TenantCategory extends State<TenantCategory> {
                                   break;
                                 }
                               }
-                              selected_asset_type_id = m_asset_type_ids[0];
+                              if(m_asset_type_ids.length > 0)
+                                  selected_asset_type_id = m_asset_type_ids[0];
 
 
                             });
@@ -357,7 +363,8 @@ class  _TenantCategory extends State<TenantCategory> {
                                   break;
                                 }
                               }
-                              selected_asset_type_id = m_asset_type_ids[0];
+                              if(m_asset_type_ids.length > 0)
+                                  selected_asset_type_id = m_asset_type_ids[0];
 
                             });
                           }

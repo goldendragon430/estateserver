@@ -116,7 +116,7 @@ class  _TenantGroups extends State<TenantGroups> {
     setState(() {
       for(Folder folder in m_folders){
         if(folder.id == selectedValue){
-          folder.groups?.add(Group(id : generateID(), name: group_name, assetTypes: [], active:active_group ));
+          folder.groups?.add(Group(id : generateID(), name: group_name, assetTypes: [], active:active_group,created_date: DateTime.now() ));
         }
       }
     });

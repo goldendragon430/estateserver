@@ -9,6 +9,8 @@ class TenantService {
       CollectionReference tenantsCollection = firestore.collection('tenants');
       QuerySnapshot querySnapshot = await tenantsCollection.where('user_id', isEqualTo: userId).get();
       List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+      if(documents.length == 0)
+          return null;
       Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
       Tenant result = Tenant();
       result.fromJson(data);
@@ -17,8 +19,7 @@ class TenantService {
     } catch (e) {
       print('$e');
       return null;
-      throw Exception('$e');
-    }
+     }
 
   }
 

@@ -4,6 +4,7 @@ import 'package:assetmamanger/pages/tenant/tenantcategory.dart';
 import 'package:assetmamanger/pages/tenant/tenantgroups.dart';
 import 'package:assetmamanger/pages/tenant/tenantsettings.dart';
 import 'package:assetmamanger/pages/tenant/tenantfolders.dart';
+import 'package:assetmamanger/pages/tenant/tenantusers.dart';
 import 'package:flutter/material.dart';
 class TenantAdminView extends StatefulWidget {
   TenantAdminView({super.key});
@@ -20,7 +21,8 @@ class  _TenantAdminView extends State<TenantAdminView> {
       case 2: return TenantGroups();
       case 3: return TenantAssets();
       case 4: return TenantCategory();
-      default: return Text('404 Not Found');
+      case 5: return TenantUsers();
+      default: return Text('Not Found Page');
     }
   }
   @override
@@ -68,6 +70,10 @@ class  _TenantAdminView extends State<TenantAdminView> {
                       setState((){
                       tab_index = 4;
                     });}),
+                    CustomListTile(title: Text('Subusers'), icon: Icon(Icons.account_circle_outlined),onClick:(){
+                      setState((){
+                        tab_index = 5;
+                      });}),
                   ],
                 )),
 

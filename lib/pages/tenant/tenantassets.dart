@@ -72,7 +72,9 @@ class  _TenantAssets extends State<TenantAssets> {
         }
       }
     }
-    selected_group_id = m_group_ids[0];
+    if(m_group_ids.length > 0) {
+      selected_group_id = m_group_ids[0];
+    }
   }
   //-----------------update Asset Type data-----------------------------//
   void updateAssetTypes(){
@@ -258,7 +260,8 @@ class  _TenantAssets extends State<TenantAssets> {
                                   }
                                 }
                               }
-                              selected_group_id = m_group_ids[0];
+                              if(m_group_ids.length > 0)
+                                  selected_group_id = m_group_ids[0];
                             });
                           }
                         },

@@ -1,31 +1,40 @@
+import 'dart:math';
+
 import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:io';
+import 'package:dio/dio.dart';
 class RegisterView extends StatefulWidget {
   RegisterView({super.key});
   @override
   _RegisterView createState() => _RegisterView();
 }
 class  _RegisterView extends State<RegisterView> {
+  final dio = Dio();
   String username = '';
   String email = '';
   String mobile = '';
   String landline = '';
   String code = '';
   bool state = false;
+  String sent_code = '';
   @override
   void initState() {
     super.initState();
   }
 
   void onRegister() async{
-    bool ok = await LoginService().create(email, username, landline, mobile);
-    if(ok){
-      showSuccess('Success');
-      Navigator.pop(context);
+    if(sent_code == code) {
+      bool ok = await LoginService().create(email, username, landline, mobile);
+      if(ok){
+        showSuccess('Success');
+        Navigator.pop(context);
+      }else{
+        showError('Register Error');
+      }
     }else{
-      showError('Register Error');
+      showError('Not Matches Digits');
     }
   }
   void onNext() async{
@@ -37,9 +46,24 @@ class  _RegisterView extends State<RegisterView> {
       showError('Email is invalid.');
       return;
     }
-    setState(() {
-      state = true;
+    // setState(() {
+    //   state = true;
+    // });
+    Random  rng = new Random();
+    int varcode = rng. nextInt(900000) + 100000;
+
+    final response = await dio.post('http://154.38.161.183:5000/mail/send', data : {
+      'to'   : email ,
+      'code' : varcode
     });
+    if(response.data['result'] == 'success'){
+      setState(() {
+        state = true;
+        sent_code = varcode.toString();
+      });
+    }else{
+      showError('Mail server is error.');
+    }
   }
   @override
   Widget build(BuildContext context) {

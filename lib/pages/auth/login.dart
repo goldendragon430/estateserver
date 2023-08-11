@@ -4,6 +4,9 @@ import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 
+import '../../apis/tenants.dart';
+import '../../models/tenants.dart';
+
 class LoginView extends StatefulWidget {
   LoginView({super.key});
   @override
@@ -30,10 +33,16 @@ class  _LoginView extends State<LoginView> {
     if(result == null) {
       showError("User doesn't exist.");
     }else{
-      if(result['state'] == false){
-        showError('Please wait until admin allow you.');
-        return;
+
+      if(result['role'] == 1) {
+        String user_id = result['id'];
+        Tenant? tenant =  await TenantService().getTenantDetails(user_id);
+        if(tenant!.active == false) {
+          showError('Please wait until admin allow you.');
+          return;
+        }
       }
+
       saveStorage('user', jsonEncode(result));
       showSuccess('success');
       switch(result['role']){

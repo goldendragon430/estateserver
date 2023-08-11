@@ -51,8 +51,11 @@ class  _TenantSettings extends State<TenantSettings> {
     emailEditController.text = tenant_data.email!;
     addressEditController.text = tenant_data.address!;
     landlineEditController.text = tenant_data.landline!;
-    folderEditController.text = tenant_data.folders![0].name!;
-    groupEditController.text = tenant_data.folders![0].groups![0].name!;
+    if(tenant_data.folders!.length > 0) {
+      folderEditController.text = tenant_data.folders![0].name!;
+      if(tenant_data.folders![0].groups!.length > 0)
+          groupEditController.text = tenant_data.folders![0].groups![0].name!;
+    }
     phoneEditController.text = tenant_data.phone!;
     officeEditController.text = tenant_data.office!;
     faxEditController.text = tenant_data.fax!;
@@ -79,8 +82,8 @@ class  _TenantSettings extends State<TenantSettings> {
       String url =  await uploadFile(logo_image);
       tenant_data.logo = url;
     }
-    Group groupdata =  Group(id : generateID(), name: group, active: false, assetTypes: [] );
-    Folder folderdata = Folder(id : generateID(), name : folder, active: false, unlimited_group: false, groups: [groupdata]);
+    Group groupdata =  Group(id : generateID(), name: group, active: false, assetTypes: [],created_date : DateTime.now() );
+    Folder folderdata = Folder(id : generateID(), name : folder, active: false, unlimited_group: false, groups: [groupdata],created_date: DateTime.now());
     if(tenant_data.folders!.length == 0)
           tenant_data.folders = [folderdata];
     bool isOk = await TenantService().createTenantDetails(tenant_data);
@@ -207,7 +210,8 @@ class  _TenantSettings extends State<TenantSettings> {
                                          setState(() {
                                            folder = value;
                                          });
-                                       }
+                                       },
+
                                    )
                                ),
                              )
@@ -231,7 +235,8 @@ class  _TenantSettings extends State<TenantSettings> {
                                            setState(() {
                                              tenant_data.landline = value;
                                            });
-                                         }
+                                         },
+
                                      )
                                  )
 
@@ -250,7 +255,8 @@ class  _TenantSettings extends State<TenantSettings> {
                                          setState(() {
                                            group = value;
                                          });
-                                       }
+                                       },
+
                                    )
                                ),
                              )

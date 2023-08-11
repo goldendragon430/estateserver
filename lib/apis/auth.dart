@@ -1,4 +1,7 @@
+import 'dart:html';
+
 import 'package:assetmamanger/models/tenants.dart';
+import 'package:assetmamanger/models/users.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -13,6 +16,8 @@ class LoginService {
       CollectionReference usersCollection = firestore.collection('users');
       QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: email).where('username', isEqualTo: username).get();
       List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+      if(documents.length == 0)
+         return null;
       Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
 
       if (data != null) {
@@ -64,10 +69,59 @@ class LoginService {
       );
       return true;
     } catch (e) {
+      return false;
       throw Exception('$e');
     }
     return false;
   }
 
-
+  Future<bool> newUser(
+      String? email,
+      String? username,
+      String? parent_user,
+      String? id
+      ) async{
+    try{
+      CollectionReference usersCollection = firestore.collection('users');
+      User user = User(
+        subuser_id: id,
+        email : email,
+        username: username,
+        parent_user : parent_user
+      );
+      await usersCollection.add(user.toJson());
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+  Future<List<User>> getSubUser(String? user_id)async{
+    CollectionReference usersCollection = firestore.collection('users');
+    QuerySnapshot querySnapshot = await usersCollection.where('parent_user', isEqualTo: user_id).get();
+    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+    List<User> result = [];
+    for(QueryDocumentSnapshot snapshot in documents){
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+      User user = User();
+      user.fromJson(data);
+      result.add(user);
+    }
+    return result;
+  }
+  Future<bool> saveSubuser(String user_id, List<User> users) async{
+    CollectionReference usersCollection = firestore.collection('users');
+    QuerySnapshot querySnapshot = await usersCollection.where('parent_user', isEqualTo: user_id).get();
+    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+    try{
+      for(QueryDocumentSnapshot snapshot in documents){
+        await usersCollection.doc(snapshot.id).delete();
+      }
+      for(User user in users){
+        await usersCollection.add(user.toJson());
+      }
+      return true;
+    }catch(err){
+      return false;
+    }
+  }
 }

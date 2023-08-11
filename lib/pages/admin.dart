@@ -53,7 +53,10 @@ class  _AdminViewState extends State<AdminView> {
   }
   void onLeftItemClicked(String user_id){
     List<Tenant> results =  m_tenants.where((element) => element.user_id == user_id).toList();
+    if(results.length == 0)
+      return;
     setState(() {
+
        cur_tenant = results[0];
        tenantNameEditController.text = cur_tenant.name!;
        emailAddressEditController.text = cur_tenant.email!;
