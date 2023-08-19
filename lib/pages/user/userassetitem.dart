@@ -23,7 +23,7 @@ class  _UserAssetItem extends State<UserAssetItem> {
           idden: 10,
           child: Row(
             children: [
-              Image.asset('assets/images/asset2.png',width: 150,height: 150),
+              Image.asset('assets/images/asset2.png',width: 120,height: 120),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

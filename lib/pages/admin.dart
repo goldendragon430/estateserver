@@ -32,7 +32,8 @@ class  _AdminViewState extends State<AdminView> {
   TextEditingController registerationEditController = TextEditingController();
   TextEditingController groupNameEditController = TextEditingController();
   TextEditingController folderNameEditController = TextEditingController();
-
+ //-------------------- Reason Input Dialog--------------------------//
+  String reason = '';
  //----------------------search Data--------------------------------//
   List<Tenant> filteredItems = [];
 
@@ -41,6 +42,8 @@ class  _AdminViewState extends State<AdminView> {
     setState((){
       m_tenants = tenants;
       filteredItems = List.from(m_tenants);
+      if(m_tenants.length > 0)
+      onLeftItemClicked(m_tenants[0].user_id!);
     });
   }
   @override
@@ -68,16 +71,24 @@ class  _AdminViewState extends State<AdminView> {
 
        m_folders = cur_tenant.folders!;
        m_groups = [];
-       for(Folder folder in m_folders){
-         for(Group group in folder.groups!){
-           m_groups.add({
-             'folderName' : folder.name,
-             'folderID'   : folder.id,
-             'data'       : group
-           });
-         }
-       }
+
+
+
      });
+    Future.delayed(const Duration(milliseconds: 20), () {
+      setState(() {
+        for(Folder folder in m_folders){
+          for(Group group in folder.groups!){
+            m_groups.add({
+              'folderName' : folder.name,
+              'folderID'   : folder.id,
+              'data'       : group
+            });
+          }
+        }
+      });
+
+    });
   }
   void onChangeFolderItem(String folderID, bool active_folder, bool unlimited_group){
 
@@ -85,6 +96,9 @@ class  _AdminViewState extends State<AdminView> {
      for(Folder folder in folders){
         if(folder.id == folderID){
           folder.active = active_folder!;
+          if(unlimited_group == true && unlimited_group != folder.unlimited_group) {
+            checkUnlimitedGroup(folderID);
+          }
           folder.unlimited_group = unlimited_group!;
           break;
         }
@@ -105,6 +119,54 @@ class  _AdminViewState extends State<AdminView> {
       }
     }
   }
+  void checkUnlimitedFolder(){
+    if(cur_tenant.unlimited_folder == true) {
+
+        for(Folder folder in m_folders){
+            folder.active = true;
+        }
+        List<Folder> temp = List.from(m_folders);
+        setState(() {
+          m_folders = [];
+        });
+        Future.delayed(const Duration(milliseconds: 20), () {
+          setState(() {
+             m_folders = temp;
+             cur_tenant.folders = m_folders;
+          });
+        });
+    }
+  }
+  void checkUnlimitedGroup(String folderID){
+    List<Folder> folders = cur_tenant.folders!;
+    for(Folder folder in folders){
+      if(folder.id == folderID){
+        List<Group> groups = folder.groups!;
+        for(Group group in groups){
+           group.active = true;
+        }
+        break;
+      }
+    }
+    setState(() {
+      m_groups = [];
+    });
+    Future.delayed(const Duration(milliseconds: 20), () {
+      setState(() {
+        for(Folder folder in folders){
+          for(Group group in folder.groups!){
+            m_groups.add({
+              'folderName' : folder.name,
+              'folderID'   : folder.id,
+              'data'       : group
+            });
+          }
+        }
+      });
+
+    });
+
+  }
   void onSave() async{
     bool isOk = await TenantService().createTenantDetails(cur_tenant);
     if(isOk){
@@ -112,6 +174,80 @@ class  _AdminViewState extends State<AdminView> {
     }else{
       showError('Error');
     }
+  }
+  void sendActiveAccountEmail() async{
+    String email = cur_tenant.email!;
+    String title = '${cur_tenant.name} Account Activated';
+    String Body  = '<html><body><p>Welcome ${cur_tenant.name}. Your account has been activated by Cloud Asset. You can now use your username and email to sign into Cloud Asset. Simply get started by doing the following in order.</p>'
+        '<p style = "margin-top:10px">1. Create Asset Folder</p>'
+        '<p>2. Create Asset Groups</p>'
+        '<p>3. Create Asset Types</p>'
+        '<p>4. Create Asset Categories</p>'
+        '<p>5. Register Asset Cloud users for your company or organization.</p>'
+        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
+        '<p style = "margin-top:10px">Thank You</p>'
+        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+        '</body></html>';
+    sendEmail(email, title, Body);
+  }
+  void sendDeActiveAccountEmail() async{
+    String email = cur_tenant.email!;
+    String title = '${cur_tenant.name} Account Deactivated';
+    String Body  = '<html><body><p>Your account ${cur_tenant.name} has been inactivated for the following reasons by Cloud Asset:</p>'
+        '<p style = "margin-top:10px">${reason}</p>'
+        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
+        '<p style = "margin-top:10px">Thank You</p>'
+        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+        '</body></html>';
+    sendEmail(email, title, Body);
+  }
+  StatefulBuilder gradeDialog() {
+    return StatefulBuilder(
+      builder: (context, _setter) {
+        return AlertDialog(
+          title: Text('Please enter the reason for deactivation.'),
+          content:
+          Container(
+              height: 150,
+              child:
+                SizedBox(
+                  width:300,
+                  child: TextField(
+                    maxLines: 10,
+                    decoration: InputDecoration(
+                      hintText: 'Reason',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value){
+                      setState(() {
+                        reason = value;
+                      });
+                    },
+                  ))
+
+          ),
+
+          actions: [
+            ElevatedButton(
+              onPressed:(){
+                setState(() {
+                  cur_tenant.active = false;
+                });
+                sendDeActiveAccountEmail();
+                Navigator.pop(context);
+              },
+              child: Text('Confirm'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
   @override
   Widget build(BuildContext context) {
@@ -333,7 +469,17 @@ class  _AdminViewState extends State<AdminView> {
                                               value: cur_tenant.active==null?false:cur_tenant.active,
                                               onChanged: (bool? value) {
                                                 setState(() {
+                                                  if(value == true){
+                                                    sendActiveAccountEmail();
                                                     cur_tenant.active = value;
+                                                  }
+                                                  else{
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) => gradeDialog()  ,
+                                                    );
+                                                  }
+
                                                 });
                                               },
                                             ),
@@ -356,6 +502,7 @@ class  _AdminViewState extends State<AdminView> {
                                                 setState(() {
                                                       cur_tenant.unlimited_folder = value;
                                                 });
+                                                checkUnlimitedFolder();
                                               },
                                             ),
                                             SizedBox(
@@ -413,7 +560,7 @@ class  _AdminViewState extends State<AdminView> {
                             padding: const EdgeInsets.only(top: 0),
                             itemCount: m_folders.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return new TenantFolderItem(folderID: m_folders[index].id,folderName: m_folders[index].name,registeredDate: m_folders[index].created_date.toString(),active: m_folders[index].active, unlimited_group: m_folders[index].unlimited_group,onChange: onChangeFolderItem);
+                              return new TenantFolderItem( tenantEmail: cur_tenant.email, folderID: m_folders[index].id,folderName: m_folders[index].name,registeredDate: m_folders[index].created_date.toString(),active: m_folders[index].active, unlimited_group: m_folders[index].unlimited_group,onChange: onChangeFolderItem);
                             })
                     )),
                     SizedBox(height:10),
@@ -425,7 +572,7 @@ class  _AdminViewState extends State<AdminView> {
                             padding: const EdgeInsets.only(top: 0),
                             itemCount: m_groups.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return  new TenantGroupItem(folderID: m_groups[index]['folderID'],groupID: (m_groups[index]['data'] as Group).id,folderName: m_groups[index]['folderName'],registeredDate:(m_groups[index]['data'] as Group).created_date.toString() ,groupName: (m_groups[index]['data'] as Group).name, active:(m_groups[index]['data'] as Group).active ,onChange: onChangeGroupItem, );
+                              return  new TenantGroupItem(tenantEmail: cur_tenant.email, folderID: m_groups[index]['folderID'],groupID: (m_groups[index]['data'] as Group).id,folderName: m_groups[index]['folderName'],registeredDate:(m_groups[index]['data'] as Group).created_date.toString() ,groupName: (m_groups[index]['data'] as Group).name, active:(m_groups[index]['data'] as Group).active ,onChange: onChangeGroupItem);
                             })
                     )),
 

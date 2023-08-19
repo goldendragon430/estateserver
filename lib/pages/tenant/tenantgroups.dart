@@ -116,7 +116,7 @@ class  _TenantGroups extends State<TenantGroups> {
     setState(() {
       for(Folder folder in m_folders){
         if(folder.id == selectedValue){
-          folder.groups?.add(Group(id : generateID(), name: group_name, assetTypes: [], active:active_group,created_date: DateTime.now() ));
+          folder.groups?.add(Group(id : generateID(), name: group_name, assetTypes: [], active:folder.unlimited_group,created_date: DateTime.now() ));
         }
       }
     });
@@ -247,23 +247,23 @@ class  _TenantGroups extends State<TenantGroups> {
                             )
                         )
                     ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: this.active_group,
-                            onChanged: (bool? value) {
-                              _setter(() {
-                                this.active_group = value!;
-                              });
-                            },
-                          ),
-                          SizedBox(
-                              width:10
-                          ),
-                          Text('Group Active')
-                        ],
-                      ),
+                      // SizedBox(height: 20),
+                      // Row(
+                      //   children: [
+                      //     Checkbox(
+                      //       value: this.active_group,
+                      //       onChanged: (bool? value) {
+                      //         _setter(() {
+                      //           this.active_group = value!;
+                      //         });
+                      //       },
+                      //     ),
+                      //     SizedBox(
+                      //         width:10
+                      //     ),
+                      //     Text('Group Active')
+                      //   ],
+                      // ),
                   ])
                 ),
 

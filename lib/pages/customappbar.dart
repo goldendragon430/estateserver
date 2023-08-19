@@ -12,43 +12,43 @@ class CustomAppBar extends AppBar {
             'assets/images/logo.png',
             fit: BoxFit.fitWidth
           ),
-          const Text('Tenants',
+          const Text('',
               style: TextStyle(
                   fontSize: 28
               )),
           const Text(
-            'Vladyslav Zaporozhets : admin',
+            '',
             style : TextStyle(
                   fontSize: 14
             )
           )
         ]),
     actions: [
-      IconButton(
-        icon: Icon(Icons.notifications),
-        onPressed: () {
-          // Perform settings action
-        },
-      ),
-      IconButton(
-        icon: Icon(Icons.person),
-        onPressed: () {
-          // Perform settings action
-        },
-      ),
-      IconButton(
-        icon: Icon(Icons.home),
-        onPressed: () {
-          // Perform settings action
-        },
-      )
-      ,
-      IconButton(
-        icon: Icon(Icons.settings),
-        onPressed: () {
-          // Perform settings action
-        },
-      ),
+      // IconButton(
+      //   icon: Icon(Icons.notifications),
+      //   onPressed: () {
+      //     // Perform settings action
+      //   },
+      // ),
+      // IconButton(
+      //   icon: Icon(Icons.person),
+      //   onPressed: () {
+      //     // Perform settings action
+      //   },
+      // ),
+      // IconButton(
+      //   icon: Icon(Icons.home),
+      //   onPressed: () {
+      //     // Perform settings action
+      //   },
+      // )
+      // ,
+      // IconButton(
+      //   icon: Icon(Icons.settings),
+      //   onPressed: () {
+      //     // Perform settings action
+      //   },
+      // ),
       IconButton(
         icon: Icon(Icons.logout),
         onPressed: () {

@@ -90,10 +90,10 @@ class  _FolderItem extends State<FolderItem> {
                                       Checkbox(
                                         value: this.folder_active,
                                         onChanged: (bool? value) {
-                                          setState(() {
-                                            this.folder_active = value!;
-                                            update();
-                                          });
+                                          // setState(() {
+                                          //   this.folder_active = value!;
+                                          //   update();
+                                          // });
                                         },
                                       ),
                                       SizedBox(
@@ -110,10 +110,10 @@ class  _FolderItem extends State<FolderItem> {
                                       Checkbox(
                                         value: this.group_active,
                                         onChanged: (bool? value) {
-                                          setState(() {
-                                            this.group_active = value!;
-                                            update();
-                                          });
+                                          // setState(() {
+                                          //   // this.group_active = value!;
+                                          //   // update();
+                                          // });
                                         },
                                       ),
                                       SizedBox(

@@ -8,9 +8,11 @@ class InspcetionItem extends StatefulWidget {
   DateTime? next_inspection;
   String? comment;
   bool? functional_condition;
-  Function(String id, DateTime inspection_date,bool condition,String asset_money_value,DateTime next_inspection, String comment)? onChange;
+  String? status;
+  String? value;
+  Function(String id, DateTime inspection_date,bool condition,String asset_money_value,DateTime next_inspection, String comment, String value, String status)? onChange;
   Function(String id)? onDelete;
-  InspcetionItem({super.key,this.id,this.logo,this.inspection_date,this.asset_money_value,this.next_inspection,this.comment,this.functional_condition,this.onChange,this.onDelete});
+  InspcetionItem({super.key,this.status,this.value,this.id,this.logo,this.inspection_date,this.asset_money_value,this.next_inspection,this.comment,this.functional_condition,this.onChange,this.onDelete});
   @override
   _InspcetionItem createState() => _InspcetionItem();
 }
@@ -24,8 +26,12 @@ class  _InspcetionItem extends State<InspcetionItem> {
   DateTime? next_inspection;
   String? comment;
   bool? functional_condition;
+  String? status = 'Active';
+  String? asset_value;
+  List<String> status_list = ['Active','Disposed','Non Operational','UnAccounted','Sold Off'];
   TextEditingController inspectionController = TextEditingController();
   TextEditingController amountControlller = TextEditingController();
+  TextEditingController valueController = TextEditingController();
   TextEditingController nextInspectionController = TextEditingController();
   TextEditingController commentController = TextEditingController();
   @override
@@ -42,10 +48,13 @@ class  _InspcetionItem extends State<InspcetionItem> {
       comment = widget.comment;
       commentController.text = comment!;
       functional_condition = widget.functional_condition;
+      status =  widget.status;
+      asset_value = widget.value;
+      valueController.text = asset_value!;
     });
   }
   void update(){
-    widget.onChange!(widget.id!,inspection_date!,functional_condition!,asset_money_value!,next_inspection!,comment!);
+    widget.onChange!(widget.id!,inspection_date!,functional_condition!,asset_money_value!,next_inspection!,comment!,asset_value!,status!);
   }
   @override
   Widget build(BuildContext context) {
@@ -100,34 +109,9 @@ class  _InspcetionItem extends State<InspcetionItem> {
                             )
                         )
                     ),
-                    Column(children: [
-                      SizedBox(height: 15),
-                      Row(
-                        children: [
-                          SizedBox(
-                              width:15
-                          ),
-
-                          Checkbox(
-                            value: functional_condition,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                functional_condition = value!;
-                              });
-                              update();
-
-                            },
-                          ),
-                          SizedBox(
-                              width:5
-                          ),
-                          Text('Functional Condition')
-                        ],
-                      ),
-                    ]),
                     SizedBox(
                         height: 35,
-                        width: 150,
+                        width: 70,
                         child:
                         Container(
                             margin:EdgeInsets.only(left:20),
@@ -175,6 +159,48 @@ class  _InspcetionItem extends State<InspcetionItem> {
                                 update();
 
                               },
+                            )
+                        )
+                    ),
+                    SizedBox(
+                        width : 170,
+                        height : 60,
+                        child: DropdownButton<String>(
+                          value: status,
+                          padding: EdgeInsets.all(5),
+                          isExpanded: true,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              status = newValue;
+                            });
+                          },
+                          items: status_list.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        )
+                    ),
+                    SizedBox(
+                        height: 35,
+                        width: 70,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextField(
+                                controller: valueController,
+                                decoration: InputDecoration(
+                                  hintText: 'Asset Value',
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    asset_value = value;
+                                  });
+                                  update();
+
+                                },
+                                style: TextStyle(fontSize: 14)
                             )
                         )
                     ),

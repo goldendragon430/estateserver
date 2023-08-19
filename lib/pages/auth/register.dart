@@ -28,8 +28,10 @@ class  _RegisterView extends State<RegisterView> {
     if(sent_code == code) {
       bool ok = await LoginService().create(email, username, landline, mobile);
       if(ok){
-        showSuccess('Success');
-        Navigator.pop(context);
+        showSuccess('Congratulations ${username}. Your account has been successfully registered with Cloud Asset. You will be notified by email once your account has been verified and activated by Cloud Asset Administrator. \nIn the meantime, you can read some of our resources in this link to familiarize yourself on how to use the system. \nThank you.');
+        Future.delayed(const Duration(milliseconds: 3000), () {
+          Navigator.pop(context);
+        });
       }else{
         showError('Register Error');
       }
@@ -65,13 +67,14 @@ class  _RegisterView extends State<RegisterView> {
       showError('Mail server is error.');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return
       Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Sign up',
+            Text( state == false ? 'Sign Up' : 'Access Code Confirmation',
                 style: TextStyle(
                   fontSize: 32,
                   color: Colors.black,
@@ -248,8 +251,15 @@ class  _RegisterView extends State<RegisterView> {
                 ) : Container(
                    child: Column(
                        children: [
+                         Container(
+                             width:490,
+                             child: Text(
+                               'Your User Access Code has been supplied to the email address  ${email}.\nPlease enter this user access code below to confirm.',
+                               style: TextStyle(fontSize: 16),
+                               textAlign: TextAlign.center,
+                             )),
+                         SizedBox(height: 20),
                          Row(children: [
-
                            Container(
                                margin: EdgeInsets.only(top: 10,bottom:10),
                                child: SizedBox(
@@ -258,7 +268,8 @@ class  _RegisterView extends State<RegisterView> {
                                    child:
                                    Container(
                                      margin:EdgeInsets.only(left:0),
-                                     child: TextField(
+                                     child: TextFormField(
+                                       initialValue: '',
                                        onChanged: (value) {
                                          setState(() {
                                            this.code = value;

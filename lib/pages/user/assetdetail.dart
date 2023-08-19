@@ -66,7 +66,10 @@ class  _AssetDetailView extends State<AssetDetailView> {
   String new_comment = '';
   TextEditingController newInspecController = TextEditingController();
   TextEditingController nextInspecController = TextEditingController();
-
+  TextEditingController valueController = TextEditingController();
+  String? status = 'Active';
+  String? asset_value;
+  List<String> status_list = ['Active','Disposed','Non Operational','UnAccounted','Sold Off'];
 
 
 
@@ -184,7 +187,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
     });
     fetchData();
   }
-  void onInspectionChange(String id, DateTime inspection_date,bool condition,String asset_money_value,DateTime next_inspection, String comment){
+  void onInspectionChange(String id, DateTime inspection_date,bool condition,String asset_money_value,DateTime next_inspection, String comment, String value, String status){
     setState(() {
       for(Inspection inspection in m_inspections){
         if(inspection.id == id){
@@ -193,6 +196,8 @@ class  _AssetDetailView extends State<AssetDetailView> {
           inspection.asset_money_value = asset_money_value;
           inspection.next_inspect_date = next_inspection;
           inspection.comment = comment;
+          inspection.status = status;
+          inspection.value = value;
           break;
         }
       }
@@ -277,24 +282,46 @@ class  _AssetDetailView extends State<AssetDetailView> {
                         )
                     )
                 ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: new_function_condition,
-                      onChanged: (bool? value) {
-                        _setter(() {
-                          new_function_condition = value!;
+                SizedBox(
+                    width : 300,
+                    height : 60,
+                    child: DropdownButton<String>(
+                      value: status,
+                      padding: EdgeInsets.all(5),
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          status = newValue;
                         });
                       },
-                    ),
-                    SizedBox(
-                        width:10
-                    ),
-                    Text('Funnctional Condition')
-                  ],
+                      items: status_list.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    )
                 ),
-
+                SizedBox(
+                    width: 300,
+                    height: 35,
+                    child:
+                    Container(
+                        margin:EdgeInsets.only(left:4),
+                        child: TextField(
+                            controller: valueController,
+                            decoration: InputDecoration(
+                              hintText: 'Asset Value',
+                            ),
+                            onChanged: (value){
+                              setState(() {
+                                asset_value = value;
+                              });
+                             }
+                        )
+                    )
+                ),
+                SizedBox(height: 20),
                 SizedBox(
                     height: 35,
                     width: 300,
@@ -373,7 +400,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
 
                 if(logo_image != null) {
                   String url =  await uploadFile(logo_image);
-                  Inspection inspection = Inspection(id:generateID(),inspection_date: new_inspec_date,full_condition: new_function_condition,asset_money_value: new_money_value,next_inspect_date: new_next_inspec,comment: new_comment,logo: url);
+                  Inspection inspection = Inspection(id:generateID(),status: status,value: asset_value,inspection_date: new_inspec_date,full_condition: new_function_condition,asset_money_value: new_money_value,next_inspect_date: new_next_inspec,comment: new_comment,logo: url);
                   _setter(() {
                     new_inspec_date = DateTime(2023);
                     new_money_value = '';
@@ -382,6 +409,8 @@ class  _AssetDetailView extends State<AssetDetailView> {
                     newInspecController.text = '';
                     nextInspecController.text = '';
                     logo_image = null;
+                    asset_value = '';
+                    status = 'Active';
                   });
                   setState(() {
                     m_inspections.add(inspection);
@@ -773,7 +802,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
                                                     padding: const EdgeInsets.only(top: 0),
                                                     itemCount:  m_inspections.length,
                                                     itemBuilder: (BuildContext context, int index) {
-                                                      return  InspcetionItem(id : m_inspections[index].id!, logo: m_inspections[index].logo!,inspection_date: m_inspections[index].inspection_date,functional_condition: m_inspections[index].full_condition,asset_money_value: m_inspections[index].asset_money_value,next_inspection: m_inspections[index].next_inspect_date,comment: m_inspections[index].comment,onChange: onInspectionChange,onDelete: onInspectionDelete);
+                                                      return  InspcetionItem(status: m_inspections[index].status,value: m_inspections[index].value, id : m_inspections[index].id!, logo: m_inspections[index].logo!,inspection_date: m_inspections[index].inspection_date,functional_condition: m_inspections[index].full_condition,asset_money_value: m_inspections[index].asset_money_value,next_inspection: m_inspections[index].next_inspect_date,comment: m_inspections[index].comment,onChange: onInspectionChange,onDelete: onInspectionDelete);
                                                     })
                                             )
                                             ],

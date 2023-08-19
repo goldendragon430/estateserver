@@ -90,7 +90,7 @@ class  _TenantFolders extends State<TenantFolders> {
   }
   void onAdd() async{
       setState(() {
-        Folder folder = Folder(id : generateID(),name:'New Folder',active: false, unlimited_group: false,groups: [],created_date: DateTime.now());
+        Folder folder = Folder(id : generateID(),name:'New Folder',active:DB_instance.unlimited_folder , unlimited_group: false,groups: [],created_date: DateTime.now());
         searchEditController.clear();
         setState(() {
           folders.add(folder);

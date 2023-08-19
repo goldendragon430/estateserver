@@ -8,7 +8,8 @@ class Inspection {
     DateTime? next_inspect_date;
     String? comment;
     String? logo;
-
+    String? status;
+    String? value;
     Map<String,dynamic> toJson(){
       return {
         'id' : id,
@@ -17,7 +18,9 @@ class Inspection {
         'asset_money_value' : asset_money_value,
         'next_inspect_date' : next_inspect_date.toString(),
         'comment' : comment,
-        'logo' : logo
+        'logo' : logo,
+        'status' : status,
+        'value' : value
       };
     }
     void fromJson(Map<String,dynamic>? data){
@@ -28,6 +31,17 @@ class Inspection {
       comment = data?['comment'];
       logo = data?['logo'];
       next_inspect_date = DateTime.parse(data?['next_inspect_date']);
+      if(data?['status'] == null) {
+        status = 'Active';
+      }
+      else
+        status = data?['status'];
+      if(data?['value'] == null)
+        {
+          value = '0';
+        }
+      else
+        value = data?['value'];
     }
 
   Inspection({
@@ -38,5 +52,7 @@ class Inspection {
       this.next_inspect_date,
       this.comment,
       this.logo,
+      this.status,
+      this.value
   });
 }

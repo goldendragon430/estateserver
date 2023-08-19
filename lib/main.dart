@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
                           builder: (context) {
                             return Scaffold(body:AdminView());
                           });
-                    case 'tenant':
+                      case 'tenant':
                       return MaterialPageRoute(
                           builder: (context) {
                             return Scaffold(body:TenantAdminView());

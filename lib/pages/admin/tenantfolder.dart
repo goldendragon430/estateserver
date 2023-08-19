@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:assetmamanger/utils/global.dart';
 class TenantFolderItem extends StatefulWidget {
   String? folderID = '';
   String? folderName = '';
   String? registeredDate = '';
   bool? active = false;
   bool? unlimited_group = false;
+  String? tenantEmail = '';
   final Function(String id,bool active,bool ugroup)? onChange;
-  TenantFolderItem({super.key,this.folderID, this.folderName, this.registeredDate, this.active, this.unlimited_group, this.onChange});
+  TenantFolderItem({super.key,this.folderID, this.folderName, this.registeredDate, this.active,this.tenantEmail, this.unlimited_group, this.onChange});
   @override
   _TenantFolderItem createState() => _TenantFolderItem();
 }
@@ -44,7 +46,26 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
       }
     });
   }
-
+  void sendActiveAccountEmail() async{
+    String email = widget.tenantEmail!;
+    String title = '${folder_name} Folder Activated';
+    String Body  = '<html><body><p>Your Cloud Asset Folder ${folder_name} has been activated.</p>'
+        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
+        '<p style = "margin-top:10px">Thank You</p>'
+        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+        '</body></html>';
+    sendEmail(email, title, Body);
+  }
+  void sendDeActiveAccountEmail() async{
+    String email = widget.tenantEmail!;
+    String title = '${folder_name} Folder Deactivated';
+    String Body  = '<html><body><p>Your Cloud Asset folder ${folder_name} has been deactivated.</p>'
+        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
+        '<p style = "margin-top:10px">Thank You</p>'
+        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+        '</body></html>';
+    sendEmail(email, title, Body);
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,7 +76,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
               Image.asset('assets/images/folder.png',width: 80,height: 50),
               SizedBox(
                   height: 35,
-                  width: 250,
+                  width: 200,
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
@@ -70,7 +91,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
               ),
               SizedBox(
                   height: 35,
-                  width: 250,
+                  width: 200,
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
@@ -93,6 +114,12 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
                     onChanged: (bool? value) {
                       setState(() {
                         this.active_value = value!;
+                        if(value == true) {
+                          sendActiveAccountEmail();
+                        }
+                        else{
+                          sendDeActiveAccountEmail();
+                        }
                         update();
                       });
                     },

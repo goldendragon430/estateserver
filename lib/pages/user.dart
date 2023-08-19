@@ -88,19 +88,22 @@ class  _UserView extends State<UserView> {
   List<String> m_category_ids = [];
   late final PlutoGridStateManager stateManager;
 
+//-----------------------------------------------------------//
+  TextEditingController searchController = TextEditingController();
+  String search_str = '';
   void fetchData() async{
 
-    String? val =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(val!);
-    print(data);
-    if(data?['parent_user'] != null) {
-      setState(() {
-        user_id = data?['parent_user'];
-      });
-    }
-    else{
-      return;
-    }
+    // String? val =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(val!);
+    // print(data);
+    // if(data?['parent_user'] != null) {
+    //   setState(() {
+    //     user_id = data?['parent_user'];
+    //   });
+    // }
+    // else{
+    //   return;
+    // }
 
     Tenant? result =  await TenantService().getTenantDetails(user_id);
 
@@ -272,6 +275,9 @@ class  _UserView extends State<UserView> {
     super.initState();
     fetchData();
   }
+  void search(){
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -381,24 +387,30 @@ class  _UserView extends State<UserView> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
-                SizedBox(
-                    height: 35,
-                    width: 250,
-                    child:
-                    Container(
-                        margin:EdgeInsets.only(left:0),
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          decoration: InputDecoration(
-                            hintText: 'Search Asset Type',
-                          ),
-                        )
-                    )
-
-                ),
+                // SizedBox(height: 16),
+                // SizedBox(
+                //     height: 35,
+                //     width: 250,
+                //     child:
+                //     Container(
+                //         margin:EdgeInsets.only(left:0),
+                //         child: TextField(
+                //           controller: assetTypeSearchController,
+                //           textAlign: TextAlign.center,
+                //           decoration: InputDecoration(
+                //             hintText: 'Search Asset Type',
+                //           ),
+                //           onChanged: (value){
+                //             setState(() {
+                //               asset_type_search = value;
+                //             });
+                //           },
+                //         )
+                //     )
+                //
+                // ),
                 Expanded(child: ListView.builder(
-                  padding: const EdgeInsets.only(top: 25),
+                  padding: const EdgeInsets.only(top: 10),
                   itemCount: m_asset_types.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
@@ -497,11 +509,14 @@ class  _UserView extends State<UserView> {
                                   width: screenWidth - 1070,
                                   child:
                                   Container(
+
                                     margin:EdgeInsets.only(left:20),
                                     child: TextField(
+                                      controller: searchController,
                                       onChanged: (value) {
                                         setState(() {
-
+                                          search_str = value;
+                                          search();
                                         });
                                       },
                                       decoration: InputDecoration(

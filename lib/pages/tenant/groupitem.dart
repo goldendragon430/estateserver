@@ -117,10 +117,10 @@ class  _GroupItem extends State<GroupItem> {
                                                         Checkbox(
                                                           value: this.active,
                                                           onChanged: (bool? value) {
-                                                            setState(() {
-                                                              this.active = value!;
-                                                              update();
-                                                            });
+                                                            // setState(() {
+                                                            //   this.active = value!;
+                                                            //   update();
+                                                            // });
                                                           },
                                                         ),
                                                         SizedBox(

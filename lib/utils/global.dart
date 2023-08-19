@@ -4,6 +4,7 @@ import 'dart:html';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:math';
+import 'package:dio/dio.dart';
 bool isEmailValid(String email) {
   // Regular expression pattern for email validation
   final pattern = r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$';
@@ -30,7 +31,6 @@ String? getStorage(String key){
   return _localStorage[key];
 }
 
-
 String generateID() {
   int length = 10;
   final random = Random();
@@ -43,7 +43,6 @@ String generateID() {
   return result;
 }
 
-
 Future<String> uploadFile(Uint8List? imageData) async{
   final fileName = DateTime.now().millisecondsSinceEpoch.toString() + '.png';
   final firebaseStorageRef = firebase_storage.FirebaseStorage.instance.ref().child(fileName);
@@ -52,4 +51,18 @@ Future<String> uploadFile(Uint8List? imageData) async{
   await uploadTask.whenComplete(() => null);
   final downloadUrl = await firebaseStorageRef.getDownloadURL();
   return downloadUrl;
+}
+
+Future<bool> sendEmail(to,title,body) async{
+  final dio = Dio();
+  final response = await dio.post('http://154.38.161.183:5000/mail/active', data : {
+    'to'   : to ,
+    'title' : title,
+    'body'  : body
+  });
+  if(response.data['result'] == 'success'){
+    return true;
+  }else{
+   return false;
+  }
 }

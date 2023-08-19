@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:assetmamanger/utils/global.dart';
+
 class TenantGroupItem extends StatefulWidget {
   String? folderID = '';
   String? groupID = '';
@@ -6,8 +8,9 @@ class TenantGroupItem extends StatefulWidget {
   String? groupName = '';
   String? registeredDate = '';
   bool? active = false;
+  String? tenantEmail = '';
   final Function(String folder_id,String group_id,bool active)? onChange;
-  TenantGroupItem({super.key,this.folderID,this.groupID,this.folderName,this.groupName,this.registeredDate,this.active,this.onChange});
+  TenantGroupItem({super.key,this.folderID,this.groupID,this.folderName,this.tenantEmail,this.groupName,this.registeredDate,this.active,this.onChange});
   @override
   _TenantGroupItem createState() => _TenantGroupItem();
 }
@@ -36,6 +39,26 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
 
     widget.onChange!(widget.folderID!,widget.groupID!,active_value);
   }
+  void sendActiveAccountEmail() async{
+    String email = widget.tenantEmail!;
+    String title = '${widget.groupName} Group Activated';
+    String Body  = '<html><body><p>Your Cloud Asset Group ${widget.groupName} has been activated.</p>'
+        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
+        '<p style = "margin-top:10px">Thank You</p>'
+        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+        '</body></html>';
+    sendEmail(email, title, Body);
+  }
+  void sendDeActiveAccountEmail() async{
+    String email = widget.tenantEmail!;
+    String title = '${widget.groupName} Group Deactivated';
+    String Body  = '<html><body><p>Your Cloud Asset Group ${widget.groupName} has been deactivated.</p>'
+        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
+        '<p style = "margin-top:10px">Thank You</p>'
+        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+        '</body></html>';
+    sendEmail(email, title, Body);
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,7 +69,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
               Image.asset('assets/images/group.png',width: 80,height: 50,),
               SizedBox(
                   height: 35,
-                  width: 250,
+                  width: 200,
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
@@ -61,7 +84,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
               ),
               SizedBox(
                   height: 35,
-                  width: 250,
+                  width: 200,
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
@@ -76,7 +99,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
               ),
               SizedBox(
                   height: 35,
-                  width: 250,
+                  width: 200,
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
@@ -99,6 +122,11 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                     onChanged: (bool? value) {
                       setState(() {
                         this.active_value = value!;
+                        if(value == true) {
+                          sendActiveAccountEmail();
+                        }else{
+                          sendDeActiveAccountEmail();
+                        }
                         update();
                       });
                     },
