@@ -67,11 +67,11 @@ class  _TenantSettings extends State<TenantSettings> {
     // TODO: implement initState
     super.initState();
 
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     loadData();
 
   }
@@ -93,359 +93,666 @@ class  _TenantSettings extends State<TenantSettings> {
       showError('Error');
     }
   }
+
+  Widget getLargeWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double textfield_width = screenWidth > 1260 ? (screenWidth - 500)/2 : (screenWidth - 350)/2 ;
+    final double renewal_width = textfield_width * 2 - 410;
+    return  Column(
+      children: [
+        Row(
+          children: [
+            // Image.asset('assets/images/home.jpg',width: 200,height: 150),
+            GestureDetector(
+                onTap:() async{
+                  // Image? fromPicker = await ImagePickerWeb.getImageAsWidget();
+                  Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
+                  setState(() {
+                    logo_image = data!;
+                  });
+                },
+                child:  Container(
+                    width:200,
+                    height: 150,
+                    child: logo_image != null? Image.memory(logo_image!) : (tenant_data.logo == '' ? Image.asset('assets/images/home.jpg') : Image.network(tenant_data.logo!))
+                )
+            ),
+
+            Expanded(child: Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                              controller: nameEditController,
+                              decoration: InputDecoration(
+                                hintText: 'Tenant Name',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.name = value;
+                                });
+                              },
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                              controller: addressEditController,
+                              decoration: InputDecoration(
+                                hintText: 'POSTAL ADDRESS',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.address = value;
+                                });
+                              }
+                          )
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: emailEditController,
+                                decoration: InputDecoration(
+                                  hintText: 'Tenant Email',
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    tenant_data.email = value;
+                                  });
+                                }
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                            controller: folderEditController,
+                            decoration: InputDecoration(
+                              hintText: 'Folder Name',
+                            ),
+                            onChanged: (value){
+                              setState(() {
+                                folder = value;
+                              });
+                            },
+
+                          )
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                              controller: landlineEditController,
+                              decoration: InputDecoration(
+                                hintText: 'Tenant Landline',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.landline = value;
+                                });
+                              },
+
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                            controller: groupEditController,
+                            decoration: InputDecoration(
+                              hintText: 'Group Name',
+                            ),
+                            onChanged: (value){
+                              setState(() {
+                                group = value;
+                              });
+                            },
+
+                          )
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        SizedBox(
+                            height: 35,
+                            width: textfield_width,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: phoneEditController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Tenant Mobile',
+                                    ),
+                                    onChanged: (value){
+                                      setState(() {
+                                        tenant_data.phone = value;
+                                      });
+                                    }
+                                )
+                            )
+
+                        ),
+                        SizedBox(
+                          height: 35,
+                          width: textfield_width,
+                          child:  Container(
+                              margin:EdgeInsets.only(left:20),
+                              child: TextFormField(
+                                  controller: faxEditController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Faxline',
+                                  ),
+                                  onChanged: (value){
+                                    setState(() {
+                                      tenant_data.fax = value;
+                                    });
+                                  }
+                              )
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                        height: 70,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20,top:5),
+                            child: TextFormField(
+                                controller: officeEditController,
+                                maxLines: 5,
+                                decoration: InputDecoration(
+                                  hintText: 'Office location',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    tenant_data.office = value;
+                                  });
+                                }
+                            )
+                        )
+
+                    )
+                  ],
+                ),
+                Row(children: [
+                  SizedBox(width:textfield_width * 2 - 100),
+                  Container(
+                      padding: EdgeInsets.only(top:10),
+                      width: 100, // Set the desired width here
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                          onPressed: onSave,
+                          child: const Text('Save'))
+                  )
+                ])
+              ],
+            )
+
+            )
+          ],
+        ),
+        SizedBox(height: 30),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TitledContainer(titleText: 'Account Status and Settings',
+                child: Row(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                            width:5
+                        ),
+                        Checkbox(
+                          value: tenant_data?.active,
+                          onChanged: (bool? value) {
+
+                          },
+                        ),
+                        SizedBox(
+                            width:3
+                        ),
+                        Text('Account Active')
+                      ],
+                    ),
+                    SizedBox(width: 25),
+                    Row(children: [
+                      Text('Renewal Date'),
+                      SizedBox(
+                          height: 35,
+                          width: renewal_width > 300 ? 300 : renewal_width,
+                          child:
+                          Container(
+                              margin:EdgeInsets.only(left:20,bottom:3),
+                              child: TextFormField(
+                                style: TextStyle(fontSize: 16),
+                                initialValue: tenant_data.renewal_date.toString(),
+                                decoration: InputDecoration(
+                                  hintText: '',
+
+                                ),
+                                onChanged: (value){
+
+                                },
+                                enabled: false,
+                              )
+                          )
+
+                      )
+                    ],),
+                    Row(
+                      children: [
+                        SizedBox(
+                            width:25
+                        ),
+                        Checkbox(
+                          value: tenant_data?.unlimited_folder,
+                          onChanged: (bool? value) {
+
+                          },
+                        ),
+                        SizedBox(
+                            width:3
+                        ),
+                        Text('Unlimited Folders')
+
+                      ],
+
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                            width:20
+                        ),
+                        Checkbox(
+                          value: tenant_data?.unlimited_group,
+                          onChanged: (bool? value) {
+
+                          },
+                        ),
+                        SizedBox(
+                            width:3
+                        ),
+                        Text('Unlimited Groups')
+
+                      ],
+
+                    ),
+                  ],
+                ) )
+          ],
+        )
+      ],
+    );
+  }
+  Widget getSmallWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double textfield_width = screenWidth > 1260 ? (screenWidth - 500)/2 : (screenWidth - 350)/2 ;
+    final double renewal_width = textfield_width * 2 - 410;
+    return  ListView(
+                  children: [
+                    GestureDetector(
+                        onTap:() async{
+                          // Image? fromPicker = await ImagePickerWeb.getImageAsWidget();
+                          Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
+                          setState(() {
+                            logo_image = data!;
+                          });
+                        },
+                        child:  Container(
+                            width:200,
+                            height: 150,
+                            child: logo_image != null? Image.memory(logo_image!) : (tenant_data.logo == '' ? Image.asset('assets/images/home.jpg') : Image.network(tenant_data.logo!))
+                        )
+                    ),
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                              controller: nameEditController,
+                              decoration: InputDecoration(
+                                hintText: 'Tenant Name',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.name = value;
+                                });
+                              },
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                              controller: addressEditController,
+                              decoration: InputDecoration(
+                                hintText: 'POSTAL ADDRESS',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.address = value;
+                                });
+                              }
+                          )
+                      ),
+                    ),
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: emailEditController,
+                                decoration: InputDecoration(
+                                  hintText: 'Tenant Email',
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    tenant_data.email = value;
+                                  });
+                                }
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                            controller: folderEditController,
+                            decoration: InputDecoration(
+                              hintText: 'Folder Name',
+                            ),
+                            onChanged: (value){
+                              setState(() {
+                                folder = value;
+                              });
+                            },
+
+                          )
+                      ),
+                    ),
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                              controller: landlineEditController,
+                              decoration: InputDecoration(
+                                hintText: 'Tenant Landline',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.landline = value;
+                                });
+                              },
+
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                            controller: groupEditController,
+                            decoration: InputDecoration(
+                              hintText: 'Group Name',
+                            ),
+                            onChanged: (value){
+                              setState(() {
+                                group = value;
+                              });
+                            },
+
+                          )
+                      ),
+                    ),
+                    SizedBox(
+                        height: 35,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: phoneEditController,
+                                decoration: InputDecoration(
+                                  hintText: 'Tenant Mobile',
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    tenant_data.phone = value;
+                                  });
+                                }
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 35,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                              controller: faxEditController,
+                              decoration: InputDecoration(
+                                hintText: 'Faxline',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.fax = value;
+                                });
+                              }
+                          )
+                      ),
+                    ),
+                    SizedBox(
+                        height: 70,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20,top:5),
+                            child: TextFormField(
+                                controller: officeEditController,
+                                maxLines: 5,
+                                decoration: InputDecoration(
+                                  hintText: 'Office location',
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    tenant_data.office = value;
+                                  });
+                                }
+                            )
+                        )
+
+                    ),
+                    Container(
+                        width: textfield_width,
+                        padding: EdgeInsets.only(left:20,right:1,top:15),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.green),
+                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                          onPressed: onSave,
+                          child: const Text('Save'))),
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TitledContainer(titleText: 'Account Status and Settings',
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width:5
+                                    ),
+                                    Checkbox(
+                                      value: tenant_data?.active,
+                                      onChanged: (bool? value) {
+
+                                      },
+                                    ),
+                                    SizedBox(
+                                        width:3
+                                    ),
+                                    Text('Account Active')
+                                  ],
+                                ),
+
+                                Row(children: [
+                                  SizedBox(width: 10),
+                                  Text('Renewal Date'),
+                                  SizedBox(
+                                      height: 35,
+                                      width: 200,
+                                      child:
+                                      Container(
+                                          margin:EdgeInsets.only(left:10,bottom:3),
+                                          child: TextFormField(
+                                            style: TextStyle(fontSize: 16),
+                                            initialValue: tenant_data.renewal_date.toString(),
+                                            decoration: InputDecoration(
+                                              hintText: '',
+
+                                            ),
+                                            onChanged: (value){
+
+                                            },
+                                            enabled: false,
+                                          )
+                                      )
+
+                                  )
+                                ],),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width:5
+                                    ),
+                                    Checkbox(
+                                      value: tenant_data?.unlimited_folder,
+                                      onChanged: (bool? value) {
+
+                                      },
+                                    ),
+                                    SizedBox(
+                                        width:3
+                                    ),
+                                    Text('Unlimited Folders')
+
+                                  ],
+
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width:5
+                                    ),
+                                    Checkbox(
+                                      value: tenant_data?.unlimited_group,
+                                      onChanged: (bool? value) {
+
+                                      },
+                                    ),
+                                    SizedBox(
+                                        width:3
+                                    ),
+                                    Text('Unlimited Groups')
+
+                                  ],
+
+                                ),
+                              ],
+                            ) )
+                      ],
+                    )
+                  ],
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final double textfield_width = (screenWidth - 600)/2 > 450? 450: (screenWidth - 600)/2;
-    final double renewal_width = textfield_width * 2 - 610;
-
+    bool is_Large = screenWidth > 800;
     return  Container(
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left:30),
+      margin: const EdgeInsets.only(left:0),
       child: Column(
         children: [
          Expanded(child: TitledContainer(
              titleText: 'TENANT Details',
              idden: 10,
-             child:
-             Column(
-               children: [
-                 Row(
-                   children: [
-                     // Image.asset('assets/images/home.jpg',width: 200,height: 150),
-                     GestureDetector(
-                       onTap:() async{
-                         // Image? fromPicker = await ImagePickerWeb.getImageAsWidget();
-                         Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
-                         setState(() {
-                          logo_image = data!;
-                         });
-                       },
-                       child:  Container(
-                           width:200,
-                           height: 150,
-                           child: logo_image != null? Image.memory(logo_image!) : (tenant_data.logo == '' ? Image.asset('assets/images/home.jpg') : Image.network(tenant_data.logo!))
-                       )
-                     ),
-
-                     Expanded(child: Column(
-                       children: [
-                         Row(
-                           children: [
-                             SizedBox(
-                                 height: 35,
-                                 width: textfield_width,
-                                 child:
-                                 Container(
-                                     margin:EdgeInsets.only(left:20),
-                                     child: TextFormField(
-                                       controller: nameEditController,
-                                         decoration: InputDecoration(
-                                           hintText: 'Tenant Name',
-                                         ),
-                                         onChanged: (value){
-                                            setState(() {
-                                              tenant_data.name = value;
-                                            });
-                                       },
-                                     )
-                                 )
-
-                             ),
-                             SizedBox(
-                               height: 35,
-                               width: textfield_width,
-                               child:  Container(
-                                   margin:EdgeInsets.only(left:20),
-                                   child: TextFormField(
-                                       controller: addressEditController,
-                                       decoration: InputDecoration(
-                                         hintText: 'POSTAL ADDRESS',
-                                       ),
-                                       onChanged: (value){
-                                         setState(() {
-                                           tenant_data.address = value;
-                                         });
-                                       }
-                                   )
-                               ),
-                             )
-                           ],
-                         ),
-                         SizedBox(height: 5),
-                         Row(
-                           children: [
-                             SizedBox(
-                                 height: 35,
-                                 width: textfield_width,
-                                 child:
-                                 Container(
-                                     margin:EdgeInsets.only(left:20),
-                                     child: TextFormField(
-                                         controller: emailEditController,
-                                         decoration: InputDecoration(
-                                           hintText: 'Tenant Email',
-                                         ),
-                                         onChanged: (value){
-                                           setState(() {
-                                             tenant_data.email = value;
-                                           });
-                                         }
-                                     )
-                                 )
-
-                             ),
-                             SizedBox(
-                               height: 35,
-                               width: textfield_width,
-                               child:  Container(
-                                   margin:EdgeInsets.only(left:20),
-                                   child: TextFormField(
-                                       controller: folderEditController,
-                                       decoration: InputDecoration(
-                                         hintText: 'Folder Name',
-                                       ),
-                                       onChanged: (value){
-                                         setState(() {
-                                           folder = value;
-                                         });
-                                       },
-
-                                   )
-                               ),
-                             )
-                           ],
-                         ),
-                         SizedBox(height: 5),
-                         Row(
-                           children: [
-                             SizedBox(
-                                 height: 35,
-                                 width: textfield_width,
-                                 child:
-                                 Container(
-                                     margin:EdgeInsets.only(left:20),
-                                     child: TextFormField(
-                                         controller: landlineEditController,
-                                         decoration: InputDecoration(
-                                           hintText: 'Tenant Landline',
-                                         ),
-                                         onChanged: (value){
-                                           setState(() {
-                                             tenant_data.landline = value;
-                                           });
-                                         },
-
-                                     )
-                                 )
-
-                             ),
-                             SizedBox(
-                               height: 35,
-                               width: textfield_width,
-                               child:  Container(
-                                   margin:EdgeInsets.only(left:20),
-                                   child: TextFormField(
-                                       controller: groupEditController,
-                                       decoration: InputDecoration(
-                                         hintText: 'Group Name',
-                                       ),
-                                       onChanged: (value){
-                                         setState(() {
-                                           group = value;
-                                         });
-                                       },
-
-                                   )
-                               ),
-                             )
-                           ],
-                         ),
-                         SizedBox(height: 5),
-                         Row(
-                           children: [
-                             Column(
-                               children: [
-                                 SizedBox(
-                                     height: 35,
-                                     width: textfield_width,
-                                     child:
-                                     Container(
-                                         margin:EdgeInsets.only(left:20),
-                                         child: TextFormField(
-                                             controller: phoneEditController,
-                                             decoration: InputDecoration(
-                                               hintText: 'Tenant Mobile',
-                                             ),
-                                             onChanged: (value){
-                                               setState(() {
-                                                 tenant_data.phone = value;
-                                               });
-                                             }
-                                         )
-                                     )
-
-                                 ),
-                                 SizedBox(
-                                   height: 35,
-                                   width: textfield_width,
-                                   child:  Container(
-                                       margin:EdgeInsets.only(left:20),
-                                       child: TextFormField(
-                                           controller: faxEditController,
-                                           decoration: InputDecoration(
-                                             hintText: 'Faxline',
-                                           ),
-                                           onChanged: (value){
-                                             setState(() {
-                                               tenant_data.fax = value;
-                                             });
-                                           }
-                                       )
-                                   ),
-                                 )
-                               ],
-                             ),
-                             SizedBox(
-                                 height: 70,
-                                 width: textfield_width,
-                                 child:
-                                 Container(
-                                     margin:EdgeInsets.only(left:20,top:5),
-                                     child: TextFormField(
-                                         controller: officeEditController,
-                                         maxLines: 5,
-                                         decoration: InputDecoration(
-                                           hintText: 'Office location',
-                                           border: OutlineInputBorder(),
-                                         ),
-                                         onChanged: (value){
-                                           setState(() {
-                                             tenant_data.office = value;
-                                           });
-                                         }
-                                     )
-                                 )
-
-                             )
-                           ],
-                         ),
-                         Row(children: [
-                           SizedBox(width:textfield_width * 2 - 100),
-                           Container(
-                                padding: EdgeInsets.only(top:10),
-                               width: 100, // Set the desired width here
-                               child: ElevatedButton(
-                                   style: ButtonStyle(
-                                       backgroundColor: MaterialStateProperty.all(Colors.green),
-                                       padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-
-                                       textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                                   onPressed: onSave,
-                                   child: const Text('Save'))
-                           )
-                         ],)
-                       ],
-                     )
-
-                     )
-                   ],
-                 ),
-                 SizedBox(height: 30),
-                 Row(
-                   children: [
-                     SizedBox(width:220),
-                     TitledContainer(titleText: 'Account Status and Settings',
-                         child: Row(
-                           children: [
-                             Row(
-                               children: [
-                                 SizedBox(
-                                     width:5
-                                 ),
-                                 Checkbox(
-                                   value: tenant_data?.active,
-                                   onChanged: (bool? value) {
-
-                                   },
-                                 ),
-                                 SizedBox(
-                                     width:3
-                                 ),
-                                 Text('Account Active')
-                               ],
-                             ),
-                             SizedBox(width: 25),
-                             Row(children: [
-                               Text('Renewal Date'),
-                               SizedBox(
-                                   height: 35,
-                                   width: renewal_width,
-                                   child:
-                                   Container(
-                                       margin:EdgeInsets.only(left:20,bottom:3),
-                                       child: TextFormField(
-                                           style: TextStyle(fontSize: 16),
-                                           initialValue: tenant_data.renewal_date.toString(),
-                                           decoration: InputDecoration(
-                                             hintText: '',
-
-                                           ),
-                                         onChanged: (value){
-
-                                         },
-                                         enabled: false,
-                                       )
-                                   )
-
-                               )
-                             ],),
-                             Row(
-                               children: [
-                                 SizedBox(
-                                     width:25
-                                 ),
-                                 Checkbox(
-                                   value: tenant_data?.unlimited_folder,
-                                   onChanged: (bool? value) {
-
-                                   },
-                                 ),
-                                 SizedBox(
-                                     width:3
-                                 ),
-                                 Text('Unlimited Folders')
-
-                               ],
-
-                             ),
-                             Row(
-                               children: [
-                                 SizedBox(
-                                     width:20
-                                 ),
-                                 Checkbox(
-                                   value: tenant_data?.unlimited_group,
-                                   onChanged: (bool? value) {
-
-                                   },
-                                 ),
-                                 SizedBox(
-                                     width:3
-                                 ),
-                                 Text('Unlimited Groups')
-
-                               ],
-
-                             ),
-                           ],
-                         ) )
-                   ],
-                 )
-               ],
-             )
-
+             child: is_Large ? getLargeWidget(context) : getSmallWidget(context)
          ))
         ],
       ),

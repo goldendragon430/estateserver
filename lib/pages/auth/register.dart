@@ -54,7 +54,7 @@ class  _RegisterView extends State<RegisterView> {
     Random  rng = new Random();
     int varcode = rng. nextInt(900000) + 100000;
 
-    final response = await dio.post('http://154.38.161.183:5000/mail/send', data : {
+    final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/send', data : {
       'to'   : email ,
       'code' : varcode
     });

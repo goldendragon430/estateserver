@@ -220,213 +220,389 @@ class  _TenantAssets extends State<TenantAssets> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     getAssetTypes();
+  }
+  StatefulBuilder gradeDialog() {
+    return StatefulBuilder(
+      builder: (context, _setter) {
+        return AlertDialog(
+          title: Text('Add new asset type'),
+          content:
+          Container(
+              height: 200,
+              child: Column(children: [
+                SizedBox(
+                    width: 300,
+                    child:
+                    DropdownButton<String>(
+                      value: selected_folder_id,
+                      padding: EdgeInsets.all(5),
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          _setter(() {
+                            selected_folder_id = newValue;
+                            m_group_ids = [];
+                            for(Folder folder in m_folders){
+                              if(folder.id == selected_folder_id){
+                                for(Group group in folder.groups!){
+                                  m_group_ids.add(group.id!);
+                                }
+                              }
+                            }
+                            if(m_group_ids.length > 0)
+                              selected_group_id = m_group_ids[0];
+                          });
+                        }
+                      },
+                      items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(getFolderName(value)),
+                        );
+                      }).toList(),
+                    )
+                ),
+                SizedBox(
+                    width: 300,
+                    child:
+                    DropdownButton<String>(
+                      value: selected_group_id,
+                      padding: EdgeInsets.all(5),
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          _setter(() {
+                            selected_group_id = newValue;
+                          });
+                        }
+                      },
+                      items: m_group_ids.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(getGroupName(value)),
+                        );
+                      }).toList(),
+                    )
+                ),
+                SizedBox(
+                    height: 35,
+                    width: 300,
+                    child: Container(
+                        margin:EdgeInsets.only(left:4),
+                        child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Asset Type Name',
+                            ),
+                            onChanged: (value){
+                              asset_type_name = value;
+                            }
+                        )
+                    )
+                )
+              ])
+          ),
+
+          actions: [
+            ElevatedButton(
+              onPressed:(){
+                onAdd();
+                Navigator.pop(context);
+              },
+              child: Text('Create'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Widget getLargeWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 300 - 100)/3;
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => gradeDialog()  ,
+                  );
+                },
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed:onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: (search_asset_types.length/3).ceil(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> ele = search_asset_types[3 * index];
+            Map<String, dynamic>? ele_2 = 3 * index + 1 >= search_asset_types.length ? null: search_asset_types[3 * index + 1];
+            Map<String, dynamic>? ele_3 = 3 * index + 2 >= search_asset_types.length ? null: search_asset_types[3 * index + 2];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele['folderID'],groupID: ele['groupID'], assetTypeID: (ele['assetTypeData'] as AssetType).id, assetTypeName : (ele['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+                  ele_2 != null ?  SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele_2['folderID'],groupID: ele_2['groupID'], assetTypeID: (ele_2['assetTypeData'] as AssetType).id, assetTypeName : (ele_2['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width),
+                  ele_3 != null ?  SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele_3['folderID'],groupID: ele_3['groupID'], assetTypeID: (ele_3['assetTypeData'] as AssetType).id, assetTypeName : (ele_3['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width),
+                ]);
+          },
+        )
+
+        )
+      ],
+    );
+  }
+  Widget getMediumWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200)/2;
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => gradeDialog()  ,
+                  );
+                },
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed:onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: (search_asset_types.length/2).ceil(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> ele = search_asset_types[2 * index];
+            Map<String, dynamic>? ele_2 = 2 * index + 1 >= search_asset_types.length ? null: search_asset_types[2 * index + 1];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele['folderID'],groupID: ele['groupID'], assetTypeID: (ele['assetTypeData'] as AssetType).id, assetTypeName : (ele['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+                  ele_2 != null ?  SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele_2['folderID'],groupID: ele_2['groupID'], assetTypeID: (ele_2['assetTypeData'] as AssetType).id, assetTypeName : (ele_2['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width),
+                ]);
+          },
+        )
+
+        )
+      ],
+    );
+  }
+  Widget getSmallWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200);
+    return Column(
+      children: [
+        Column(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: tile_width,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:0),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(height:10),
+            Container(width: tile_width, child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => gradeDialog()  ,
+                  );
+                },
+                child: const Text('Add'))),
+            SizedBox(height:10),
+            Container(width: tile_width, child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed:onSave,
+                child: const Text('Save Changes')))
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: search_asset_types.length,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> ele = search_asset_types[index];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele['folderID'],groupID: ele['groupID'], assetTypeID: (ele['assetTypeData'] as AssetType).id, assetTypeName : (ele['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+                ]);
+          },
+        )
+
+        )
+      ],
+    );
+  }
+  Widget getResponsiveWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    if(screenWidth > 1260) return getLargeWidget(context);
+    else if(screenWidth > 800) return getMediumWidget(context);
+    else return getSmallWidget(context);
   }
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final tile_width = (screenWidth - 300 - 100)/3;
-
-    StatefulBuilder gradeDialog() {
-      return StatefulBuilder(
-        builder: (context, _setter) {
-          return AlertDialog(
-            title: Text('Add new asset type'),
-            content:
-            Container(
-                height: 200,
-                child: Column(children: [
-                  SizedBox(
-                      width: 300,
-                      child:
-                      DropdownButton<String>(
-                        value: selected_folder_id,
-                        padding: EdgeInsets.all(5),
-                        isExpanded: true,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            _setter(() {
-                              selected_folder_id = newValue;
-                              m_group_ids = [];
-                              for(Folder folder in m_folders){
-                                if(folder.id == selected_folder_id){
-                                  for(Group group in folder.groups!){
-                                    m_group_ids.add(group.id!);
-                                  }
-                                }
-                              }
-                              if(m_group_ids.length > 0)
-                                  selected_group_id = m_group_ids[0];
-                            });
-                          }
-                        },
-                        items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(getFolderName(value)),
-                          );
-                        }).toList(),
-                      )
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child:
-                      DropdownButton<String>(
-                        value: selected_group_id,
-                        padding: EdgeInsets.all(5),
-                        isExpanded: true,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            _setter(() {
-                              selected_group_id = newValue;
-                            });
-                          }
-                        },
-                        items: m_group_ids.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(getGroupName(value)),
-                          );
-                        }).toList(),
-                      )
-                  ),
-                  SizedBox(
-                      height: 35,
-                      width: 300,
-                      child: Container(
-                          margin:EdgeInsets.only(left:4),
-                          child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Asset Type Name',
-                              ),
-                              onChanged: (value){
-                                asset_type_name = value;
-                              }
-                          )
-                      )
-                  )
-                ])
-            ),
-
-            actions: [
-              ElevatedButton(
-                onPressed:(){
-                  onAdd();
-                  Navigator.pop(context);
-                },
-                child: Text('Create'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel'),
-              ),
-            ],
-          );
-        },
-      );
-    }
 
     return   Container(
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left:30),
+      margin: const EdgeInsets.only(left:0),
       child: Column(
         children: [
           Expanded(child: TitledContainer(
               titleText: 'TENANT Assets',
               idden: 10,
-              child:
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                          margin: EdgeInsets.only(top: 10,bottom:10),
-                          child: SizedBox(
-                              height: 45,
-                              width: 400,
-                              child:
-                              Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextField(
-                                  controller: searchEditController,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      searchItems(value);
-                                      search_str = value;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                      hintText: 'Search...',
-                                      // Add a clear button to the search bar
-                                      suffixIcon:  Icon(Icons.clear),
-                                      // Add a search icon or button to the search bar
-                                      prefixIcon:  Icon(Icons.search),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true
-                                  ),
-                                ),
-                              )
-
-                          )
-                      ),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => gradeDialog()  ,
-                            );
-                          },
-                          child: const Text('Add')),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed:onSave,
-                          child: const Text('Save Changes')),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Expanded(child:
-                      ListView.builder(
-                        itemCount: (search_asset_types.length/3).ceil(),
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          Map<String, dynamic> ele = search_asset_types[3 * index];
-                          Map<String, dynamic>? ele_2 = 3 * index + 1 >= search_asset_types.length ? null: search_asset_types[3 * index + 1];
-                          Map<String, dynamic>? ele_3 = 3 * index + 2 >= search_asset_types.length ? null: search_asset_types[3 * index + 2];
-
-                          return Row(children: [
-                            SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele['folderID'],groupID: ele['groupID'], assetTypeID: (ele['assetTypeData'] as AssetType).id, assetTypeName : (ele['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                            if(ele_2 != null)
-                              SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele_2['folderID'],groupID: ele_2['groupID'], assetTypeID: (ele_2['assetTypeData'] as AssetType).id, assetTypeName : (ele_2['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                            if(ele_3 != null)
-                              SizedBox(width : tile_width, child: Center(child:AssetItem(folderID : ele_3['folderID'],groupID: ele_3['groupID'], assetTypeID: (ele_3['assetTypeData'] as AssetType).id, assetTypeName : (ele_3['assetTypeData'] as AssetType).type, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                          ]);
-                        },
-                      )
-
-                  )
-                ],
-              )
-
+              child: getResponsiveWidget(context)
           ))
         ],
       ),

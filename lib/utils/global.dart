@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
 import 'dart:html';
@@ -30,6 +32,14 @@ String? getStorage(String key){
   final Storage _localStorage = window.localStorage;
   return _localStorage[key];
 }
+String getUserName(){
+  String? userDataString =  getStorage('user');
+  if(userDataString == null) {
+    return '';
+  }
+  Map<String, dynamic>? data =  jsonDecode(userDataString!);
+  return data?['username'];
+}
 
 String generateID() {
   int length = 10;
@@ -55,7 +65,7 @@ Future<String> uploadFile(Uint8List? imageData) async{
 
 Future<bool> sendEmail(to,title,body) async{
   final dio = Dio();
-  final response = await dio.post('http://154.38.161.183:5000/mail/active', data : {
+  final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/active', data : {
     'to'   : to ,
     'title' : title,
     'body'  : body

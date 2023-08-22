@@ -7,19 +7,15 @@
 * m_folders is db and groups is for displaying.
 * */
 
-import 'dart:convert';
-
 import 'package:assetmamanger/apis/auth.dart';
-import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/folders.dart';
-import 'package:assetmamanger/models/groups.dart';
 import 'package:assetmamanger/models/tenants.dart';
 import 'package:assetmamanger/models/users.dart';
 import 'package:assetmamanger/pages/tenant/useritem.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
-import 'package:assetmamanger/pages/tenant/groupitem.dart';
+
 
 class TenantUsers extends StatefulWidget {
   TenantUsers({super.key});
@@ -47,17 +43,17 @@ class  _TenantUsers extends State<TenantUsers> {
   List<String> m_folder_ids = [];
 
   void getUsers()async{
-    String? val =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(val!);
-
-    if(data?['id'] != null) {
-      setState(() {
-        userid = data?['id'];
-      });
-    }
-    else{
-      return;
-    }
+    // String? val =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(val!);
+    //
+    // if(data?['id'] != null) {
+    //   setState(() {
+    //     userid = data?['id'];
+    //   });
+    // }
+    // else{
+    //   return;
+    // }
 
     List<User> users =  await LoginService().getSubUser(userid);
     setState(() {
@@ -154,185 +150,267 @@ class  _TenantUsers extends State<TenantUsers> {
     getUsers();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget getLargeWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
     final tile_width = (screenWidth - 300 - 100)/3;
 
-    StatefulBuilder gradeDialog() {
-      return StatefulBuilder(
-        builder: (context, _setter) {
-          return AlertDialog(
-            title: Text('Add new user'),
-            content:
+    return Column(
+      children: [
+        Row(
+          children: [
             Container(
-                height: 150,
-                child: Column(children: [
-                  SizedBox(
-                      width: 300,
-                      child:
-                      DropdownButton<String>(
-                        value: selectedValue,
-                        padding: EdgeInsets.all(5),
-                        isExpanded: true,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            _setter(() {
-                              selectedValue = newValue;
-                            });
-                          }
-                        },
-                        items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(getFolderName(value)),
-                          );
-                        }).toList(),
-                      )
-                  ),
-                  SizedBox(
-                      height: 35,
-                      width: 300,
-                      child: Container(
-                          margin:EdgeInsets.only(left:4),
-                          child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Group Name',
-                              ),
-                              onChanged: (value){
-                                group_name = value;
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: this.active_group,
-                        onChanged: (bool? value) {
-                          _setter(() {
-                            this.active_group = value!;
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
                           });
                         },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
                       ),
-                      SizedBox(
-                          width:10
-                      ),
-                      Text('Group Active')
-                    ],
-                  ),
-                ])
+                    )
+                )
             ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
 
-            actions: [
-              ElevatedButton(
-                onPressed:(){
-                  onAdd();
-                  Navigator.pop(context);
-                },
-                child: Text('Create'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onAdd,
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: (search_groups.length/3).ceil(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            User ele = search_groups[3 * index];
+            User? ele_2 = 3 * index + 1 >= search_groups.length ? null: search_groups[3 * index + 1];
+            User? ele_3 = 3 * index + 2 >= search_groups.length ? null: search_groups[3 * index + 2];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+              SizedBox(width : tile_width, child: Center(child:UserItem(id:ele.subuser_id,username: ele.username,email : ele.email,active: ele.state,onChange: onChangeItem, onDelete: onDeleteItem))),
+              ele_2 != null ? SizedBox(width : tile_width, child: Center(child:UserItem(id:ele_2.subuser_id,username: ele_2.username,email : ele_2.email,active: ele_2.state,onChange: onChangeItem, onDelete: onDeleteItem))) : SizedBox(width: tile_width),
+              ele_3 != null ? SizedBox(width : tile_width, child: Center(child:UserItem(id:ele_3.subuser_id,username: ele_3.username,email : ele_3.email,active: ele_3.state,onChange: onChangeItem, onDelete: onDeleteItem))) : SizedBox(width: tile_width),
+            ]);
+          },
+        )
+        )
+      ],
+    );
+  }
+  Widget getMediumWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200)/2;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+                )
+            ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onAdd,
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: (search_groups.length/2).ceil(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            User ele = search_groups[2 * index];
+            User? ele_2 = 2 * index + 1 >= search_groups.length ? null: search_groups[2 * index + 1];
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+              SizedBox(width : tile_width, child: Center(child:UserItem(id:ele.subuser_id,username: ele.username,email : ele.email,active: ele.state,onChange: onChangeItem, onDelete: onDeleteItem))),
+              ele_2 != null ? SizedBox(width : tile_width, child: Center(child:UserItem(id:ele_2.subuser_id,username: ele_2.username,email : ele_2.email,active: ele_2.state,onChange: onChangeItem, onDelete: onDeleteItem))) : SizedBox(width: tile_width),
+            ]);
+          },
+        )
+        )
+      ],
+    );
+  }
+  Widget getSmallWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200);
+
+    return Column(
+      children: [
+        Column(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: tile_width,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:0),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+                )
+            ),
+            SizedBox(height:20),
+            Container(width: tile_width, child : ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onAdd,
+                child: const Text('Add'))),
+            SizedBox(height:20),
+            Container(width: tile_width, child:  ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onSave,
+                child: const Text('Save Changes'))),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: search_groups.length,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            User ele = search_groups[ index];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                children: [
+              SizedBox(width : tile_width, child: Center(child:UserItem(id:ele.subuser_id,username: ele.username,email : ele.email,active: ele.state,onChange: onChangeItem, onDelete: onDeleteItem))),
+
+            ]);
+          },
+        )
+        )
+      ],
+    );
+
+  }
+  Widget getResponsiveWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    if(screenWidth > 1260) return getLargeWidget(context);
+    else if(screenWidth > 800) return getMediumWidget(context);
+    else return getSmallWidget(context);
+  }
+  @override
+  Widget build(BuildContext context) {
+
     return   Container(
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left:30),
+      margin: const EdgeInsets.only(left:0),
       child: Column(
         children: [
           Expanded(child: TitledContainer(
               titleText: 'TENANT Subusers',
               idden: 10,
-              child:
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                          margin: EdgeInsets.only(top: 10,bottom:10),
-                          child: SizedBox(
-                              height: 45,
-                              width: 400,
-                              child:
-                              Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextField(
-                                  controller: searchEditController,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      searchItems(value);
-                                      search_str = value;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                      hintText: 'Search...',
-                                      // Add a clear button to the search bar
-                                      suffixIcon:  Icon(Icons.clear),
-                                      // Add a search icon or button to the search bar
-                                      prefixIcon:  Icon(Icons.search),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true
-                                  ),
-                                ),
-                              )
+              child:  getResponsiveWidget(context)
 
-                          )
-                      ),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: onAdd,
-                          child: const Text('Add')),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: onSave,
-                          child: const Text('Save Changes')),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Expanded(child:
-                  ListView.builder(
-                    itemCount: (search_groups.length/3).ceil(),
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      User ele = search_groups[3 * index];
-                      User? ele_2 = 3 * index + 1 >= search_groups.length ? null: search_groups[3 * index + 1];
-                      User? ele_3 = 3 * index + 2 >= search_groups.length ? null: search_groups[3 * index + 2];
-
-                      return Row(children: [
-                        SizedBox(width : tile_width, child: Center(child:UserItem(id:ele.subuser_id,username: ele.username,email : ele.email,active: ele.state,onChange: onChangeItem, onDelete: onDeleteItem))),
-                        if(ele_2 != null)
-                          SizedBox(width : tile_width, child: Center(child:UserItem(id:ele_2.subuser_id,username: ele_2.username,email : ele_2.email,active: ele_2.state,onChange: onChangeItem, onDelete: onDeleteItem))),
-                        if(ele_3 != null)
-                          SizedBox(width : tile_width, child: Center(child:UserItem(id:ele_3.subuser_id,username: ele_3.username,email : ele_3.email,active: ele_3.state,onChange: onChangeItem, onDelete: onDeleteItem))),
-
-
-                      ]);
-                    },
-                  )
-                  )
-                ],
-              )
           ))
         ],
       ),

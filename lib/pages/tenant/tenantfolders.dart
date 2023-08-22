@@ -36,11 +36,11 @@ class  _TenantFolders extends State<TenantFolders> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     getFolders();
   }
   void searchItems(String val){
@@ -98,100 +98,262 @@ class  _TenantFolders extends State<TenantFolders> {
         });
       });
   }
-  @override
-  Widget build(BuildContext context) {
+  Widget getLargeWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
     final tile_width = (screenWidth - 300 - 100)/3;
-    final items_count = 10;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          searchItems(value);
+                          setState(() {
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onAdd,
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed:  onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child: ListView.builder(
+          itemCount:  (search_folders.length/3).ceil(),
+          shrinkWrap: true, ///////////////////////Use This Line
+          itemBuilder: (BuildContext context, int index) {
+            Folder folder = search_folders[3 * index];
+            Folder? folder2 = 3 * index + 1 >= search_folders.length ? null: search_folders[3 * index + 1];
+            Folder? folder3 = 3 * index + 2 >= search_folders.length ? null: search_folders[3 * index + 2];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                  folder2 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) : SizedBox(width: tile_width),
+                  folder3 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder3.id, foldername : folder3.name,active :  folder3.active, ugroups : folder3.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))): SizedBox(width: tile_width) ,
+                ]);
+
+          },
+        )
+        )
+      ],
+    );
+  }
+  Widget getMediumWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200)/2;
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          searchItems(value);
+                          setState(() {
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onAdd,
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed:  onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child: ListView.builder(
+          itemCount:  (search_folders.length/2).ceil(),
+          shrinkWrap: true, ///////////////////////Use This Line
+          itemBuilder: (BuildContext context, int index) {
+            Folder folder = search_folders[2 * index];
+            Folder? folder2 = 2 * index + 1 >= search_folders.length ? null: search_folders[2 * index + 1];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                  folder2 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) : SizedBox(width : tile_width)
+                ]);
+
+          },
+        )
+        )
+      ],
+    );
+  }
+  Widget getSmallWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200);
+    return Column(
+      children: [
+        Column(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: tile_width,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:0),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          searchItems(value);
+                          setState(() {
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(height:10),
+            Container(width: tile_width, child:ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onAdd,
+                child: const Text('Add'))),
+            SizedBox(height:10),
+            Container(width: tile_width, child:ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed:  onSave,
+                child: const Text('Save Changes')))
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child: ListView.builder(
+          itemCount:  search_folders.length,
+          shrinkWrap: true, ///////////////////////Use This Line
+          itemBuilder: (BuildContext context, int index) {
+            Folder folder = search_folders[index];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                ]);
+
+          },
+        )
+        )
+      ],
+    );
+  }
+  Widget getResponsiveWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    if(screenWidth > 1260) return getLargeWidget(context);
+    else if(screenWidth > 800) return getMediumWidget(context);
+    else return getSmallWidget(context);
+  }
+  @override
+  Widget build(BuildContext context) {
 
     return   Container(
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left:30),
+      margin: const EdgeInsets.only(left:0),
       child: Column(
         children: [
           Expanded(child: TitledContainer(
               titleText: 'TENANT Folders',
               idden: 10,
-              child:
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 10,bottom:10),
-                        child: SizedBox(
-                            height: 45,
-                            width: 400,
-                            child:
-                            Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextField(
-                                  controller: searchEditController,
-                                  onChanged: (value) {
-                                    searchItems(value);
-                                    setState(() {
-                                      search_str = value;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                      hintText: 'Search...',
-                                      // Add a clear button to the search bar
-                                      suffixIcon:  Icon(Icons.clear),
-                                      // Add a search icon or button to the search bar
-                                      prefixIcon:  Icon(Icons.search),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true
-                                  ),
-                                ),
-                            )
-
-                        )
-                      ),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: onAdd,
-                          child: const Text('Add')),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed:  onSave,
-                          child: const Text('Save Changes')),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Expanded(child:
-
-                        ListView.builder(
-                          itemCount:  (search_folders.length/3).ceil(),
-                          shrinkWrap: true, ///////////////////////Use This Line
-                          itemBuilder: (BuildContext context, int index) {
-                            Folder folder = search_folders[3 * index];
-                            Folder? folder2 = 3 * index + 1 >= search_folders.length ? null: search_folders[3 * index + 1];
-                            Folder? folder3 = 3 * index + 2 >= search_folders.length ? null: search_folders[3 * index + 2];
-
-                            return Row(children: [
-                              SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
-                              if(folder2 != null) SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
-                              if(folder3 != null) SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder3.id, foldername : folder3.name,active :  folder3.active, ugroups : folder3.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
-                            ]);
-
-                          },
-                        )
-
-                  )
-                ],
-              )
-
+              child: getResponsiveWidget(context)
           ))
         ],
       ),

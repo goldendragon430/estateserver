@@ -275,264 +275,447 @@ class  _TenantCategory extends State<TenantCategory> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     getCategories();
   }
-  @override
-  Widget build(BuildContext context) {
+  StatefulBuilder gradeDialog() {
+    return StatefulBuilder(
+      builder: (context, _setter) {
+        return AlertDialog(
+          title: Text('Add new category'),
+          content:
+          Container(
+              height: 250,
+              child: Column(children: [
+                SizedBox(
+                    width: 300,
+                    child:
+                    DropdownButton<String>(
+                      value: selected_folder_id,
+                      padding: EdgeInsets.all(5),
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          _setter(() {
+                            selected_folder_id = newValue;
+                            m_group_ids = [];
+                            for(Folder folder in m_folders){
+                              if(folder.id == selected_folder_id){
+                                for(Group group in folder.groups!){
+                                  m_group_ids.add(group.id!);
+                                }
+                                break;
+                              }
+                            }
+                            if(m_group_ids.length > 0)
+                              selected_group_id = m_group_ids[0];
+
+                            m_asset_type_ids = [];
+                            for(Group group in m_groups){
+                              if(group.id == selected_group_id){
+                                for(AssetType type in group.assetTypes!){
+                                  m_asset_type_ids.add(type.id!);
+                                }
+                                break;
+                              }
+                            }
+                            if(m_asset_type_ids.length > 0)
+                              selected_asset_type_id = m_asset_type_ids[0];
+
+
+                          });
+                        }
+                      },
+                      items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(getFolderName(value)),
+                        );
+                      }).toList(),
+                    )
+                ),
+                SizedBox(
+                    width: 300,
+                    child:
+                    DropdownButton<String>(
+                      value: selected_group_id,
+                      padding: EdgeInsets.all(5),
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          _setter(() {
+                            selected_group_id = newValue;
+                            m_asset_type_ids = [];
+                            for(Group group in m_groups){
+                              if(group.id == selected_group_id){
+                                for(AssetType type in group.assetTypes!){
+                                  m_asset_type_ids.add(type.id!);
+                                }
+                                break;
+                              }
+                            }
+                            if(m_asset_type_ids.length > 0)
+                              selected_asset_type_id = m_asset_type_ids[0];
+
+                          });
+                        }
+                      },
+                      items: m_group_ids.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(getGroupName(value)),
+                        );
+                      }).toList(),
+                    )
+                ),
+                SizedBox(
+                    width: 300,
+                    child:
+                    DropdownButton<String>(
+                      value: selected_asset_type_id,
+                      padding: EdgeInsets.all(5),
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          _setter(() {
+                            selected_asset_type_id = newValue;
+                          });
+                        }
+                      },
+                      items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(getAssetTypeName(value)),
+                        );
+                      }).toList(),
+                    )
+                ),
+                SizedBox(
+                    height: 35,
+                    width: 300,
+                    child: Container(
+                        margin:EdgeInsets.only(left:4),
+                        child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Category Name',
+                            ),
+                            onChanged: (value){
+                              setState(() {
+                                category_name = value;
+                              });
+                            }
+                        )
+                    )
+                )
+              ])
+          ),
+
+          actions: [
+            ElevatedButton(
+              onPressed:(){
+                onAdd();
+                Navigator.pop(context);
+              },
+              child: Text('Create'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Widget getLargeWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
     final tile_width = (screenWidth - 300 - 100)/3;
 
-    StatefulBuilder gradeDialog() {
-      return StatefulBuilder(
-        builder: (context, _setter) {
-          return AlertDialog(
-            title: Text('Add new category'),
-            content:
+    return Column(
+      children: [
+        Row(
+          children: [
             Container(
-                height: 250,
-                child: Column(children: [
-                  SizedBox(
-                      width: 300,
-                      child:
-                      DropdownButton<String>(
-                        value: selected_folder_id,
-                        padding: EdgeInsets.all(5),
-                        isExpanded: true,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            _setter(() {
-                              selected_folder_id = newValue;
-                              m_group_ids = [];
-                              for(Folder folder in m_folders){
-                                if(folder.id == selected_folder_id){
-                                  for(Group group in folder.groups!){
-                                    m_group_ids.add(group.id!);
-                                  }
-                                  break;
-                                }
-                              }
-                              if(m_group_ids.length > 0)
-                                  selected_group_id = m_group_ids[0];
-
-                              m_asset_type_ids = [];
-                              for(Group group in m_groups){
-                                if(group.id == selected_group_id){
-                                  for(AssetType type in group.assetTypes!){
-                                    m_asset_type_ids.add(type.id!);
-                                  }
-                                  break;
-                                }
-                              }
-                              if(m_asset_type_ids.length > 0)
-                                  selected_asset_type_id = m_asset_type_ids[0];
-
-
-                            });
-                          }
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
                         },
-                        items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(getFolderName(value)),
-                          );
-                        }).toList(),
-                      )
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child:
-                      DropdownButton<String>(
-                        value: selected_group_id,
-                        padding: EdgeInsets.all(5),
-                        isExpanded: true,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            _setter(() {
-                              selected_group_id = newValue;
-                              m_asset_type_ids = [];
-                              for(Group group in m_groups){
-                                if(group.id == selected_group_id){
-                                  for(AssetType type in group.assetTypes!){
-                                    m_asset_type_ids.add(type.id!);
-                                  }
-                                  break;
-                                }
-                              }
-                              if(m_asset_type_ids.length > 0)
-                                  selected_asset_type_id = m_asset_type_ids[0];
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
 
-                            });
-                          }
-                        },
-                        items: m_group_ids.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(getGroupName(value)),
-                          );
-                        }).toList(),
-                      )
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child:
-                      DropdownButton<String>(
-                        value: selected_asset_type_id,
-                        padding: EdgeInsets.all(5),
-                        isExpanded: true,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            _setter(() {
-                              selected_asset_type_id = newValue;
-                            });
-                          }
-                        },
-                        items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(getAssetTypeName(value)),
-                          );
-                        }).toList(),
-                      )
-                  ),
-                  SizedBox(
-                      height: 35,
-                      width: 300,
-                      child: Container(
-                          margin:EdgeInsets.only(left:4),
-                          child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Category Name',
-                              ),
-                              onChanged: (value){
-                                setState(() {
-                                  category_name = value;
-                                });
-                              }
-                          )
-                      )
-                  )
-                ])
+                )
             ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
 
-            actions: [
-              ElevatedButton(
-                onPressed:(){
-                  onAdd();
-                  Navigator.pop(context);
-                },
-                child: Text('Create'),
-              ),
-              ElevatedButton(
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
                 onPressed: () {
-                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => gradeDialog()  ,
+                  );
                 },
-                child: Text('Cancel'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: (search_categories.length/3).ceil(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> ele = search_categories[3 * index];
+            Map<String, dynamic>? ele_2 = 3 * index + 1 >= search_categories.length ? null: search_categories[3 * index + 1];
+            Map<String, dynamic>? ele_3 = 3 * index + 2 >= search_categories.length ? null: search_categories[3 * index + 2];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele['folderID'],groupID: ele['groupID'],categoryID: (ele['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele['assetTypeID']),  assetTypeID: ele['assetTypeID'], categoryName : (ele['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+                  ele_2 != null ? SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele_2['folderID'],groupID: ele_2['groupID'],categoryID: (ele_2['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele_2['assetTypeID']) , assetTypeID: ele_2['assetTypeID'], categoryName : (ele_2['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width) ,
+                  ele_3 != null ? SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele_3['folderID'],groupID: ele_3['groupID'],categoryID: (ele_3['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele_3['assetTypeID']), assetTypeID: ele_3['assetTypeID'], categoryName : (ele_3['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width) ,
+                ]);
+          },
+        )
+
+        )
+      ],
+    );
+  }
+  Widget getMediumWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200)/2;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: 400,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:20),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => gradeDialog()  ,
+                  );
+                },
+                child: const Text('Add')),
+            SizedBox(width:20),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onSave,
+                child: const Text('Save Changes')),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: (search_categories.length/2).ceil(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> ele = search_categories[2 * index];
+            Map<String, dynamic>? ele_2 = 2 * index + 1 >= search_categories.length ? null: search_categories[2 * index + 1];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele['folderID'],groupID: ele['groupID'],categoryID: (ele['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele['assetTypeID']),  assetTypeID: ele['assetTypeID'], categoryName : (ele['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+                  ele_2 != null ? SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele_2['folderID'],groupID: ele_2['groupID'],categoryID: (ele_2['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele_2['assetTypeID']) , assetTypeID: ele_2['assetTypeID'], categoryName : (ele_2['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width) ,
+                   ]);
+          },
+        )
+
+        )
+      ],
+    );
+
+  }
+  Widget getSmallWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tile_width = (screenWidth - 200);
+
+    return Column(
+      children: [
+        Column(
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 10,bottom:10),
+                child: SizedBox(
+                    height: 45,
+                    width: tile_width,
+                    child:
+                    Container(
+                      margin:EdgeInsets.only(left:0),
+                      child: TextField(
+                        controller: searchEditController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                            search_str = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    )
+
+                )
+            ),
+            SizedBox(height:10),
+            Container(width: tile_width, child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => gradeDialog()  ,
+                  );
+                },
+                child: const Text('Add'))),
+            SizedBox(height:10),
+            Container(width: tile_width, child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                    padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                onPressed: onSave,
+                child: const Text('Save Changes'))),
+          ],
+        ),
+        SizedBox(height: 30),
+        Expanded(child:
+        ListView.builder(
+          itemCount: search_categories.length,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Map<String, dynamic> ele = search_categories[index];
+
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele['folderID'],groupID: ele['groupID'],categoryID: (ele['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele['assetTypeID']),  assetTypeID: ele['assetTypeID'], categoryName : (ele['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem )))
+                ]);
+          },
+        )
+
+        )
+      ],
+    );
+
+  }
+  Widget getResponsiveWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    if(screenWidth > 1260) return getLargeWidget(context);
+    else if(screenWidth > 800) return getMediumWidget(context);
+    else return getSmallWidget(context);
+  }
+  @override
+  Widget build(BuildContext context) {
+
 
 
     return   Container(
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(left:30),
+      margin: const EdgeInsets.only(left:0),
       child: Column(
         children: [
           Expanded(child: TitledContainer(
               titleText: 'TENANT Category',
               idden: 10,
-              child:
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                          margin: EdgeInsets.only(top: 10,bottom:10),
-                          child: SizedBox(
-                              height: 45,
-                              width: 400,
-                              child:
-                              Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextField(
-                                  controller: searchEditController,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      searchItems(value);
-                                      search_str = value;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                      hintText: 'Search...',
-                                      // Add a clear button to the search bar
-                                      suffixIcon:  Icon(Icons.clear),
-                                      // Add a search icon or button to the search bar
-                                      prefixIcon:  Icon(Icons.search),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true
-                                  ),
-                                ),
-                              )
-
-                          )
-                      ),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => gradeDialog()  ,
-                            );
-                          },
-                          child: const Text('Add')),
-                      SizedBox(width:20),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                              padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                              textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                          onPressed: onSave,
-                          child: const Text('Save Changes')),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Expanded(child:
-                        ListView.builder(
-                          itemCount: (search_categories.length/3).ceil(),
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            Map<String, dynamic> ele = search_categories[3 * index];
-                            Map<String, dynamic>? ele_2 = 3 * index + 1 >= search_categories.length ? null: search_categories[3 * index + 1];
-                            Map<String, dynamic>? ele_3 = 3 * index + 2 >= search_categories.length ? null: search_categories[3 * index + 2];
-
-                            return Row(children: [
-                              SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele['folderID'],groupID: ele['groupID'],categoryID: (ele['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele['assetTypeID']),  assetTypeID: ele['assetTypeID'], categoryName : (ele['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                              if(ele_2 != null)
-                                SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele_2['folderID'],groupID: ele_2['groupID'],categoryID: (ele_2['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele_2['assetTypeID']) , assetTypeID: ele_2['assetTypeID'], categoryName : (ele_2['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                              if(ele_3 != null)
-                                SizedBox(width : tile_width, child: Center(child:CategoryItem(folderID : ele_3['folderID'],groupID: ele_3['groupID'],categoryID: (ele_3['categoryData'] as Category).id,assetTypeName: getAssetTypeName(ele_3['assetTypeID']), assetTypeID: ele_3['assetTypeID'], categoryName : (ele_3['categoryData'] as Category).name, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                            ]);
-                          },
-                        )
-
-                  )
-                ],
-              )
+              child: getResponsiveWidget(context)
 
           ))
         ],

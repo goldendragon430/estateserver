@@ -14,11 +14,9 @@ class CustomAppBar extends AppBar {
           ),
           const Text('',
               style: TextStyle(
-                  fontSize: 28
+                  fontSize: 14
               )),
-          const Text(
-            '',
-            style : TextStyle(
+          Text(title, style : TextStyle(
                   fontSize: 14
             )
           )

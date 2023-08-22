@@ -27,24 +27,27 @@ class  _TenantAdminView extends State<TenantAdminView> {
   }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    bool is_Mobile_Mode = screenWidth < 1260 ;
     return   Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-            width : 300,
+            width : is_Mobile_Mode ? 90 : 250,
             color:Colors.white,
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.only(top:10),
-                  child:  Text('Actions',
-                    style: TextStyle(
-                      fontSize: 20,
+                if(is_Mobile_Mode == false)
+                  Container(
+                      margin: EdgeInsets.only(top:10),
+                      child:  Text('Actions',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
                 Expanded(child: ListView(
                   children: <Widget>[
                     CustomListTile(title: Text('Settings'), icon: Icon(Icons.settings),onClick:(){

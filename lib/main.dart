@@ -6,6 +6,7 @@ import 'package:assetmamanger/pages/tenantadmin.dart';
 import 'package:assetmamanger/pages/customAppBar.dart';
 import 'package:assetmamanger/pages/user.dart';
 import 'package:assetmamanger/pages/user/assetdetail.dart';
+import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
@@ -34,7 +35,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '', context : context),
       body: Stack(
         children: [
           Column(
@@ -47,42 +47,62 @@ class MyApp extends StatelessWidget {
                     case '/':
                           return MaterialPageRoute(
                             builder: (context) {
-                                return Scaffold(body:LoginView());
+                                return Scaffold(
+                                    appBar: CustomAppBar(title: '', context : context),
+                                    body:TenantAdminView()
+                                );
                             });
                     case 'admin':
                       return MaterialPageRoute(
                           builder: (context) {
-                            return Scaffold(body:AdminView());
+                            return Scaffold(
+                                appBar: CustomAppBar(title: 'Welcome ' + getUserName(), context : context),
+                                body:AdminView()
+                            );
                           });
                       case 'tenant':
                       return MaterialPageRoute(
                           builder: (context) {
-                            return Scaffold(body:TenantAdminView());
+                            return Scaffold(
+                                appBar: CustomAppBar(title: 'Welcome ' +  getUserName(), context : context),
+                                body:TenantAdminView()
+                            );
                           });
                     case 'user':
                       return MaterialPageRoute(
                           builder: (context) {
-                            return Scaffold(body:UserView());
+                            return Scaffold(
+                                appBar: CustomAppBar(title: 'Welcome ' +  getUserName(), context : context),
+                                body:UserView()
+                            );
                           });
                     case 'userdetail':
                       final args = settings.arguments as Map<String, dynamic>;
                       return MaterialPageRoute(
                           builder: (context) {
-                            return Scaffold(body:AssetDetailView(data: args));
+                            return Scaffold(
+                                appBar: CustomAppBar(title: 'Welcome ' +  getUserName(), context : context),
+                                body:AssetDetailView(data: args)
+                            );
                           });
                     case 'register':
                       return MaterialPageRoute(
                           builder: (context) {
-                            return Scaffold(body:RegisterView());
+                            return Scaffold(
+                                appBar: CustomAppBar(title: '', context : context),
+                                body:RegisterView()
+                            );
                           });
                     default:
                       return MaterialPageRoute(
                           builder: (context) {
-                            return Scaffold(body:Text('Not Found'));
+                            return Scaffold(
+                                appBar: CustomAppBar(title: '', context : context),
+                                body:Text('Not Found')
+                            );
                           });
                   }
                 },
-
               )),
               Container(
                 color:Color.fromRGBO(0, 113, 255, 1),
