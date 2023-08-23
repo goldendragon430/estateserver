@@ -8,7 +8,7 @@ class UserItem extends StatefulWidget {
   String? username;
   String? email;
   bool? active;
-  Function(String email, String username,String id,bool active)? onChange;
+  Function(String id, BuildContext context)? onChange;
   Function(String id)? onDelete;
 
   UserItem({super.key, this.id, this.username,this.email, this.active, this.onChange, this.onDelete});
@@ -24,8 +24,8 @@ class  _UserItem extends State<UserItem> {
   TextEditingController userNameEditController = TextEditingController();
   TextEditingController emailNameEditController = TextEditingController();
 
-  void update(){
-    widget.onChange!(email,user_name,widget.id!,active);
+  void update(BuildContext context){
+    widget.onChange!(widget.id!, context);
   }
 
   @override
@@ -57,81 +57,86 @@ class  _UserItem extends State<UserItem> {
             child: Stack(
                 children:
                 [
-                  TitledContainer(
-                      titleText: '',
-                      idden: 10,
-                      child: Row(
-                        children: [
-                          Image.asset('assets/images/group.png',width: 94,height: 94),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                  height: 35,
-                                  width: 150,
-                                  child:
-                                  Container(
-                                      margin:EdgeInsets.only(left:20),
-                                      child: TextField(
+                  GestureDetector(
+                    onTap: (){
+                      update(context);
+                    },
+                    child: TitledContainer(
+                        titleText: '',
+                        idden: 10,
+                        color : is_focus ? Colors.deepOrange:Colors.grey,
+                        child: Row(
+                          children: [
+                            Image.asset('assets/images/group.png',width: 94,height: 94),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    height: 35,
+                                    width: 150,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
 
-                                        controller: userNameEditController,
-                                        decoration: InputDecoration(
-                                          hintText: 'User Name',
-                                        ),
-                                        onChanged: (value){
-                                                user_name = value;
-                                                update();
-                                        },
-                                      )
-                                  )
+                                          controller: userNameEditController,
+                                          decoration: InputDecoration(
+                                            hintText: 'User Name',
+                                          ),
+                                          readOnly: true,
+                                          onChanged: (value){
+                                            // user_name = value;
+                                            // update();
+                                          },
+                                        )
+                                    )
 
-                              ),
-                              SizedBox(
-                                  height: 35,
-                                  width: 150,
-                                  child:
-                                  Container(
-                                      margin:EdgeInsets.only(left:20),
-                                      child: TextField(
-                                        controller: emailNameEditController,
-                                        decoration: InputDecoration(
-                                          hintText: 'Email',
-                                        ),
-                                        onChanged: (value){
-                                          setState(() {
-                                            email = value;
-                                            update();
-                                          });
-                                        },
-                                      )
-                                  )
+                                ),
+                                SizedBox(
+                                    height: 35,
+                                    width: 150,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: emailNameEditController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Email',
+                                          ),
+                                          readOnly: true,
+                                          onChanged: (value){
+                                            setState(() {
+                                              // email = value;
+                                              // update();
+                                            });
+                                          },
+                                        )
+                                    )
 
-                              ),
-                              SizedBox(height:5),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                      width:15
-                                  ),
-                                  Checkbox(
-                                    value: this.active,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        this.active = value!;
-                                        update();
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(
-                                      width:10
-                                  ),
-                                  Text('Active')
-                                ],
-                              ),
+                                ),
+                                SizedBox(height:5),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width:15
+                                    ),
+                                    Checkbox(
+                                      value: this.active,
+                                      onChanged: (bool? value) {
 
-                            ],)
-                        ],
-                      )
+                                      },
+                                    ),
+                                    SizedBox(
+                                        width:10
+                                    ),
+                                    Text('Active')
+                                  ],
+                                ),
+
+                              ],)
+                          ],
+                        )
+                    )
                   ),
                   if(is_focus)
                     Container(

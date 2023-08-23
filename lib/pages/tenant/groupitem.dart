@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 
 
 class GroupItem extends StatefulWidget {
@@ -9,10 +13,11 @@ class GroupItem extends StatefulWidget {
   String? folderID;
   String? groupName;
   bool? groupActive;
-  Function(String folderID, String groupID,String groupName,bool groupActive)? onChange;
+  String? logo;
+  Function(String folderID, String groupID,String groupName,bool groupActive, String logo)? onChange;
   Function(String folder_id, String id)? onDelete;
 
-  GroupItem({super.key, this.groupID, this.folderName,this.folderID, this.groupName, this.groupActive, this.onChange, this.onDelete});
+  GroupItem({super.key,this.logo, this.groupID, this.folderName,this.folderID, this.groupName, this.groupActive, this.onChange, this.onDelete});
   @override
   _GroupItem createState() => _GroupItem();
 }
@@ -21,12 +26,12 @@ class  _GroupItem extends State<GroupItem> {
 
   String group_name = '';
   bool is_focus = false;
-
+  String logo = '';
   TextEditingController folderNameEditController = TextEditingController();
   TextEditingController groupNameEditController = TextEditingController();
 
   void update(){
-    widget.onChange!(widget.folderID!, widget.groupID!,group_name,active);
+    widget.onChange!(widget.folderID!, widget.groupID!,group_name,active,logo);
   }
 
   @override
@@ -38,7 +43,7 @@ class  _GroupItem extends State<GroupItem> {
 
       group_name = widget.groupName!;
       folderNameEditController.text = widget.folderName!;
-
+      logo = widget.logo!;
       groupNameEditController.text = group_name;
     });
   }
@@ -64,7 +69,17 @@ class  _GroupItem extends State<GroupItem> {
                                             idden: 10,
                                             child: Row(
                                               children: [
-                                                Image.asset('assets/images/group.png',width: 94,height: 94),
+                                                GestureDetector(
+                                                  onTap: () async{
+                                                    Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
+                                                    String url =  await uploadFile(data);
+                                                    setState(() {
+                                                      logo = url;
+                                                    });
+                                                    update();
+                                                  },
+                                                  child: logo == '' ? Image.asset('assets/images/group.png',width: 94,height: 94) : Image.network(logo,width: 94,height: 94)
+                                                ),
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [

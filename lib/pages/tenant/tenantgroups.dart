@@ -8,6 +8,7 @@
 * */
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/folders.dart';
@@ -17,6 +18,7 @@ import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/tenant/groupitem.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 
 class TenantGroups extends StatefulWidget {
   TenantGroups({super.key});
@@ -41,7 +43,9 @@ class  _TenantGroups extends State<TenantGroups> {
   String selectedValue  = '';
   bool   active_group = false;
   String group_name = '';
+  Uint8List? new_logo = null;
   List<String> m_folder_ids = [];
+
 
   void getGroups()async{
     Tenant? result =  await TenantService().getTenantDetails(userid);
@@ -113,10 +117,15 @@ class  _TenantGroups extends State<TenantGroups> {
 
   //-----------------add features-------------------------------//
   void onAdd() async{
+    String url = '';
+    if(new_logo != null)
+      url = await uploadFile(new_logo!);
+    else url = '';
+
     setState(() {
       for(Folder folder in m_folders){
         if(folder.id == selectedValue){
-          folder.groups?.add(Group(id : generateID(), name: group_name, assetTypes: [], active:folder.unlimited_group,created_date: DateTime.now() ));
+          folder.groups?.add(Group(logo: url, id : generateID(), name: group_name, assetTypes: [], active:folder.unlimited_group,created_date: DateTime.now() ));
         }
       }
     });
@@ -156,7 +165,7 @@ class  _TenantGroups extends State<TenantGroups> {
   }
 
   //-----------------change handler -----------------------------//
-  void onChangeItem(String folder_id, String id, String group_name, bool group_active ) async{
+  void onChangeItem(String folder_id, String id, String group_name, bool group_active, String logo ) async{
     setState(() {
       for(Folder folder in m_folders){
         if(folder.id == folder_id){
@@ -165,6 +174,7 @@ class  _TenantGroups extends State<TenantGroups> {
             if(group.id == id) {
               group.name = group_name;
               group.active = group_active;
+              group.logo = logo;
               break;
             }
           }
@@ -187,11 +197,11 @@ class  _TenantGroups extends State<TenantGroups> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
 
     getGroups();
   }
@@ -201,9 +211,23 @@ class  _TenantGroups extends State<TenantGroups> {
         return AlertDialog(
           title: Text('Add new group'),
           content:
+
           Container(
-              height: 150,
+              height: 350,
               child: Column(children: [
+                SizedBox(
+                    width: 300,
+                    child: GestureDetector(
+                      onTap: ()async{
+                        Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
+                        _setter(() {
+                          new_logo = data;
+                        });
+                      },
+                      child: Center(child : new_logo == null ? Image.asset('assets/images/group.png',width: 188,height: 188) : Image.memory(new_logo!,width: 188,height: 188))
+                    )
+
+                ),
                 SizedBox(
                     width: 300,
                     child:
@@ -241,23 +265,6 @@ class  _TenantGroups extends State<TenantGroups> {
                         )
                     )
                 ),
-                // SizedBox(height: 20),
-                // Row(
-                //   children: [
-                //     Checkbox(
-                //       value: this.active_group,
-                //       onChanged: (bool? value) {
-                //         _setter(() {
-                //           this.active_group = value!;
-                //         });
-                //       },
-                //     ),
-                //     SizedBox(
-                //         width:10
-                //     ),
-                //     Text('Group Active')
-                //   ],
-                // ),
               ])
           ),
 
@@ -353,13 +360,12 @@ class  _TenantGroups extends State<TenantGroups> {
             Map<String, dynamic> ele = search_groups[3 * index];
             Map<String, dynamic>? ele_2 = 3 * index + 1 >= search_groups.length ? null: search_groups[3 * index + 1];
             Map<String, dynamic>? ele_3 = 3 * index + 2 >= search_groups.length ? null: search_groups[3 * index + 2];
-
-            return Row(children: [
-              SizedBox(width : tile_width, child: Center(child:GroupItem(groupID: (ele['groupData'] as Group).id, folderName : ele['folderName'],folderID: ele['folderID'] ,  groupName : (ele['groupData'] as Group).name, groupActive : (ele['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-              if(ele_2 != null)
-                SizedBox(width : tile_width, child: Center(child:GroupItem(groupID: (ele_2['groupData'] as Group).id, folderName : ele_2['folderName'],folderID: ele_2['folderID'] ,  groupName : (ele_2['groupData'] as Group).name, groupActive : (ele_2['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-              if(ele_3 != null)
-                SizedBox(width : tile_width, child: Center(child:GroupItem(groupID: (ele_3['groupData'] as Group).id, folderName : ele_3['folderName'],folderID: ele_3['folderID'] ,  groupName : (ele_3['groupData'] as Group).name, groupActive : (ele_3['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+              SizedBox(width : tile_width, child: Center(child:GroupItem(logo : (ele['groupData'] as Group).logo,  groupID: (ele['groupData'] as Group).id, folderName : ele['folderName'],folderID: ele['folderID'] ,  groupName : (ele['groupData'] as Group).name, groupActive : (ele['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+              ele_2 != null ? SizedBox(width : tile_width, child: Center(child:GroupItem(logo : (ele_2['groupData'] as Group).logo, groupID: (ele_2['groupData'] as Group).id, folderName : ele_2['folderName'],folderID: ele_2['folderID'] ,  groupName : (ele_2['groupData'] as Group).name, groupActive : (ele_2['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width),
+              ele_3 != null ? SizedBox(width : tile_width, child: Center(child:GroupItem(logo : (ele_3['groupData'] as Group).logo, groupID: (ele_3['groupData'] as Group).id, folderName : ele_3['folderName'],folderID: ele_3['folderID'] ,  groupName : (ele_3['groupData'] as Group).name, groupActive : (ele_3['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem )))  : SizedBox(width: tile_width),
             ]);
           },
         )
@@ -443,8 +449,8 @@ class  _TenantGroups extends State<TenantGroups> {
               return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                SizedBox(width : tile_width, child: Center(child:GroupItem(groupID: (ele['groupData'] as Group).id, folderName : ele['folderName'],folderID: ele['folderID'] ,  groupName : (ele['groupData'] as Group).name, groupActive : (ele['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
-                ele_2 != null ? SizedBox(width : tile_width, child: Center(child:GroupItem(groupID: (ele_2['groupData'] as Group).id, folderName : ele_2['folderName'],folderID: ele_2['folderID'] ,  groupName : (ele_2['groupData'] as Group).name, groupActive : (ele_2['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width) ,
+                SizedBox(width : tile_width, child: Center(child:GroupItem(logo : (ele['groupData'] as Group).logo, groupID: (ele['groupData'] as Group).id, folderName : ele['folderName'],folderID: ele['folderID'] ,  groupName : (ele['groupData'] as Group).name, groupActive : (ele['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+                ele_2 != null ? SizedBox(width : tile_width, child: Center(child:GroupItem(logo : (ele_2['groupData'] as Group).logo, groupID: (ele_2['groupData'] as Group).id, folderName : ele_2['folderName'],folderID: ele_2['folderID'] ,  groupName : (ele_2['groupData'] as Group).name, groupActive : (ele_2['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) : SizedBox(width: tile_width) ,
               ]);
             },
           )
@@ -526,7 +532,7 @@ class  _TenantGroups extends State<TenantGroups> {
             return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-              SizedBox(width : tile_width, child: Center(child:GroupItem(groupID: (ele['groupData'] as Group).id, folderName : ele['folderName'],folderID: ele['folderID'] ,  groupName : (ele['groupData'] as Group).name, groupActive : (ele['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
+              SizedBox(width : tile_width, child: Center(child:GroupItem(logo : (ele['groupData'] as Group).logo, groupID: (ele['groupData'] as Group).id, folderName : ele['folderName'],folderID: ele['folderID'] ,  groupName : (ele['groupData'] as Group).name, groupActive : (ele['groupData'] as Group).active, onChange: onChangeItem, onDelete: onDeleteItem ))) ,
             ]);
           },
         )

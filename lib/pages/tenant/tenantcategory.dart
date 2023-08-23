@@ -177,21 +177,27 @@ class  _TenantCategory extends State<TenantCategory> {
 
   //-----------------delete feature-------------------------------//
   void onDeleteItem(String folder_id, String group_id, String asset_type_id,String category_id) async{
+
     setState(() {
       for(Folder folder in m_folders){
-        if(folder.id == selected_folder_id){
+        if(folder.id == folder_id){
+
           List<Group> groups = folder.groups!;
           for(Group group in groups){
-            if(group.id == selected_group_id){
+            if(group.id == group_id){
+
               List<AssetType> assets = group.assetTypes!;
               for(AssetType type in assets){
-                if(type.id == selected_asset_type_id) {
-                   List<Category> categories =  type.categories!;
+                if(type.id == asset_type_id) {
+
+                  List<Category> categories =  type.categories!;
+
                    for(Category category in categories){
                      if(category.id == category_id){
-                        categories.remove(category);
+
+                       categories.remove(category);
+                       break;
                      }
-                     break;
                    }
                   break;
                 }
@@ -275,11 +281,11 @@ class  _TenantCategory extends State<TenantCategory> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     getCategories();
   }
   StatefulBuilder gradeDialog() {

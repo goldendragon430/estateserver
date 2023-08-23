@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 
 
 class FolderItem extends StatefulWidget {
@@ -7,9 +11,10 @@ class FolderItem extends StatefulWidget {
   final bool? active;
   final bool? ugroups;
   final String? folderId;
-  final Function(String id,String name,bool active,bool ugroup)? onChange;
+  final String? logo;
+  final Function(String id,String name,bool active,bool ugroup,String logo)? onChange;
   final Function(String id)? onDelete;
-  FolderItem({super.key,this.folderId,this.foldername, this.active, this.ugroups, this.onChange, this.onDelete});
+  FolderItem({super.key,this.logo,this.folderId,this.foldername, this.active, this.ugroups, this.onChange, this.onDelete});
   @override
   _FolderItem createState() => _FolderItem();
 }
@@ -18,6 +23,7 @@ class  _FolderItem extends State<FolderItem> {
   bool group_active = false;
   bool is_focus = false;
   String name = '';
+  String logo = '';
   TextEditingController nameEditController = TextEditingController();
 
   @override
@@ -29,10 +35,11 @@ class  _FolderItem extends State<FolderItem> {
       name = widget.foldername!;
       folder_active = widget.active!;
       group_active = widget.ugroups!;
+      logo = widget.logo!;
     });
   }
   void update(){
-    widget.onChange!(widget.folderId!,name,folder_active,group_active);
+    widget.onChange!(widget.folderId!,name,folder_active,group_active,logo);
   }
   @override
   Widget build(BuildContext context) {
@@ -57,7 +64,17 @@ class  _FolderItem extends State<FolderItem> {
                           idden: 10,
                           child: Row(
                             children: [
-                              Image.asset('assets/images/folder.png',width: 94,height: 94),
+                               GestureDetector(
+                                onTap: () async{
+                                  Uint8List? data =  await ImagePickerWeb.getImageAsBytes();
+                                  String url =  await uploadFile(data);
+                                  setState(() {
+                                    logo = url;
+                                  });
+                                  update();
+                                },
+                                child: logo == '' ? Image.asset('assets/images/folder.png',width: 94,height: 94) : Image.network(logo,width: 94,height: 94)
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

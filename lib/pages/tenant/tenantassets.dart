@@ -220,11 +220,11 @@ class  _TenantAssets extends State<TenantAssets> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     getAssetTypes();
   }
   StatefulBuilder gradeDialog() {

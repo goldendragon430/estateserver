@@ -7,13 +7,14 @@ import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/tenant/folderitem.dart';
-import 'package:flutter_layout_grid/flutter_layout_grid.dart';
-import 'dart:math';
+
+
 class TenantFolders extends StatefulWidget {
   TenantFolders({super.key});
   @override
   _TenantFolders createState() => _TenantFolders();
 }
+
 class  _TenantFolders extends State<TenantFolders> {
   String userid = 'bdMg1tPZwEUZA1kimr8b';
   List<Folder> folders = [] ;
@@ -21,6 +22,7 @@ class  _TenantFolders extends State<TenantFolders> {
   String search_str = '';
   Tenant DB_instance = Tenant();
   TextEditingController searchEditController = TextEditingController();
+
   void getFolders()async{
     Tenant? result =  await TenantService().getTenantDetails(userid);
     if(result != null){
@@ -31,16 +33,15 @@ class  _TenantFolders extends State<TenantFolders> {
       });
     }
   }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     getFolders();
   }
   void searchItems(String val){
@@ -55,14 +56,14 @@ class  _TenantFolders extends State<TenantFolders> {
     });
 
   }
-
-  void onChangeItem(String id, String name, bool active, bool unlimited_group){
+  void onChangeItem(String id, String name, bool active, bool unlimited_group,String logo){
     setState(() {
       for(Folder folder in folders){
         if(folder.id == id){
           folder.name = name;
           folder.active = active;
           folder.unlimited_group = unlimited_group;
+          folder.logo = logo;
         }
       }
       // search_folders = List.from(folders);
@@ -90,7 +91,7 @@ class  _TenantFolders extends State<TenantFolders> {
   }
   void onAdd() async{
       setState(() {
-        Folder folder = Folder(id : generateID(),name:'New Folder',active:DB_instance.unlimited_folder , unlimited_group: false,groups: [],created_date: DateTime.now());
+        Folder folder = Folder(logo : '',id : generateID(),name:'New Folder',active:DB_instance.unlimited_folder , unlimited_group: false,groups: [],created_date: DateTime.now());
         searchEditController.clear();
         setState(() {
           folders.add(folder);
@@ -169,9 +170,9 @@ class  _TenantFolders extends State<TenantFolders> {
             return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
-                  folder2 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) : SizedBox(width: tile_width),
-                  folder3 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder3.id, foldername : folder3.name,active :  folder3.active, ugroups : folder3.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))): SizedBox(width: tile_width) ,
+                  SizedBox(width : tile_width, child: Center(child:FolderItem(logo : folder.logo, folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                  folder2 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(logo : folder2.logo,folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) : SizedBox(width: tile_width),
+                  folder3 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(logo : folder3.logo,folderId: folder3.id, foldername : folder3.name,active :  folder3.active, ugroups : folder3.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))): SizedBox(width: tile_width) ,
                 ]);
 
           },
@@ -249,8 +250,8 @@ class  _TenantFolders extends State<TenantFolders> {
             return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
-                  folder2 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) : SizedBox(width : tile_width)
+                  SizedBox(width : tile_width, child: Center(child:FolderItem(logo: folder.logo, folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                  folder2 != null ? SizedBox(width : tile_width, child: Center(child:FolderItem(logo: folder2.logo, folderId: folder2.id, foldername : folder2.name,active :  folder2.active, ugroups : folder2.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) : SizedBox(width : tile_width)
                 ]);
 
           },
@@ -327,7 +328,7 @@ class  _TenantFolders extends State<TenantFolders> {
             return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(width : tile_width, child: Center(child:FolderItem(folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
+                  SizedBox(width : tile_width, child: Center(child:FolderItem(logo: folder.logo, folderId: folder.id, foldername : folder.name,active :  folder.active, ugroups : folder.unlimited_group, onChange: onChangeItem, onDelete: onDeleteItem,))) ,
                 ]);
 
           },

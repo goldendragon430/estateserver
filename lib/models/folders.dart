@@ -6,6 +6,7 @@ class Folder {
     bool? unlimited_group;
     List<Group>? groups;
     DateTime? created_date;
+    String? logo;
   Map<String,dynamic> toJson(){
     List<Map<String,dynamic>> group_data = [];
 
@@ -18,7 +19,8 @@ class Folder {
       'active' : active,
       'unlimited_group' : unlimited_group,
       'groups': group_data,
-      'created_date' : created_date.toString()
+      'created_date' : created_date.toString(),
+      'logo' : logo
     };
   }
 
@@ -31,6 +33,12 @@ class Folder {
     }else{
       created_date = DateTime(2023,1,1);
     }
+    if(data?['logo'] != null) {
+      logo = data?['logo'];
+    }
+    else
+      logo = '';
+
     unlimited_group = data?['unlimited_group'];
     List<dynamic> group_data = data?['groups'];
     List<Group> groupData = [];
@@ -47,6 +55,7 @@ class Folder {
       this.active,
       this.unlimited_group,
       this.groups,
-      this.created_date
+      this.created_date,
+      this.logo
   });
 }

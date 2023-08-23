@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
                             builder: (context) {
                                 return Scaffold(
                                     appBar: CustomAppBar(title: '', context : context),
-                                    body:TenantAdminView()
+                                    body:LoginView()
                                 );
                             });
                     case 'admin':
