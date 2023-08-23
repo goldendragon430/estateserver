@@ -81,7 +81,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
               SizedBox(width:10),
               logo == '' ? Image.asset('assets/images/folder.png',width: 80,height: 50) : Image.network(logo,width: 80,height: 50),
               SizedBox(
-                  height: 35,
+                  height: 50,
                   width: 200,
                   child:
                   Container(
@@ -89,14 +89,14 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
                       child: TextField(
                         controller: nameEditController,
                           decoration: InputDecoration(
-                            hintText: 'Folder Name',
+                            labelText: 'Folder Name',
                           ),
                         readOnly: true,
                       )
                   )
               ),
               if(is_Mobile == false) SizedBox(
-                  height: 35,
+                  height: 50,
                   width: 200,
                   child:
                   Container(
@@ -104,7 +104,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
                       child: TextField(
                         controller: dateEditController,
                           decoration: InputDecoration(
-                            hintText: 'Date registered',
+                            labelText: 'Date registered',
                           ),
                         readOnly: true,
                       )

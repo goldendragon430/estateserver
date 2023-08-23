@@ -49,7 +49,7 @@ class  _GroupItem extends State<GroupItem> {
   }
   @override
   Widget build(BuildContext context) {
-    return  SizedBox(width:300,height:150,
+    return  SizedBox(width:300,height:170,
               child: MouseRegion(
                         onEnter: (event){
                           setState(() {
@@ -67,6 +67,7 @@ class  _GroupItem extends State<GroupItem> {
                                       TitledContainer(
                                             titleText: '',
                                             idden: 10,
+                                            color : is_focus ? Colors.deepOrange:Colors.grey,
                                             child: Row(
                                               children: [
                                                 GestureDetector(
@@ -80,11 +81,12 @@ class  _GroupItem extends State<GroupItem> {
                                                   },
                                                   child: logo == '' ? Image.asset('assets/images/group.png',width: 94,height: 94) : Image.network(logo,width: 94,height: 94)
                                                 ),
+                                                SizedBox(width: 10),
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     SizedBox(
-                                                        height: 35,
+                                                        height: 50,
                                                         width: 150,
                                                         child:
                                                         Container(
@@ -93,7 +95,7 @@ class  _GroupItem extends State<GroupItem> {
                                                               readOnly: true,
                                                               controller: folderNameEditController,
                                                                 decoration: InputDecoration(
-                                                                  hintText: 'Folder Name',
+                                                                  labelText: 'Folder Name',
                                                                 ),
                                                               onChanged: (value){
 
@@ -103,7 +105,7 @@ class  _GroupItem extends State<GroupItem> {
 
                                                     ),
                                                     SizedBox(
-                                                        height: 35,
+                                                        height: 50,
                                                         width: 150,
                                                         child:
                                                         Container(
@@ -111,7 +113,7 @@ class  _GroupItem extends State<GroupItem> {
                                                             child: TextField(
                                                                 controller: groupNameEditController,
                                                                 decoration: InputDecoration(
-                                                                  hintText: 'Group Name',
+                                                                  labelText: 'Group Name',
                                                                 ),
                                                                 onChanged: (value){
                                                                   setState(() {

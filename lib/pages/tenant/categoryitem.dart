@@ -67,6 +67,7 @@ class  _CategoryItem extends State<CategoryItem> {
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
                                 hintText: 'Asset Type',
+
                               ),
                             readOnly: true,
                           )
@@ -93,7 +94,6 @@ class  _CategoryItem extends State<CategoryItem> {
                             },
                           )
                       )
-
                   ),
                 ]
               ),

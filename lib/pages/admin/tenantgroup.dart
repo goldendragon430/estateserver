@@ -75,7 +75,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
               SizedBox(width:10),
               logo == '' ? Image.asset('assets/images/group.png',width: 80,height: 50) : Image.network(logo,width: 80,height: 50),
               SizedBox(
-                  height: 35,
+                  height: 50,
                   width: 200,
                   child:
                   Container(
@@ -83,14 +83,14 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                       child: TextField(
                         controller: folderNameController,
                           decoration: InputDecoration(
-                            hintText: 'Folder Name',
+                            labelText: 'Folder Name',
                           ),
                         readOnly: true,
                       )
                   )
               ),
               if(is_Mobile == false) SizedBox(
-                  height: 35,
+                  height: 50,
                   width: 200,
                   child:
                   Container(
@@ -98,14 +98,14 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                       child: TextField(
                         controller: groupNameController,
                           decoration: InputDecoration(
-                            hintText: 'Group Name',
+                            labelText: 'Group Name',
                           ),
                         readOnly: true,
                       )
                   )
               ),
               if(is_Mobile == false)  SizedBox(
-                  height: 35,
+                  height: 50,
                   width: 300,
                   child:
                   Container(
@@ -113,7 +113,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                       child: TextFormField(
                            initialValue: registeredDate,
                           decoration: InputDecoration(
-                            hintText: 'Date registered',
+                            labelText: 'Date registered',
                           ),
                         readOnly: true,
                       )

@@ -42,7 +42,7 @@ class  _UserItem extends State<UserItem> {
   }
   @override
   Widget build(BuildContext context) {
-    return  SizedBox(width:300,height:150,
+    return  SizedBox(width:300,height:170,
         child: MouseRegion(
             onEnter: (event){
               setState(() {
@@ -72,8 +72,8 @@ class  _UserItem extends State<UserItem> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                    height: 35,
-                                    width: 150,
+                                    height: 50,
+                                    width: 180,
                                     child:
                                     Container(
                                         margin:EdgeInsets.only(left:20),
@@ -81,7 +81,7 @@ class  _UserItem extends State<UserItem> {
 
                                           controller: userNameEditController,
                                           decoration: InputDecoration(
-                                            hintText: 'User Name',
+                                            labelText: 'User Name',
                                           ),
                                           readOnly: true,
                                           onChanged: (value){
@@ -93,15 +93,15 @@ class  _UserItem extends State<UserItem> {
 
                                 ),
                                 SizedBox(
-                                    height: 35,
-                                    width: 150,
+                                    height: 50,
+                                    width: 180,
                                     child:
                                     Container(
                                         margin:EdgeInsets.only(left:20),
                                         child: TextField(
                                           controller: emailNameEditController,
                                           decoration: InputDecoration(
-                                            hintText: 'Email',
+                                            labelText: 'Email',
                                           ),
                                           readOnly: true,
                                           onChanged: (value){

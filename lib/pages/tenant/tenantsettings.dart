@@ -97,7 +97,8 @@ class  _TenantSettings extends State<TenantSettings> {
   Widget getLargeWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
     final double textfield_width = screenWidth > 1260 ? (screenWidth - 500)/2 : (screenWidth - 350)/2 ;
-    final double renewal_width = textfield_width * 2 - 410;
+    double renewal_width = textfield_width * 2 - 410;
+    if(renewal_width < 50) renewal_width = 50;
     return  Column(
       children: [
         Row(
@@ -123,7 +124,7 @@ class  _TenantSettings extends State<TenantSettings> {
                 Row(
                   children: [
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -131,7 +132,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                               controller: nameEditController,
                               decoration: InputDecoration(
-                                hintText: 'Tenant Name',
+                                labelText: 'Tenant Name',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -143,14 +144,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                               controller: addressEditController,
                               decoration: InputDecoration(
-                                hintText: 'POSTAL ADDRESS',
+                                labelText: 'POSTAL ADDRESS',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -166,7 +167,7 @@ class  _TenantSettings extends State<TenantSettings> {
                 Row(
                   children: [
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -174,7 +175,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                                 controller: emailEditController,
                                 decoration: InputDecoration(
-                                  hintText: 'Tenant Email',
+                                  labelText: 'Tenant Email',
                                 ),
                                 onChanged: (value){
                                   setState(() {
@@ -186,14 +187,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                             controller: folderEditController,
                             decoration: InputDecoration(
-                              hintText: 'Folder Name',
+                              labelText: 'Folder Name',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -210,7 +211,7 @@ class  _TenantSettings extends State<TenantSettings> {
                 Row(
                   children: [
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -218,7 +219,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                               controller: landlineEditController,
                               decoration: InputDecoration(
-                                hintText: 'Tenant Landline',
+                                labelText: 'Tenant Landline',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -231,14 +232,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                             controller: groupEditController,
                             decoration: InputDecoration(
-                              hintText: 'Group Name',
+                              labelText: 'Group Name',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -257,7 +258,7 @@ class  _TenantSettings extends State<TenantSettings> {
                     Column(
                       children: [
                         SizedBox(
-                            height: 35,
+                            height: 50,
                             width: textfield_width,
                             child:
                             Container(
@@ -265,7 +266,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                 child: TextFormField(
                                     controller: phoneEditController,
                                     decoration: InputDecoration(
-                                      hintText: 'Tenant Mobile',
+                                      labelText: 'Tenant Mobile',
                                     ),
                                     onChanged: (value){
                                       setState(() {
@@ -277,14 +278,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                         ),
                         SizedBox(
-                          height: 35,
+                          height: 50,
                           width: textfield_width,
                           child:  Container(
                               margin:EdgeInsets.only(left:20),
                               child: TextFormField(
                                   controller: faxEditController,
                                   decoration: InputDecoration(
-                                    hintText: 'Faxline',
+                                    labelText: 'Faxline',
                                   ),
                                   onChanged: (value){
                                     setState(() {
@@ -297,16 +298,16 @@ class  _TenantSettings extends State<TenantSettings> {
                       ],
                     ),
                     SizedBox(
-                        height: 70,
+                        height: 100,
                         width: textfield_width,
                         child:
                         Container(
-                            margin:EdgeInsets.only(left:20,top:5),
+                            margin:EdgeInsets.only(left:20,top:15),
                             child: TextFormField(
                                 controller: officeEditController,
                                 maxLines: 5,
                                 decoration: InputDecoration(
-                                  hintText: 'Office location',
+                                  labelText: 'Office location',
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (value){
@@ -378,7 +379,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                 style: TextStyle(fontSize: 16),
                                 initialValue: tenant_data.renewal_date.toString(),
                                 decoration: InputDecoration(
-                                  hintText: '',
+                                  labelText: '',
 
                                 ),
                                 onChanged: (value){
@@ -437,8 +438,8 @@ class  _TenantSettings extends State<TenantSettings> {
   }
   Widget getSmallWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
-    final double textfield_width = screenWidth > 1260 ? (screenWidth - 500)/2 : (screenWidth - 350)/2 ;
-    final double renewal_width = textfield_width * 2 - 410;
+    final double textfield_width = screenWidth > 1260 ? (screenWidth - 500)/2 : (screenWidth - 500)/2 ;
+
     return  ListView(
                   children: [
                     GestureDetector(
@@ -456,7 +457,7 @@ class  _TenantSettings extends State<TenantSettings> {
                         )
                     ),
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -464,7 +465,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                               controller: nameEditController,
                               decoration: InputDecoration(
-                                hintText: 'Tenant Name',
+                                labelText: 'Tenant Name',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -476,14 +477,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                               controller: addressEditController,
                               decoration: InputDecoration(
-                                hintText: 'POSTAL ADDRESS',
+                                labelText: 'POSTAL ADDRESS',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -494,7 +495,7 @@ class  _TenantSettings extends State<TenantSettings> {
                       ),
                     ),
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -502,7 +503,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                                 controller: emailEditController,
                                 decoration: InputDecoration(
-                                  hintText: 'Tenant Email',
+                                  labelText: 'Tenant Email',
                                 ),
                                 onChanged: (value){
                                   setState(() {
@@ -514,14 +515,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                             controller: folderEditController,
                             decoration: InputDecoration(
-                              hintText: 'Folder Name',
+                              labelText: 'Folder Name',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -533,7 +534,7 @@ class  _TenantSettings extends State<TenantSettings> {
                       ),
                     ),
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -541,7 +542,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                               controller: landlineEditController,
                               decoration: InputDecoration(
-                                hintText: 'Tenant Landline',
+                                labelText: 'Tenant Landline',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -554,14 +555,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                             controller: groupEditController,
                             decoration: InputDecoration(
-                              hintText: 'Group Name',
+                              labelText: 'Group Name',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -573,7 +574,7 @@ class  _TenantSettings extends State<TenantSettings> {
                       ),
                     ),
                     SizedBox(
-                        height: 35,
+                        height: 50,
                         width: textfield_width,
                         child:
                         Container(
@@ -581,7 +582,7 @@ class  _TenantSettings extends State<TenantSettings> {
                             child: TextFormField(
                                 controller: phoneEditController,
                                 decoration: InputDecoration(
-                                  hintText: 'Tenant Mobile',
+                                  labelText: 'Tenant Mobile',
                                 ),
                                 onChanged: (value){
                                   setState(() {
@@ -593,14 +594,14 @@ class  _TenantSettings extends State<TenantSettings> {
 
                     ),
                     SizedBox(
-                      height: 35,
+                      height: 50,
                       width: textfield_width,
                       child:  Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
                               controller: faxEditController,
                               decoration: InputDecoration(
-                                hintText: 'Faxline',
+                                labelText: 'Faxline',
                               ),
                               onChanged: (value){
                                 setState(() {
@@ -611,16 +612,16 @@ class  _TenantSettings extends State<TenantSettings> {
                       ),
                     ),
                     SizedBox(
-                        height: 70,
+                        height: 100,
                         width: textfield_width,
                         child:
                         Container(
-                            margin:EdgeInsets.only(left:20,top:5),
+                            margin:EdgeInsets.only(left:20,top:15),
                             child: TextFormField(
                                 controller: officeEditController,
-                                maxLines: 5,
+                                maxLines: 10,
                                 decoration: InputDecoration(
-                                  hintText: 'Office location',
+                                  labelText: 'Office location',
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (value){
@@ -681,7 +682,7 @@ class  _TenantSettings extends State<TenantSettings> {
                                             style: TextStyle(fontSize: 16),
                                             initialValue: tenant_data.renewal_date.toString(),
                                             decoration: InputDecoration(
-                                              hintText: '',
+                                              labelText: '',
 
                                             ),
                                             onChanged: (value){

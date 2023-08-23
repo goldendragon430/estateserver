@@ -62,6 +62,7 @@ class  _FolderItem extends State<FolderItem> {
                       TitledContainer(
                           titleText: '',
                           idden: 10,
+                          color : is_focus ? Colors.deepOrange:Colors.grey,
                           child: Row(
                             children: [
                                GestureDetector(
@@ -79,7 +80,7 @@ class  _FolderItem extends State<FolderItem> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(
-                                      height: 35,
+                                      height: 50,
                                       width: 150,
                                       child:
                                       Container(
@@ -87,7 +88,7 @@ class  _FolderItem extends State<FolderItem> {
                                           child: TextField(
                                             controller: nameEditController,
                                               decoration: InputDecoration(
-                                                hintText: 'Folder Name',
+                                                labelText: 'Folder Name',
                                               ),
                                             onChanged: (value){
                                               setState(() {

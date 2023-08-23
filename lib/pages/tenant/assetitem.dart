@@ -60,6 +60,7 @@ class  _AssetItem extends State<AssetItem> {
                                             textAlign: TextAlign.center,
                                             decoration: InputDecoration(
                                               hintText: 'Asset Type',
+
                                             ),
                                           onChanged: (val){
                                               setState(() {

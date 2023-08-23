@@ -211,10 +211,10 @@ class  _TenantUsers extends State<TenantUsers> {
               child: Column(children: [
                 SizedBox(
                     width:400,
-                    height: 35,
+                    height: 50,
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: 'Username',
+                        labelText: 'Username',
                       ),
                       onChanged: (value){
                         _setter(() {
@@ -225,10 +225,10 @@ class  _TenantUsers extends State<TenantUsers> {
                 SizedBox(height: 5),
                 SizedBox(
                     width:400,
-                    height: 35,
+                    height: 50,
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: 'Email',
+                        labelText: 'Email',
                       ),
                       onChanged: (value){
                         _setter(() {
@@ -387,11 +387,11 @@ class  _TenantUsers extends State<TenantUsers> {
               child: Column(children: [
                 SizedBox(
                     width:400,
-                    height: 35,
+                    height: 50,
                     child: TextField(
                       controller: nameEditController,
                       decoration: InputDecoration(
-                        hintText: 'Username',
+                        labelText: 'Username',
                       ),
                       onChanged: (value){
                         _setter(() {
@@ -402,11 +402,11 @@ class  _TenantUsers extends State<TenantUsers> {
                 SizedBox(height: 5),
                 SizedBox(
                     width:400,
-                    height: 35,
+                    height: 50,
                     child: TextField(
                       controller: emailEditController,
                       decoration: InputDecoration(
-                        hintText: 'Email',
+                        labelText: 'Email',
                       ),
                       onChanged: (value){
                         _setter(() {
