@@ -7,8 +7,9 @@ class TenantFolderItem extends StatefulWidget {
   bool? active = false;
   bool? unlimited_group = false;
   String? tenantEmail = '';
+  String? logo = '';
   final Function(String id,bool active,bool ugroup)? onChange;
-  TenantFolderItem({super.key,this.folderID, this.folderName, this.registeredDate, this.active,this.tenantEmail, this.unlimited_group, this.onChange});
+  TenantFolderItem({super.key,this.logo,this.folderID, this.folderName, this.registeredDate, this.active,this.tenantEmail, this.unlimited_group, this.onChange});
   @override
   _TenantFolderItem createState() => _TenantFolderItem();
 }
@@ -21,7 +22,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
   String register_date = '';
   TextEditingController nameEditController = TextEditingController();
   TextEditingController dateEditController = TextEditingController();
-
+  String logo = '';
   void update(){
     widget.onChange!(widget.folderID!,active_value,folder_value);
   }
@@ -44,6 +45,9 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
       if(widget.unlimited_group != null) {
         folder_value = widget.unlimited_group!;
       }
+      if(widget.logo == null) logo = '';
+      else logo = widget.logo!;
+
     });
   }
   void sendActiveAccountEmail() async{
@@ -68,12 +72,14 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
   }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    bool is_Mobile = screenWidth < 1000;
     return Container(
         margin: const EdgeInsets.only(top: 10),
         child: Row(
             children: [
               SizedBox(width:10),
-              Image.asset('assets/images/folder.png',width: 80,height: 50),
+              logo == '' ? Image.asset('assets/images/folder.png',width: 80,height: 50) : Image.network(logo,width: 80,height: 50),
               SizedBox(
                   height: 35,
                   width: 200,
@@ -89,7 +95,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
                       )
                   )
               ),
-              SizedBox(
+              if(is_Mobile == false) SizedBox(
                   height: 35,
                   width: 200,
                   child:
@@ -132,7 +138,7 @@ class  _TenantFolderItem extends State<TenantFolderItem> {
                 ],
 
               ),
-              Row(
+              if(is_Mobile == false) Row(
                 children: [
                   SizedBox(
                       width:15

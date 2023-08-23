@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:html';
 
+import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/assetTypes.dart';
 import 'package:assetmamanger/models/assets.dart';
 import 'package:assetmamanger/models/folders.dart';
 import 'package:assetmamanger/models/groups.dart';
+import 'package:assetmamanger/models/users.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/pages/user/userassetitem.dart';
 import 'package:assetmamanger/utils/global.dart';
@@ -77,7 +79,9 @@ class  _UserView extends State<UserView> {
 //-------------------Listview variables----------------//
 
   String user_id = 'bdMg1tPZwEUZA1kimr8b'; // parent user's id
+  String subuser_id = 'hnqul82t4q';
   Tenant m_tenant = Tenant(); // Parent DB's Data
+  User cur_user = User() ;
   List<Folder> m_folders = [];
   List<Group>  m_groups = [];
   List<AssetType> m_asset_types = [];
@@ -91,6 +95,8 @@ class  _UserView extends State<UserView> {
 //-----------------------------------------------------------//
   TextEditingController searchController = TextEditingController();
   String search_str = '';
+
+
   void fetchData() async{
 
     // String? val =  getStorage('user');
@@ -99,6 +105,7 @@ class  _UserView extends State<UserView> {
     // if(data?['parent_user'] != null) {
     //   setState(() {
     //     user_id = data?['parent_user'];
+    //     subuser_id = data?['subuser_id'];
     //   });
     // }
     // else{
@@ -106,21 +113,61 @@ class  _UserView extends State<UserView> {
     // }
 
     Tenant? result =  await TenantService().getTenantDetails(user_id);
+    List<User> users = await LoginService().getSubUser(user_id);
 
-    if(result != null){
-      setState(() {
-        m_tenant = result;
-        m_folder_ids = [];
-        m_folders = result.folders!;
-        for (Folder folder in m_folders){
-          m_folder_ids.add(folder.id!);
-        }
-        if(m_folder_ids.length > 0) {
-          selected_folder_id = m_folder_ids[0];
-          onChangeFolder(m_folder_ids[0]);
-        }
-      });
+    for(User user in users){
+      if(user.subuser_id == subuser_id){
+        cur_user = user;
+        break;
+      }
     }
+    if(result != null){
+      m_tenant = result;
+      m_folder_ids = [];
+      m_folders = [];
+
+        if(cur_user.acess_level == 0) {
+          setState(() {
+            m_folders = result.folders!;
+            for (Folder folder in m_folders){
+              m_folder_ids.add(folder.id!);
+            }
+            if(m_folder_ids.length > 0) {
+              selected_folder_id = m_folder_ids[0];
+              onChangeFolder(m_folder_ids[0]);
+              }
+          });
+      }
+      else if(cur_user.acess_level == 1) {
+          for (Folder folder in result.folders!){
+             if(folder.id == cur_user.acess_id){
+              m_folders.add(folder);
+              m_folder_ids.add(folder.id!);
+              selected_folder_id = folder.id!;
+              onChangeFolder(selected_folder_id);
+              break;
+             }
+          }
+        }
+      else{
+
+        for (Folder folder in result.folders!){
+            for(Group group in folder.groups!){
+                if(group.id == cur_user.acess_id){
+                    m_folders.add(folder);
+                    m_folder_ids.add(folder.id!);
+                    selected_folder_id = folder.id!;
+                    onChangeFolder(selected_folder_id);
+                    break;
+                }
+            }
+          }
+
+      }
+
+    }
+
+
   }
   String getFolderName(String folder_id){
     for(Folder folder in m_folders){
@@ -147,28 +194,39 @@ class  _UserView extends State<UserView> {
     return 'No Selected';
   }
   void onChangeFolder(String new_folder_id){
+    m_groups = [];
     for(Folder folder in m_folders){
       if(folder.id == new_folder_id){
         setState(() {
-          m_groups = folder.groups!;
-          if(m_groups.length > 0){
-            selected_group_id = m_groups[0].id!;
-            m_asset_types = m_groups[0]!.assetTypes!;
+          if(cur_user.acess_level < 2){
+            m_groups = folder.groups!;
           }
-          if(m_asset_types.length > 0){
-            selected_asset_type_id = m_asset_types[0].id!;
-            m_categories = m_asset_types[0]!.categories!;
-            m_category_ids = [];
-            for(Category category in m_categories){
-              m_category_ids.add(category.id!);
+          else{
+            for(Group group in folder.groups!){
+              if(group.id == cur_user.acess_id){
+                m_groups.add(group);
+                break;
+              }
             }
-            if(m_category_ids.length > 0) {
-              selected_category_id = m_category_ids[0];
-              m_assets = m_categories![0].assets!;
-              updateAssetsView();
-            } else
-              selected_category_id = '';
           }
+            if(m_groups.length > 0){
+              selected_group_id = m_groups[0].id!;
+              m_asset_types = m_groups[0]!.assetTypes!;
+            }
+            if(m_asset_types.length > 0){
+              selected_asset_type_id = m_asset_types[0].id!;
+              m_categories = m_asset_types[0]!.categories!;
+              m_category_ids = [];
+              for(Category category in m_categories){
+                m_category_ids.add(category.id!);
+              }
+              if(m_category_ids.length > 0) {
+                selected_category_id = m_category_ids[0];
+                m_assets = m_categories![0].assets!;
+                updateAssetsView();
+              } else
+                selected_category_id = '';
+            }
         });
         break;
       }

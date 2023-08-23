@@ -9,8 +9,9 @@ class TenantGroupItem extends StatefulWidget {
   String? registeredDate = '';
   bool? active = false;
   String? tenantEmail = '';
+  String? logo = '';
   final Function(String folder_id,String group_id,bool active)? onChange;
-  TenantGroupItem({super.key,this.folderID,this.groupID,this.folderName,this.tenantEmail,this.groupName,this.registeredDate,this.active,this.onChange});
+  TenantGroupItem({super.key,this.logo,this.folderID,this.groupID,this.folderName,this.tenantEmail,this.groupName,this.registeredDate,this.active,this.onChange});
   @override
   _TenantGroupItem createState() => _TenantGroupItem();
 }
@@ -19,6 +20,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
 
   String registeredDate = '';
   bool active_value = false;
+  String logo = '';
   TextEditingController folderNameController = TextEditingController();
   TextEditingController groupNameController  = TextEditingController();
   @override
@@ -33,6 +35,9 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
         active_value = widget.active!;
       if(widget.registeredDate!= null)
         registeredDate = widget.registeredDate!;
+      if(widget.logo == null)
+          logo = '';
+      else logo = widget.logo!;
     });
   }
   void update(){
@@ -61,12 +66,14 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
   }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    bool is_Mobile = screenWidth < 1000;
     return Container(
         margin: const EdgeInsets.only(top: 10),
         child: Row(
             children: [
               SizedBox(width:10),
-              Image.asset('assets/images/group.png',width: 80,height: 50,),
+              logo == '' ? Image.asset('assets/images/group.png',width: 80,height: 50) : Image.network(logo,width: 80,height: 50),
               SizedBox(
                   height: 35,
                   width: 200,
@@ -82,7 +89,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                       )
                   )
               ),
-              SizedBox(
+              if(is_Mobile == false) SizedBox(
                   height: 35,
                   width: 200,
                   child:
@@ -97,9 +104,9 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                       )
                   )
               ),
-              SizedBox(
+              if(is_Mobile == false)  SizedBox(
                   height: 35,
-                  width: 200,
+                  width: 300,
                   child:
                   Container(
                       margin:EdgeInsets.only(left:20),
@@ -112,7 +119,7 @@ class  _TenantGroupItem extends State<TenantGroupItem> {
                       )
                   )
               ),
-              Row(
+               Row(
                 children: [
                   SizedBox(
                       width:15
