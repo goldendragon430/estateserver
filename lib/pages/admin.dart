@@ -352,7 +352,7 @@ class  _AdminViewState extends State<AdminView> {
                       idden: 10,
                       child: Row(
                         children: [
-                          Image.asset('assets/images/home.jpg',width: 200,height: 150,),
+                          cur_tenant.logo == null ? Image.asset('assets/images/tenant.png',width: 200,height: 150) : Image.network(cur_tenant.logo!,width: 200,height: 150),
                           Expanded(child:
                           Column(
                             children: [

@@ -122,11 +122,12 @@ class  _UserView extends State<UserView> {
       }
     }
     if(result != null){
+
       m_tenant = result;
       m_folder_ids = [];
       m_folders = [];
 
-        if(cur_user.acess_level == 0) {
+      if(cur_user.acess_level == 0) {
           setState(() {
             m_folders = result.folders!;
             for (Folder folder in m_folders){
@@ -166,7 +167,6 @@ class  _UserView extends State<UserView> {
       }
 
     }
-
 
   }
   String getFolderName(String folder_id){

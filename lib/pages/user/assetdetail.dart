@@ -557,7 +557,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(left:30),
-              child: Column(
+              child: ListView(
                 children: [
                   TitledContainer(
                       titleText: 'Asset Details',
@@ -776,7 +776,8 @@ class  _AssetDetailView extends State<AssetDetailView> {
                       ),
                   ),
                   SizedBox(height:10),
-                  Expanded(
+                  SizedBox(
+                      height: 600,
                       child: TitledContainer(
                                 titleText: 'Inspections',
                                 idden: 10,

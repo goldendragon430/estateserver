@@ -64,7 +64,7 @@ class  _UserItem extends State<UserItem> {
                     child: TitledContainer(
                         titleText: '',
                         idden: 10,
-                        color : is_focus ? Colors.deepOrange:Colors.grey,
+                        color : is_focus ? Colors.deepOrange:Colors.black12,
                         child: Row(
                           children: [
                             Image.asset('assets/images/group.png',width: 94,height: 94),

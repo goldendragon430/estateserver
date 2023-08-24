@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TitledContainer extends StatelessWidget {
-  const TitledContainer({required this.titleText, required this.child,this.color = Colors.grey, this.idden = 8, Key? key}) : super(key: key);
+  const TitledContainer({required this.titleText, required this.child,this.color = Colors.black12, this.idden = 8, Key? key}) : super(key: key);
   final String titleText;
   final double idden;
   final Widget child;
@@ -11,26 +11,27 @@ class TitledContainer extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 8),
+          margin: EdgeInsets.only(top: (titleText != '' ? 40 : 5)),
           padding: EdgeInsets.all(idden),
           decoration: BoxDecoration(
             border: Border.all(color: color),
-            borderRadius: BorderRadius.circular(idden * 0.6),
           ),
           child: child,
         ),
-        Positioned(
-          left: 10,
-          right: 10,
-          top: 0,
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Container(
-              color: Colors.white,
-              child: Text(titleText, overflow: TextOverflow.ellipsis),
-            ),
-          ),
-        ),
+        if(titleText != '')
+          Container(
+          color:Color.fromRGBO(0, 113, 255, 1),
+          height: 40,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(titleText,
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white
+                    )),
+                             ]),
+        )
       ],
     );
   }

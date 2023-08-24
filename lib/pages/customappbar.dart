@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 
+
 class CustomAppBar extends AppBar {
-  CustomAppBar({Key? key, required String title, required BuildContext context})
+  final String title2;
+  CustomAppBar({Key? key, required String title, required this.title2, required BuildContext context})
       : super(
     key: key,
     automaticallyImplyLeading: false,
@@ -12,10 +15,7 @@ class CustomAppBar extends AppBar {
             'assets/images/logo.png',
             fit: BoxFit.fitWidth
           ),
-          const Text('',
-              style: TextStyle(
-                  fontSize: 14
-              )),
+           Text(title2),
           Text(title, style : TextStyle(
                   fontSize: 14
             )
@@ -61,7 +61,5 @@ class CustomAppBar extends AppBar {
     ],
     backgroundColor: Colors.orange, // Customize the background color
     elevation: 4.0, // Customize the elevation
-
-
   );
 }
