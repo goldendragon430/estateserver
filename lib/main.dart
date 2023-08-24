@@ -47,6 +47,7 @@ class  _MyApp extends State<MyApp>{
   }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         body: Stack(
           children: [
@@ -62,7 +63,7 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title: '',title2 : '', context : context),
-                                  body:LoginView(),
+                                  body:UserView(),
                                 backgroundColor: Colors.white,
                               );
                             });

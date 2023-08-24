@@ -95,7 +95,8 @@ class  _UserView extends State<UserView> {
 //-----------------------------------------------------------//
   TextEditingController searchController = TextEditingController();
   String search_str = '';
-
+  bool showing_bar = false;
+  bool showing_bar_2 = false;
 
   void fetchData() async{
 
@@ -336,12 +337,9 @@ class  _UserView extends State<UserView> {
   void search(){
 
   }
-
-  @override
-  Widget build(BuildContext context) {
-    
+  Widget getLargeWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
-    return   Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -360,32 +358,32 @@ class  _UserView extends State<UserView> {
                   ),
                 ),
                 Container(
-                  width: 250,
-                  margin: EdgeInsets.only(top: 10,bottom: 20),
-                  child: DropdownButton<String>(
-                    value: selected_folder_id,
-                    isExpanded: true,
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          selected_folder_id = newValue;
-                          onChangeFolder(newValue);
-                        });
-                      }
-                    },
-                    items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Row(
-                          children: [
-                            Image.asset('assets/images/folder.png',width: 30, height: 30),
-                            SizedBox(width: 10),
-                            Text(getFolderName(value))
-                          ]
-                        )
-                      );
-                    }).toList(),
-                  )
+                    width: 250,
+                    margin: EdgeInsets.only(top: 10,bottom: 20),
+                    child: DropdownButton<String>(
+                      value: selected_folder_id,
+                      isExpanded: true,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            selected_folder_id = newValue;
+                            onChangeFolder(newValue);
+                          });
+                        }
+                      },
+                      items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                            value: value,
+                            child: Row(
+                                children: [
+                                  Image.asset('assets/images/folder.png',width: 30, height: 30),
+                                  SizedBox(width: 10),
+                                  Text(getFolderName(value))
+                                ]
+                            )
+                        );
+                      }).toList(),
+                    )
                 ),
                 Expanded(child: ListView.builder(
                   padding: const EdgeInsets.only(top: 0),
@@ -393,10 +391,10 @@ class  _UserView extends State<UserView> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                         setState(() {
-                           selected_group_id = m_groups[index].id!;
-                           onChangeGroup(m_groups[index].id!);
-                         });
+                        setState(() {
+                          selected_group_id = m_groups[index].id!;
+                          onChangeGroup(m_groups[index].id!);
+                        });
                       },
                       child: MouseRegion(
                         onEnter: (event) {
@@ -416,7 +414,7 @@ class  _UserView extends State<UserView> {
                           color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
                           child: Row(
                             children: [
-                               Image.asset('assets/images/group.png'),
+                              Image.asset('assets/images/group.png'),
                               Container(
                                 margin: const EdgeInsets.only(left: 10),
                                 child: Text('${m_groups[index].name}'),
@@ -477,7 +475,7 @@ class  _UserView extends State<UserView> {
                           selected_asset_type_id = m_asset_types[index].id!;
                           onChangeAssetType(m_asset_types[index].id!);
                         });
-                       },
+                      },
                       child: MouseRegion(
                         onEnter: (event) {
                           setState(() {
@@ -515,7 +513,7 @@ class  _UserView extends State<UserView> {
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(left:30),
-              child: Column(
+              child: ListView(
                 children: [
                   TitledContainer(
                       titleText: '',
@@ -526,37 +524,37 @@ class  _UserView extends State<UserView> {
                               width: 200,
                               margin: EdgeInsets.only(top: 10,bottom: 10),
                               child: DropdownButton<String>(
-                                value: selected_category_id,
-                                isExpanded: true,
-                                onChanged: (String? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      selected_category_id = newValue;
-                                      onChangeCategory(selected_category_id);
-                                    });
-                                  }
-                                },
-                                items:  m_category_ids.length > 0 ?
-                                            m_category_ids.map<DropdownMenuItem<String>>((String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Row(children: [
-                                                  Image.asset('assets/images/category.png',width: 30, height: 30),
-                                                  SizedBox(width: 10),
-                                                  Text(getCategoryName(value))
-                                                ]),
-                                              );
-                                            }).toList():
-                                          [
-                                            DropdownMenuItem<String>(
-                                              value: '',
-                                              child: Row(children: [
-                                                Image.asset('assets/images/category.png',width: 30, height: 30),
-                                                SizedBox(width: 10),
-                                                Text('No Category')
-                                              ]),
-                                            )
-                                          ]
+                                  value: selected_category_id,
+                                  isExpanded: true,
+                                  onChanged: (String? newValue) {
+                                    if (newValue != null) {
+                                      setState(() {
+                                        selected_category_id = newValue;
+                                        onChangeCategory(selected_category_id);
+                                      });
+                                    }
+                                  },
+                                  items:  m_category_ids.length > 0 ?
+                                  m_category_ids.map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Row(children: [
+                                        Image.asset('assets/images/category.png',width: 30, height: 30),
+                                        SizedBox(width: 10),
+                                        Text(getCategoryName(value))
+                                      ]),
+                                    );
+                                  }).toList():
+                                  [
+                                    DropdownMenuItem<String>(
+                                      value: '',
+                                      child: Row(children: [
+                                        Image.asset('assets/images/category.png',width: 30, height: 30),
+                                        SizedBox(width: 10),
+                                        Text('No Category')
+                                      ]),
+                                    )
+                                  ]
 
                               )
                           ),
@@ -616,45 +614,49 @@ class  _UserView extends State<UserView> {
                       )
                   ),
                   SizedBox(height: 10),
-                  Expanded(child: TitledContainer(
+                  SizedBox(
+                      height: 400,
+                      child: TitledContainer(
                       titleText: 'Grid View',
                       idden: 10,
                       child:PlutoGrid(
-                          columns: columns,
-                          rows: rows,
-                          onChanged: (PlutoGridOnChangedEvent event) {
-                            print(event);
-                          },
+                        columns: columns,
+                        rows: rows,
+                        onChanged: (PlutoGridOnChangedEvent event) {
+                          print(event);
+                        },
                         onLoaded: (PlutoGridOnLoadedEvent event) {
                           setState(() {
                             stateManager = event.stateManager;
                             stateManager.setShowColumnFilter(false);
                           });
-                          },
+                        },
                       )
                   )
                   ),
                   SizedBox(height: 10),
-                  Expanded(child: TitledContainer(
-                          titleText: 'Gallery View',
-                          idden: 10,
-                          child : ListView.builder(
-                                itemCount:  (m_assets.length/2).ceil(),
-                                shrinkWrap: true, ///////////////////////Use This Line
-                                itemBuilder: (BuildContext context, int index) {
-                                  Asset asset = m_assets[2 * index];
-                                  Asset? asset_2 = 2 * index + 1 >= m_assets.length ? null: m_assets[2 * index + 1];
-                                  return Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: [
-                                          UserAssetItem(asset_name: asset.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset.last_inspection_date.toString()),
-                                          if(asset_2 != null)
-                                            UserAssetItem(asset_name: asset_2.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset_2.last_inspection_date.toString()),
-                                        ],
-                                      );
+                  SizedBox(
+                      height: 400,
+                      child: TitledContainer(
+                      titleText: 'Gallery View',
+                      idden: 10,
+                      child : ListView.builder(
+                        itemCount:  (m_assets.length/2).ceil(),
+                        shrinkWrap: true, ///////////////////////Use This Line
+                        itemBuilder: (BuildContext context, int index) {
+                          Asset asset = m_assets[2 * index];
+                          Asset? asset_2 = 2 * index + 1 >= m_assets.length ? null: m_assets[2 * index + 1];
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              UserAssetItem(asset_name: asset.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset.last_inspection_date.toString()),
+                              if(asset_2 != null)
+                                UserAssetItem(asset_name: asset_2.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset_2.last_inspection_date.toString()),
+                            ],
+                          );
 
-                                },
-                              )
+                        },
+                      )
 
                   )
                   ),
@@ -684,8 +686,8 @@ class  _UserView extends State<UserView> {
                       onTap: () {
                         if(index == 2){
                           Navigator.pushNamed(
-                            context,
-                            'userdetail',
+                              context,
+                              'userdetail',
                               arguments: {
                                 'folder_id' : selected_folder_id,
                                 'user_id'   : user_id,
@@ -699,7 +701,7 @@ class  _UserView extends State<UserView> {
                       child: MouseRegion(
                         onEnter: (event) {
                           setState(() {
-                              hoveredIndex3 = index;
+                            hoveredIndex3 = index;
                           });
                         },
                         onExit: (event) {
@@ -731,5 +733,927 @@ class  _UserView extends State<UserView> {
         ),
       ],
     );
+  }
+  Widget getMediumWidget(context){
+    return  Stack(
+        children: [
+          Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                      child:
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(left:30),
+                        child: ListView(
+                          children: [
+                            TitledContainer(
+                                titleText: '',
+                                idden: 10,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                        width: 200,
+                                        margin: EdgeInsets.only(top: 10,bottom: 10),
+                                        child: DropdownButton<String>(
+                                            value: selected_category_id,
+                                            isExpanded: true,
+                                            onChanged: (String? newValue) {
+                                              if (newValue != null) {
+                                                setState(() {
+                                                  selected_category_id = newValue;
+                                                  onChangeCategory(selected_category_id);
+                                                });
+                                              }
+                                            },
+                                            items:  m_category_ids.length > 0 ?
+                                            m_category_ids.map<DropdownMenuItem<String>>((String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Row(children: [
+                                                  Image.asset('assets/images/category.png',width: 30, height: 30),
+                                                  SizedBox(width: 10),
+                                                  Text(getCategoryName(value))
+                                                ]),
+                                              );
+                                            }).toList():
+                                            [
+                                              DropdownMenuItem<String>(
+                                                value: '',
+                                                child: Row(children: [
+                                                  Image.asset('assets/images/category.png',width: 30, height: 30),
+                                                  SizedBox(width: 10),
+                                                  Text('No Category')
+                                                ]),
+                                              )
+                                            ]
+
+                                        )
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 10,bottom:10),
+                                        child: SizedBox(
+                                            height: 45,
+                                            width: 400,
+                                            child:
+                                            Container(
+
+                                              margin:EdgeInsets.only(left:20),
+                                              child: TextField(
+                                                controller: searchController,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    search_str = value;
+                                                    search();
+                                                  });
+                                                },
+                                                decoration: InputDecoration(
+                                                    hintText: 'Search...',
+                                                    // Add a clear button to the search bar
+                                                    suffixIcon:  Icon(Icons.clear),
+                                                    // Add a search icon or button to the search bar
+                                                    prefixIcon:  Icon(Icons.search),
+                                                    border: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(5.0),
+                                                    ),
+                                                    fillColor: Colors.white,
+                                                    filled: true
+                                                ),
+                                              ),
+                                            )
+
+                                        )
+                                    )
+                                    // ,
+                                    // SizedBox(width:20),
+                                    // ElevatedButton(
+                                    //     style: ButtonStyle(
+                                    //         backgroundColor: MaterialStateProperty.all(Colors.green),
+                                    //         padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                                    //
+                                    //         textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                                    //     onPressed: onAdd,
+                                    //     child: const Text('Add')),
+                                    // SizedBox(width:20),
+                                    // ElevatedButton(
+                                    //     style: ButtonStyle(
+                                    //         backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                                    //         padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                                    //         textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                                    //     onPressed: onSave,
+                                    //     child: const Text('Save Changes')),
+                                  ],
+                                )
+                            ),
+                            SizedBox(height: 10),
+                            SizedBox(
+                                height: 400,
+                                child: TitledContainer(
+                                titleText: 'Grid View',
+                                idden: 10,
+                                child:PlutoGrid(
+                                  columns: columns,
+                                  rows: rows,
+                                  onChanged: (PlutoGridOnChangedEvent event) {
+                                    print(event);
+                                  },
+                                  onLoaded: (PlutoGridOnLoadedEvent event) {
+                                    setState(() {
+                                      stateManager = event.stateManager;
+                                      stateManager.setShowColumnFilter(false);
+                                    });
+                                  },
+                                )
+                            )
+                            ),
+                            SizedBox(height: 10),
+                            SizedBox(
+                                height: 400,
+                                child: TitledContainer(
+                                titleText: 'Gallery View',
+                                idden: 10,
+                                child : ListView.builder(
+                                  itemCount:  (m_assets.length/2).ceil(),
+                                  shrinkWrap: true, ///////////////////////Use This Line
+                                  itemBuilder: (BuildContext context, int index) {
+                                    Asset asset = m_assets[2 * index];
+                                    Asset? asset_2 = 2 * index + 1 >= m_assets.length ? null: m_assets[2 * index + 1];
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        UserAssetItem(asset_name: asset.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset.last_inspection_date.toString()),
+                                        if(asset_2 != null)
+                                          UserAssetItem(asset_name: asset_2.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset_2.last_inspection_date.toString()),
+                                      ],
+                                    );
+
+                                  },
+                                )
+
+                            )
+                            ),
+                          ],
+                        ),
+                      )
+                  ),
+                  Container(
+                      width : 150,
+                      color:Color.fromRGBO(0, 113,255,0.1),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top:10),
+                            child:  Text('Actions',
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          Expanded(child: ListView.builder(
+                            padding: const EdgeInsets.only(top: 0),
+                            itemCount: actions.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  if(index == 2){
+                                    Navigator.pushNamed(
+                                        context,
+                                        'userdetail',
+                                        arguments: {
+                                          'folder_id' : selected_folder_id,
+                                          'user_id'   : user_id,
+                                          'group_id'  : selected_group_id,
+                                          'asset_type_id' : selected_asset_type_id,
+                                          'category_id'  : selected_category_id
+                                        }
+                                    );
+                                  }
+                                },
+                                child: MouseRegion(
+                                  onEnter: (event) {
+                                    setState(() {
+                                      hoveredIndex3 = index;
+                                    });
+                                  },
+                                  onExit: (event) {
+                                    setState(() {
+                                      hoveredIndex3 = -1;
+                                    });
+                                  },
+
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    height: 80,
+                                    color: hoveredIndex3 == index ? Color.fromRGBO(0, 113,255,0.4) : Color.fromRGBO(0, 113,255,0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        acionIcons[index],
+                                        Text('${actions[index]}'),
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          )),
+                        ],
+                      )
+                  ),
+                ],
+              ),
+              Container(
+                  margin: EdgeInsets.only(bottom:0,right:5),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_forward_ios),
+                        onPressed: () {
+                          setState(() {
+                            showing_bar = true;
+                          });
+                        },
+                      )
+                  )
+              )
+            ],
+          ),
+          if(showing_bar) Row(
+            children: [
+                Container(
+                    width : 200,
+                    color:Colors.white,
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top:10),
+                          child:  Text('Folders',
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                        Container(
+                            width: 250,
+                            margin: EdgeInsets.only(top: 10,bottom: 20),
+                            child: DropdownButton<String>(
+                              value: selected_folder_id,
+                              isExpanded: true,
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    selected_folder_id = newValue;
+                                    onChangeFolder(newValue);
+                                  });
+                                }
+                              },
+                              items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Row(
+                                        children: [
+                                          Image.asset('assets/images/folder.png',width: 30, height: 30),
+                                          SizedBox(width: 10),
+                                          Text(getFolderName(value))
+                                        ]
+                                    )
+                                );
+                              }).toList(),
+                            )
+                        ),
+                        Expanded(child: ListView.builder(
+                          padding: const EdgeInsets.only(top: 0),
+                          itemCount: m_groups.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selected_group_id = m_groups[index].id!;
+                                  onChangeGroup(m_groups[index].id!);
+                                });
+                              },
+                              child: MouseRegion(
+                                onEnter: (event) {
+                                  setState(() {
+                                    hoveredIndex = index;
+                                  });
+                                },
+                                onExit: (event) {
+                                  setState(() {
+                                    hoveredIndex = -1;
+                                  });
+                                },
+
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  height: 40,
+                                  color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                                  child: Row(
+                                    children: [
+                                      Image.asset('assets/images/group.png'),
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: Text('${m_groups[index].name}'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )),
+                      ],
+                    )
+                ),
+                Container(
+                    width : 200,
+                    decoration: BoxDecoration(
+                      color : Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey, // shadow color
+                          spreadRadius: 0.2, // spread radius
+                          blurRadius: 1, // blur radius
+                          offset: Offset(1, 0), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top:10),
+                              child:  Text('Asset Types',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            // SizedBox(height: 16),
+                            // SizedBox(
+                            //     height: 35,
+                            //     width: 250,
+                            //     child:
+                            //     Container(
+                            //         margin:EdgeInsets.only(left:0),
+                            //         child: TextField(
+                            //           controller: assetTypeSearchController,
+                            //           textAlign: TextAlign.center,
+                            //           decoration: InputDecoration(
+                            //             hintText: 'Search Asset Type',
+                            //           ),
+                            //           onChanged: (value){
+                            //             setState(() {
+                            //               asset_type_search = value;
+                            //             });
+                            //           },
+                            //         )
+                            //     )
+                            //
+                            // ),
+                            Expanded(child: ListView.builder(
+                              padding: const EdgeInsets.only(top: 10),
+                              itemCount: m_asset_types.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selected_asset_type_id = m_asset_types[index].id!;
+                                      onChangeAssetType(m_asset_types[index].id!);
+                                    });
+                                  },
+                                  child: MouseRegion(
+                                    onEnter: (event) {
+                                      setState(() {
+                                        hoveredIndex2 = index;
+                                      });
+                                    },
+                                    onExit: (event) {
+                                      setState(() {
+                                        hoveredIndex2 = -1;
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(top: 10),
+                                      height: 40,
+                                      color: hoveredIndex2 == index ? Color.fromRGBO(150, 150,150,0.2) : Colors.white,
+                                      child: Row(
+                                        children: [
+                                          Image.asset('assets/images/asset.png'),
+                                          Container(
+                                            margin: const EdgeInsets.only(left: 10),
+                                            child: Text('${m_asset_types[index].type}'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )),
+                          ],
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(bottom:0,right:5),
+                            child: Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  icon: Icon(Icons.arrow_back_ios_new),
+                                  onPressed: () {
+                                    setState(() {
+                                      showing_bar = false;
+                                    });
+                                  },
+                                )
+                            )
+                        ),
+                      ],
+                    )
+
+
+                )
+            ],
+      )
+        ]) ;
+  }
+  Widget getSmallWidget(context){
+    return  Stack(
+        children: [
+          Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(left:30),
+                        child: ListView(
+                          children: [
+                            TitledContainer(
+                                titleText: '',
+                                idden: 10,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        width: 200,
+                                        margin: EdgeInsets.only(top: 10,bottom: 10),
+                                        child: DropdownButton<String>(
+                                            value: selected_category_id,
+                                            isExpanded: true,
+                                            onChanged: (String? newValue) {
+                                              if (newValue != null) {
+                                                setState(() {
+                                                  selected_category_id = newValue;
+                                                  onChangeCategory(selected_category_id);
+                                                });
+                                              }
+                                            },
+                                            items:  m_category_ids.length > 0 ?
+                                            m_category_ids.map<DropdownMenuItem<String>>((String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Row(children: [
+                                                  Image.asset('assets/images/category.png',width: 30, height: 30),
+                                                  SizedBox(width: 10),
+                                                  Text(getCategoryName(value))
+                                                ]),
+                                              );
+                                            }).toList():
+                                            [
+                                              DropdownMenuItem<String>(
+                                                value: '',
+                                                child: Row(children: [
+                                                  Image.asset('assets/images/category.png',width: 30, height: 30),
+                                                  SizedBox(width: 10),
+                                                  Text('No Category')
+                                                ]),
+                                              )
+                                            ]
+
+                                        )
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 10,bottom:10),
+                                        child: SizedBox(
+                                            height: 45,
+                                            width: 350,
+                                            child:
+                                            Container(
+
+                                              margin:EdgeInsets.only(left:20),
+                                              child: TextField(
+                                                controller: searchController,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    search_str = value;
+                                                    search();
+                                                  });
+                                                },
+                                                decoration: InputDecoration(
+                                                    hintText: 'Search...',
+                                                    // Add a clear button to the search bar
+                                                    suffixIcon:  Icon(Icons.clear),
+                                                    // Add a search icon or button to the search bar
+                                                    prefixIcon:  Icon(Icons.search),
+                                                    border: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(5.0),
+                                                    ),
+                                                    fillColor: Colors.white,
+                                                    filled: true
+                                                ),
+                                              ),
+                                            )
+
+                                        )
+                                    )
+                                  ],
+                                )
+                            ),
+                            SizedBox(height: 10),
+                            SizedBox(
+                                height: 400,
+                                child: TitledContainer(
+                                titleText: 'Grid View',
+                                idden: 10,
+                                child:PlutoGrid(
+                                  columns: columns,
+                                  rows: rows,
+                                  onChanged: (PlutoGridOnChangedEvent event) {
+                                    print(event);
+                                  },
+                                  onLoaded: (PlutoGridOnLoadedEvent event) {
+                                    setState(() {
+                                      stateManager = event.stateManager;
+                                      stateManager.setShowColumnFilter(false);
+                                    });
+                                  },
+                                )
+                            )
+                            ),
+                            SizedBox(height: 10),
+                            SizedBox(
+                                height: 400,
+                                child: TitledContainer(
+                                titleText: 'Gallery View',
+                                idden: 10,
+                                child : ListView.builder(
+                                  itemCount:  m_assets.length,
+                                  shrinkWrap: true, ///////////////////////Use This Line
+                                  itemBuilder: (BuildContext context, int index) {
+                                    Asset asset = m_assets[index];
+
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        UserAssetItem(asset_name: asset.name,asset_type: getAssetTypeName(selected_asset_type_id),category: getCategoryName(selected_category_id),last_inspected: asset.last_inspection_date.toString()),
+                                     ],
+                                    );
+
+                                  },
+                                )
+
+                            )
+                            ),
+                          ],
+                        ),
+                      )
+                  ),
+                  if(showing_bar_2 == false)Container(
+                      margin: EdgeInsets.only(bottom:0,right:5),
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back_ios_new),
+                            onPressed: () {
+                              setState(() {
+                                showing_bar_2 = true;
+                              });
+                            },
+                          )
+                      )
+                  ),
+                  if(showing_bar_2) Container(
+                      width : 80,
+                      color:Color.fromRGBO(0, 113,255,0.1),
+                      padding: const EdgeInsets.all(10),
+                      child:  Stack(
+                              children: [
+                                Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(top:10),
+                                      child:  Text('Actions',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(child: ListView.builder(
+                                      padding: const EdgeInsets.only(top: 0),
+                                      itemCount: actions.length,
+                                      itemBuilder: (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if(index == 2){
+                                              Navigator.pushNamed(
+                                                  context,
+                                                  'userdetail',
+                                                  arguments: {
+                                                    'folder_id' : selected_folder_id,
+                                                    'user_id'   : user_id,
+                                                    'group_id'  : selected_group_id,
+                                                    'asset_type_id' : selected_asset_type_id,
+                                                    'category_id'  : selected_category_id
+                                                  }
+                                              );
+                                            }
+                                          },
+                                          child: MouseRegion(
+                                            onEnter: (event) {
+                                              setState(() {
+                                                hoveredIndex3 = index;
+                                              });
+                                            },
+                                            onExit: (event) {
+                                              setState(() {
+                                                hoveredIndex3 = -1;
+                                              });
+                                            },
+
+                                            child: Container(
+                                              margin: const EdgeInsets.only(top: 10),
+                                              height: 50,
+                                              color: hoveredIndex3 == index ? Color.fromRGBO(0, 113,255,0.4) : Color.fromRGBO(0, 113,255,0),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  acionIcons[index],
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )),
+                                  ],
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(bottom:0,right:5),
+                                    child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: IconButton(
+                                          icon: Icon(Icons.arrow_forward_ios),
+                                          onPressed: () {
+                                            setState(() {
+                                              showing_bar_2 = false;
+                                            });
+                                          },
+                                        )
+                                    )
+                                )
+                            ])
+
+
+                  ),
+                ],
+              ),
+              Container(
+                  margin: EdgeInsets.only(bottom:0,right:5),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_forward_ios),
+                        onPressed: () {
+                          setState(() {
+                            showing_bar = true;
+                          });
+                        },
+                      )
+                  )
+              )
+            ],
+          ),
+          if(showing_bar) Row(
+            children: [
+              Container(
+                  width : 200,
+                  color:Colors.white,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top:10),
+                        child:  Text('Folders',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      Container(
+                          width: 250,
+                          margin: EdgeInsets.only(top: 10,bottom: 20),
+                          child: DropdownButton<String>(
+                            value: selected_folder_id,
+                            isExpanded: true,
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  selected_folder_id = newValue;
+                                  onChangeFolder(newValue);
+                                });
+                              }
+                            },
+                            items: m_folder_ids.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Row(
+                                      children: [
+                                        Image.asset('assets/images/folder.png',width: 30, height: 30),
+                                        SizedBox(width: 10),
+                                        Text(getFolderName(value))
+                                      ]
+                                  )
+                              );
+                            }).toList(),
+                          )
+                      ),
+                      Expanded(child: ListView.builder(
+                        padding: const EdgeInsets.only(top: 0),
+                        itemCount: m_groups.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selected_group_id = m_groups[index].id!;
+                                onChangeGroup(m_groups[index].id!);
+                              });
+                            },
+                            child: MouseRegion(
+                              onEnter: (event) {
+                                setState(() {
+                                  hoveredIndex = index;
+                                });
+                              },
+                              onExit: (event) {
+                                setState(() {
+                                  hoveredIndex = -1;
+                                });
+                              },
+
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                height: 40,
+                                color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                                child: Row(
+                                  children: [
+                                    Image.asset('assets/images/group.png'),
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 10),
+                                      child: Text('${m_groups[index].name}'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      )),
+                    ],
+                  )
+              ),
+              Container(
+                  width : 200,
+                  decoration: BoxDecoration(
+                    color : Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey, // shadow color
+                        spreadRadius: 0.2, // spread radius
+                        blurRadius: 1, // blur radius
+                        offset: Offset(1, 0), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top:10),
+                            child:  Text('Asset Types',
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          // SizedBox(height: 16),
+                          // SizedBox(
+                          //     height: 35,
+                          //     width: 250,
+                          //     child:
+                          //     Container(
+                          //         margin:EdgeInsets.only(left:0),
+                          //         child: TextField(
+                          //           controller: assetTypeSearchController,
+                          //           textAlign: TextAlign.center,
+                          //           decoration: InputDecoration(
+                          //             hintText: 'Search Asset Type',
+                          //           ),
+                          //           onChanged: (value){
+                          //             setState(() {
+                          //               asset_type_search = value;
+                          //             });
+                          //           },
+                          //         )
+                          //     )
+                          //
+                          // ),
+                          Expanded(child: ListView.builder(
+                            padding: const EdgeInsets.only(top: 10),
+                            itemCount: m_asset_types.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selected_asset_type_id = m_asset_types[index].id!;
+                                    onChangeAssetType(m_asset_types[index].id!);
+                                  });
+                                },
+                                child: MouseRegion(
+                                  onEnter: (event) {
+                                    setState(() {
+                                      hoveredIndex2 = index;
+                                    });
+                                  },
+                                  onExit: (event) {
+                                    setState(() {
+                                      hoveredIndex2 = -1;
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    height: 40,
+                                    color: hoveredIndex2 == index ? Color.fromRGBO(150, 150,150,0.2) : Colors.white,
+                                    child: Row(
+                                      children: [
+                                        Image.asset('assets/images/asset.png'),
+                                        Container(
+                                          margin: const EdgeInsets.only(left: 10),
+                                          child: Text('${m_asset_types[index].type}'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          )),
+                        ],
+                      ),
+                      Container(
+                          margin: EdgeInsets.only(bottom:0,right:5),
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: IconButton(
+                                icon: Icon(Icons.arrow_back_ios_new),
+                                onPressed: () {
+                                  setState(() {
+                                    showing_bar = false;
+                                  });
+                                },
+                              )
+                          )
+                      ),
+                    ],
+                  )
+
+
+              )
+            ],
+          )
+        ]) ;
+  }
+  Widget getResponsiveWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    if(screenWidth > 1260) return getLargeWidget(context);
+    else if(screenWidth > 900) return getMediumWidget(context);
+    else return getSmallWidget(context);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return   getResponsiveWidget(context);
   }
 }

@@ -16,7 +16,11 @@ class  _UserAssetItem extends State<UserAssetItem> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final double tile_width = (screenWidth - 625) / 2 > 400 ? 400 : (screenWidth - 625) / 2;
+    double tile_width = (screenWidth - 625) / 2 > 400 ? 400 : (screenWidth - 625) / 2;
+    if(screenWidth < 1260)
+      tile_width = (screenWidth - 250) / 2 > 400 ? 400 : (screenWidth - 250) / 2;
+    if(screenWidth < 900)
+      tile_width = 320;
     return
       SizedBox(width:tile_width,height:180,child:TitledContainer(
           titleText: '',

@@ -647,7 +647,7 @@ class  _TenantSettings extends State<TenantSettings> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TitledContainer(titleText: 'Account Status and Settings',
+                        TitledContainer(titleText: '',
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
