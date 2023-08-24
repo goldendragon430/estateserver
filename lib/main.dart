@@ -63,7 +63,7 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title: '',title2 : '', context : context),
-                                  body:UserView(),
+                                  body:LoginView(),
                                 backgroundColor: Colors.white,
                               );
                             });
@@ -72,7 +72,7 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title2 : '', title: 'Welcome ' + getUserName(), context : context),
-                                  body:AdminView(),
+                                  body:LoginView(),
                                 backgroundColor: Colors.white,
 
                               );

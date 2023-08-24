@@ -22,7 +22,7 @@ class  _UserAssetItem extends State<UserAssetItem> {
     if(screenWidth < 900)
       tile_width = 320;
     return
-      SizedBox(width:tile_width,height:180,child:TitledContainer(
+      SizedBox(width:tile_width,height:230,child:TitledContainer(
           titleText: '',
           idden: 10,
           child: Row(
@@ -32,7 +32,7 @@ class  _UserAssetItem extends State<UserAssetItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                      height: 25,
+                      height: 50,
                       width: 170,
                       child:
                       Container(
@@ -40,16 +40,15 @@ class  _UserAssetItem extends State<UserAssetItem> {
                           child: TextFormField(
                              initialValue: widget.asset_name == null? '' : widget.asset_name,
                               decoration: InputDecoration(
-                                hintText: 'Asset Name',
+                                labelText: 'Asset Name',
                               ),
                             readOnly: true,
                           )
                       )
 
                   ),
-                  SizedBox(height: 7),
                   SizedBox(
-                      height: 25,
+                      height: 50,
                       width: 170,
                       child:
                       Container(
@@ -57,16 +56,15 @@ class  _UserAssetItem extends State<UserAssetItem> {
                           child: TextFormField(
                               initialValue: widget.asset_type == null ? '' : widget.asset_type,
                               decoration: InputDecoration(
-                                hintText: 'Asset Type',
+                                labelText: 'Asset Type',
                               ),
                             readOnly: true,
                           )
                       )
 
                   ),
-                  SizedBox(height: 7),
                   SizedBox(
-                      height: 25,
+                      height: 50,
                       width: 170,
                       child:
                       Container(
@@ -74,7 +72,7 @@ class  _UserAssetItem extends State<UserAssetItem> {
                           child: TextFormField(
                               initialValue: widget.category == null ? '' : widget.category,
                               decoration: InputDecoration(
-                                hintText: 'Asset Category',
+                                labelText: 'Asset Category',
                               ),
                             readOnly: true,
                           )
@@ -82,7 +80,7 @@ class  _UserAssetItem extends State<UserAssetItem> {
 
                   ),
                   SizedBox(
-                      height: 35,
+                      height: 50,
                       width: 170,
                       child:
                       Container(
@@ -90,7 +88,7 @@ class  _UserAssetItem extends State<UserAssetItem> {
                           child: TextFormField(
                               initialValue: widget.last_inspected == null ? '' : widget.last_inspected,
                               decoration: InputDecoration(
-                                hintText: 'Last Inspected',
+                                labelText: 'Last Inspected',
                               ),
                             readOnly: true,
                           )

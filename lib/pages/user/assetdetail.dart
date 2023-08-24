@@ -70,7 +70,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
   String? status = 'Active';
   String? asset_value;
   List<String> status_list = ['Active','Disposed','Non Operational','UnAccounted','Sold Off'];
-
+  bool showing_flag = false;
 
 
   void loadAssetdata(){
@@ -234,7 +234,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
           title: Text('Add new inspection'),
           content:
           Container(
-              height: 500,
+              height: 350,
               child: Column(children: [
                 SizedBox(
                     width: 300,
@@ -256,14 +256,14 @@ class  _AssetDetailView extends State<AssetDetailView> {
                 ),
                 SizedBox(height: 20),
                 SizedBox(
-                    height: 35,
+                    height: 50,
                     width: 300,
                     child: Container(
                         margin:EdgeInsets.only(left:4),
                         child: TextField(
                             controller: newInspecController,
                             decoration: InputDecoration(
-                              hintText: 'Inspection_date',
+                              labelText: 'Inspection_date',
                             ),
                             readOnly: true,
                             onTap: () async{
@@ -304,14 +304,14 @@ class  _AssetDetailView extends State<AssetDetailView> {
                 ),
                 SizedBox(
                     width: 300,
-                    height: 35,
+                    height: 50,
                     child:
                     Container(
                         margin:EdgeInsets.only(left:4),
                         child: TextField(
                             controller: valueController,
                             decoration: InputDecoration(
-                              hintText: 'Asset Value',
+                              labelText: 'Asset Value',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -323,14 +323,14 @@ class  _AssetDetailView extends State<AssetDetailView> {
                 ),
                 SizedBox(height: 20),
                 SizedBox(
-                    height: 35,
+                    height: 50,
                     width: 300,
                     child: Container(
                         margin:EdgeInsets.only(left:4),
                         child: TextField(
 
                             decoration: InputDecoration(
-                              hintText: 'Asset Money Value',
+                              labelText: 'Asset Money Value',
                             ),
                             onChanged: (value){
                             _setter((){
@@ -342,14 +342,14 @@ class  _AssetDetailView extends State<AssetDetailView> {
                 ),
                 SizedBox(height: 20),
                 SizedBox(
-                    height: 35,
+                    height: 50,
                     width: 300,
                     child: Container(
                         margin:EdgeInsets.only(left:4),
                         child: TextField(
                             controller: nextInspecController,
                             decoration: InputDecoration(
-                              hintText: 'Next Inspection Date',
+                              labelText: 'Next Inspection Date',
                             ),
                             readOnly: true,
                             onTap: () async{
@@ -378,7 +378,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
                         child: TextField(
 
                             decoration: InputDecoration(
-                              hintText: 'Comment',
+                              labelText: 'Comment',
                               border: OutlineInputBorder(),
                             ),
                             maxLines: 3,
@@ -445,13 +445,11 @@ class  _AssetDetailView extends State<AssetDetailView> {
       },
     );
   }
-  @override
-  Widget build(BuildContext context) {
-
+  Widget getLargeWidget(context){
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final double textfield_width = screenWidth - 600 > 600 ? 600 : screenWidth - 600;
-    return   Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -470,7 +468,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
                       });
                     },
                     decoration: InputDecoration(
-                        hintText: 'Search...',
+                        labelText: 'Search...',
                         // Add a clear button to the search bar
                         suffixIcon:  Icon(Icons.clear),
                         // Add a search icon or button to the search bar
@@ -514,7 +512,7 @@ class  _AssetDetailView extends State<AssetDetailView> {
                           color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
                           child: Row(
                             children: [
-                               Image.asset('assets/images/asset2.png'),
+                              Image.asset('assets/images/asset2.png'),
                               Container(
                                 margin: const EdgeInsets.only(left: 10),
                                 child: Text('${m_assets[index].name}'),
@@ -527,26 +525,26 @@ class  _AssetDetailView extends State<AssetDetailView> {
                   },
                 )),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children:[
-                  FloatingActionButton(
-                    heroTag: "btn1",
-                    onPressed: onAdd,
-                    child: const Icon(Icons.add),
-                  ),
-                  FloatingActionButton(
-                    heroTag: "btn2",
-                    backgroundColor: Colors.red,
-                    onPressed: onDelete,
-                    child: const Icon(Icons.delete),
-                  ),
-                  FloatingActionButton(
-                    heroTag: "btn3",
-                    backgroundColor: Colors.green,
-                    onPressed : onSave,
-                    child: const Icon(Icons.save),
-                  ),
-                ]),
+                      FloatingActionButton(
+                        heroTag: "btn1",
+                        onPressed: onAdd,
+                        child: const Icon(Icons.add),
+                      ),
+                      FloatingActionButton(
+                        heroTag: "btn2",
+                        backgroundColor: Colors.red,
+                        onPressed: onDelete,
+                        child: const Icon(Icons.delete),
+                      ),
+                      FloatingActionButton(
+                        heroTag: "btn3",
+                        backgroundColor: Colors.green,
+                        onPressed : onSave,
+                        child: const Icon(Icons.save),
+                      ),
+                    ]),
                 SizedBox(height:20),
                 Text('**Cached Assets from filtered list'),
               ],
@@ -560,256 +558,256 @@ class  _AssetDetailView extends State<AssetDetailView> {
               child: ListView(
                 children: [
                   TitledContainer(
-                      titleText: 'Asset Details',
-                      idden: 10,
-                      child:
-                      Column(
+                    titleText: 'Asset Details',
+                    idden: 10,
+                    child:
+                    Column(
+                      children: [
+                        Row(
                           children: [
-                            Row(
+                            asset_logo == '' ? Image.asset('assets/images/asset2.png',width: 200,height: 150) : Image.network(asset_logo,width: 200,height: 150),
+                            Column(
                               children: [
-                                asset_logo == '' ? Image.asset('assets/images/asset2.png',width: 200,height: 150) : Image.network(asset_logo,width: 200,height: 150),
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                        height: 35,
-                                        width: textfield_width,
-                                        child:
-                                        Container(
-                                            margin:EdgeInsets.only(left:20),
-                                            child: TextField(
-                                              controller: idEditController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Asset ID',
-                                                ),
-                                              readOnly: true,
-                                            )
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: idEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Asset ID',
+                                          ),
+                                          readOnly: true,
                                         )
-
-                                    ),
-                                    SizedBox(height: 5),
-                                    SizedBox(
-                                        height: 35,
-                                        width: textfield_width,
-                                        child:
-                                        Container(
-                                            margin:EdgeInsets.only(left:20),
-                                            child: TextField(
-                                              controller: nameEditController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Asset Name',
-                                                ),
-                                              onChanged: (value){
-                                                setState(() {
-                                                  cur_asset!.name = value;
-                                                });
-                                              },
-
-                                            )
-                                        )
-
-                                    ),
-                                    SizedBox(height: 5),
-                                    SizedBox(
-                                        height: 35,
-                                        width: textfield_width,
-                                        child:
-                                        Container(
-                                            margin:EdgeInsets.only(left:20),
-                                            child: TextField(
-                                              controller: assetTypeEditController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Asset Type',
-                                                ),
-                                              readOnly: true,
-                                            )
-                                        )
-
-                                    ),
-                                    SizedBox(height: 5),
-                                    SizedBox(
-                                        height: 35,
-                                        width: textfield_width,
-                                        child:
-                                        Container(
-                                            margin:EdgeInsets.only(left:20),
-                                            child: TextField(
-                                              controller: categoryEditController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Category Name',
-                                                ),
-                                              readOnly: true,
-                                            )
-                                        )
-
                                     )
-                                  ],
+
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: nameEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Asset Name',
+                                          ),
+                                          onChanged: (value){
+                                            setState(() {
+                                              cur_asset!.name = value;
+                                            });
+                                          },
+
+                                        )
+                                    )
+
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: assetTypeEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Asset Type',
+                                          ),
+                                          readOnly: true,
+                                        )
+                                    )
+
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: categoryEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Category Name',
+                                          ),
+                                          readOnly: true,
+                                        )
+                                    )
+
                                 )
-
                               ],
-                            ),
-                            Row(children: [
-                               SizedBox(
-                                   width: 200,
-                                   height:130,
-                                   child: ListView.builder(
-                                 padding: const EdgeInsets.only(top: 0),
-                                 itemCount: m_inspections.length,
-                                 itemBuilder: (BuildContext context, int index) {
-                                   return GestureDetector(
-                                     onTap: () {
-                                       String url = m_inspections[index].logo!;
-                                       setState(() {
-                                         asset_logo = url;
-                                       }); 
-                                     },
-                                     child: MouseRegion(
-                                       onEnter: (event) {
-                                         setState(() {
-                                           hoveredIndex2 = index;
-                                         });
-                                       },
-                                       onExit: (event) {
-                                         setState(() {
-                                           hoveredIndex2 = -1;
-                                         });
-                                       },
+                            )
 
-                                       child: Container(
-                                         margin: const EdgeInsets.only(top: 1),
-                                         height: 40,
-                                         alignment: Alignment.center,
-                                         color: hoveredIndex2 == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
-                                         child: Text('image${index + 1}',textAlign: TextAlign.center,)
-                                       ),
-                                     ),
-                                   );
-                                 },
-                               )
-                               ),Expanded(
-                                  child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: 35,
-                                                width: 200,
-                                                child:
-                                                Container(
-                                                    margin:EdgeInsets.only(left:20),
-                                                    child: TextField(
-                                                        controller: acquiredDateController,
-                                                        decoration: InputDecoration(
-                                                          hintText: 'Acquired Date',
-                                                        ),
-                                                      readOnly: true,
-                                                      onTap: () async{
-                                                          DateTime? pickedDate = await showDatePicker(
-                                                              context: context,
-                                                              initialDate: DateTime.now(), //get today's date
-                                                              firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                                              lastDate: DateTime(2101)
-                                                          );
-                                                          if(pickedDate!= null)
-                                                            setState(() {
-                                                              acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                                              cur_asset!.acquired_date = DateTime.parse(acquiredDateController.text);
-                                                            });
-
-                                                      },
-                                                    )
-                                                )
-
-                                            ),
-                                            SizedBox(
-                                                height: 35,
-                                                width: 200,
-                                                child:
-                                                Container(
-                                                    margin:EdgeInsets.only(left:20),
-                                                    child:  TextField(
-                                                      controller: lastInspectionController,
-                                                      decoration: InputDecoration(
-                                                        hintText: 'last Inspected Date',
-                                                      ),
-                                                      readOnly: true,
-                                                      onTap: () async{
-                                                        DateTime? pickedDate = await showDatePicker(
-                                                            context: context,
-                                                            initialDate: DateTime.now(), //get today's date
-                                                            firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                                            lastDate: DateTime(2101)
-                                                        );
-                                                        if(pickedDate!= null)
-                                                          setState(() {
-                                                            lastInspectionController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                                            cur_asset!.last_inspection_date = DateTime.parse(lastInspectionController.text);
-                                                          });
-
-                                                      },
-                                                    )
-                                                )
-
-                                            ),
-                                          ]),
-                                          SizedBox(height: 5),
-                                          Row(children: [
-                                            SizedBox(width:20),
-                                            SizedBox(
-                                                width:textfield_width - 20,
-                                                child:TextField(
-                                                    maxLines: 3,
-                                                    controller: commentController,
-                                                    decoration: InputDecoration(
-                                                      hintText: 'Comments',
-                                                      border: OutlineInputBorder(),
-                                                    ),
-                                                  onChanged: (value){
-                                                      setState(() {
-                                                        cur_asset!.comment = value;
-                                                      });
-                                                  },
-                                                ))
-                                          ])
-                              ]))
-                            ])
                           ],
-                      ),
+                        ),
+                        Row(children: [
+                          SizedBox(
+                              width: 200,
+                              height:130,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.only(top: 0),
+                                itemCount: m_inspections.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      String url = m_inspections[index].logo!;
+                                      setState(() {
+                                        asset_logo = url;
+                                      });
+                                    },
+                                    child: MouseRegion(
+                                      onEnter: (event) {
+                                        setState(() {
+                                          hoveredIndex2 = index;
+                                        });
+                                      },
+                                      onExit: (event) {
+                                        setState(() {
+                                          hoveredIndex2 = -1;
+                                        });
+                                      },
+
+                                      child: Container(
+                                          margin: const EdgeInsets.only(top: 1),
+                                          height: 40,
+                                          alignment: Alignment.center,
+                                          color: hoveredIndex2 == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                                          child: Text('image${index + 1}',textAlign: TextAlign.center,)
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                          ),Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      SizedBox(
+                                          height: 50,
+                                          width: 200,
+                                          child:
+                                          Container(
+                                              margin:EdgeInsets.only(left:20),
+                                              child: TextField(
+                                                controller: acquiredDateController,
+                                                decoration: InputDecoration(
+                                                  labelText: 'Acquired Date',
+                                                ),
+                                                readOnly: true,
+                                                onTap: () async{
+                                                  DateTime? pickedDate = await showDatePicker(
+                                                      context: context,
+                                                      initialDate: DateTime.now(), //get today's date
+                                                      firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                                      lastDate: DateTime(2101)
+                                                  );
+                                                  if(pickedDate!= null)
+                                                    setState(() {
+                                                      acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                                      cur_asset!.acquired_date = DateTime.parse(acquiredDateController.text);
+                                                    });
+
+                                                },
+                                              )
+                                          )
+
+                                      ),
+                                      SizedBox(
+                                          height: 50,
+                                          width: 200,
+                                          child:
+                                          Container(
+                                              margin:EdgeInsets.only(left:20),
+                                              child:  TextField(
+                                                controller: lastInspectionController,
+                                                decoration: InputDecoration(
+                                                  labelText: 'last Inspected Date',
+                                                ),
+                                                readOnly: true,
+                                                onTap: () async{
+                                                  DateTime? pickedDate = await showDatePicker(
+                                                      context: context,
+                                                      initialDate: DateTime.now(), //get today's date
+                                                      firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                                      lastDate: DateTime(2101)
+                                                  );
+                                                  if(pickedDate!= null)
+                                                    setState(() {
+                                                      lastInspectionController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                                      cur_asset!.last_inspection_date = DateTime.parse(lastInspectionController.text);
+                                                    });
+
+                                                },
+                                              )
+                                          )
+
+                                      ),
+                                    ]),
+                                    SizedBox(height: 15),
+                                    Row(children: [
+                                      SizedBox(width:20),
+                                      SizedBox(
+                                          width:textfield_width - 20,
+                                          child:TextField(
+                                            maxLines: 3,
+                                            controller: commentController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Comments',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            onChanged: (value){
+                                              setState(() {
+                                                cur_asset!.comment = value;
+                                              });
+                                            },
+                                          ))
+                                    ])
+                                  ]))
+                        ])
+                      ],
+                    ),
                   ),
                   SizedBox(height:10),
                   SizedBox(
                       height: 600,
                       child: TitledContainer(
-                                titleText: 'Inspections',
-                                idden: 10,
-                                child: Column(
-                                          children: [
-                                            SizedBox(height: 20),
-                                            Row(
-                                                mainAxisAlignment : MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(width:10),
-                                                  ElevatedButton(onPressed: (){
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) => gradeDialog()  ,
-                                                    );
+                          titleText: 'Inspections',
+                          idden: 10,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
+                              Row(
+                                  mainAxisAlignment : MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width:10),
+                                    ElevatedButton(onPressed: (){
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => gradeDialog()  ,
+                                      );
 
-                                                  }, child: Text('Add Inspection'))
-                                                ]),
-                                            SizedBox(height: 10),
-                                            SizedBox(
-                                                height: screenHeight - 540,
-                                                child :  ListView.builder(
-                                                    padding: const EdgeInsets.only(top: 0),
-                                                    itemCount:  m_inspections.length,
-                                                    itemBuilder: (BuildContext context, int index) {
-                                                      return  InspcetionItem(status: m_inspections[index].status,value: m_inspections[index].value, id : m_inspections[index].id!, logo: m_inspections[index].logo!,inspection_date: m_inspections[index].inspection_date,functional_condition: m_inspections[index].full_condition,asset_money_value: m_inspections[index].asset_money_value,next_inspection: m_inspections[index].next_inspect_date,comment: m_inspections[index].comment,onChange: onInspectionChange,onDelete: onInspectionDelete);
-                                                    })
-                                            )
-                                            ],
-                                          )
+                                    }, child: Text('Add Inspection'))
+                                  ]),
+                              SizedBox(height: 10),
+                              SizedBox(
+                                  height: screenHeight - 540,
+                                  child :  ListView.builder(
+                                      padding: const EdgeInsets.only(top: 0),
+                                      itemCount:  m_inspections.length,
+                                      itemBuilder: (BuildContext context, int index) {
+                                        return  InspcetionItem(status: m_inspections[index].status,value: m_inspections[index].value, id : m_inspections[index].id!, logo: m_inspections[index].logo!,inspection_date: m_inspections[index].inspection_date,functional_condition: m_inspections[index].full_condition,asset_money_value: m_inspections[index].asset_money_value,next_inspection: m_inspections[index].next_inspect_date,comment: m_inspections[index].comment,onChange: onInspectionChange,onDelete: onInspectionDelete);
+                                      })
+                              )
+                            ],
+                          )
 
-                  )),
+                      )),
 
                 ],
               ),
@@ -819,5 +817,818 @@ class  _AssetDetailView extends State<AssetDetailView> {
         ),
       ],
     );
+  }
+  Widget getSmallWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final double textfield_width = screenWidth - 300 > 600 ? 600 : screenWidth - 300;
+    return Stack(
+      children: [
+        Expanded(
+            child:
+            Container(
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(left:30),
+              child: ListView(
+                children: [
+                  TitledContainer(
+                    titleText: 'Asset Details',
+                    idden: 10,
+                    child:
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            asset_logo == '' ? Image.asset('assets/images/asset2.png',width: 200,height: 150) : Image.network(asset_logo,width: 200,height: 150),
+                            Column(
+                              children: [
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: idEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Asset ID',
+                                          ),
+                                          readOnly: true,
+                                        )
+                                    )
+
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: nameEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Asset Name',
+                                          ),
+                                          onChanged: (value){
+                                            setState(() {
+                                              cur_asset!.name = value;
+                                            });
+                                          },
+
+                                        )
+                                    )
+
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: assetTypeEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Asset Type',
+                                          ),
+                                          readOnly: true,
+                                        )
+                                    )
+
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:
+                                    Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextField(
+                                          controller: categoryEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Category Name',
+                                          ),
+                                          readOnly: true,
+                                        )
+                                    )
+
+                                )
+                              ],
+                            )
+
+                          ],
+                        ),
+                        Row(children: [
+                          SizedBox(
+                              width: 200,
+                              height:130,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.only(top: 0),
+                                itemCount: m_inspections.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      String url = m_inspections[index].logo!;
+                                      setState(() {
+                                        asset_logo = url;
+                                      });
+                                    },
+                                    child: MouseRegion(
+                                      onEnter: (event) {
+                                        setState(() {
+                                          hoveredIndex2 = index;
+                                        });
+                                      },
+                                      onExit: (event) {
+                                        setState(() {
+                                          hoveredIndex2 = -1;
+                                        });
+                                      },
+
+                                      child: Container(
+                                          margin: const EdgeInsets.only(top: 1),
+                                          height: 40,
+                                          alignment: Alignment.center,
+                                          color: hoveredIndex2 == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                                          child: Text('image${index + 1}',textAlign: TextAlign.center,)
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                          ),
+                          Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                        children: [
+                                          SizedBox(
+                                              height: 50,
+                                              width: textfield_width,
+                                              child:
+                                              Container(
+                                                  margin:EdgeInsets.only(left:20),
+                                                  child: TextField(
+                                                    controller: acquiredDateController,
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Acquired Date',
+                                                    ),
+                                                    readOnly: true,
+                                                    onTap: () async{
+                                                      DateTime? pickedDate = await showDatePicker(
+                                                          context: context,
+                                                          initialDate: DateTime.now(), //get today's date
+                                                          firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                                          lastDate: DateTime(2101)
+                                                      );
+                                                      if(pickedDate!= null)
+                                                        setState(() {
+                                                          acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                                          cur_asset!.acquired_date = DateTime.parse(acquiredDateController.text);
+                                                        });
+
+                                                    },
+                                                  )
+                                              )
+
+                                          ),
+                                          SizedBox(
+                                          height: 50,
+                                          width: textfield_width,
+                                          child:
+                                          Container(
+                                              margin:EdgeInsets.only(left:20),
+                                              child:  TextField(
+                                                controller: lastInspectionController,
+                                                decoration: InputDecoration(
+                                                  labelText: 'last Inspected Date',
+                                                ),
+                                                readOnly: true,
+                                                onTap: () async{
+                                                  DateTime? pickedDate = await showDatePicker(
+                                                      context: context,
+                                                      initialDate: DateTime.now(), //get today's date
+                                                      firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                                      lastDate: DateTime(2101)
+                                                  );
+                                                  if(pickedDate!= null)
+                                                    setState(() {
+                                                      lastInspectionController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                                      cur_asset!.last_inspection_date = DateTime.parse(lastInspectionController.text);
+                                                    });
+
+                                                },
+                                              )
+                                          )
+
+                                      ),
+                                    ]),
+                                    SizedBox(height: 15),
+                                    Row(children: [
+                                      SizedBox(width:20),
+                                      SizedBox(
+                                          width:textfield_width - 20,
+                                          child:TextField(
+                                            maxLines: 3,
+                                            controller: commentController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Comments',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            onChanged: (value){
+                                              setState(() {
+                                                cur_asset!.comment = value;
+                                              });
+                                            },
+                                          ))
+                                    ])
+                                  ]))
+                        ])
+                      ],
+                    ),
+                  ),
+                  SizedBox(height:10),
+                  SizedBox(
+                      height: 600,
+                      child: TitledContainer(
+                          titleText: 'Inspections',
+                          idden: 10,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
+                              Row(
+                                  mainAxisAlignment : MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width:10),
+                                    ElevatedButton(onPressed: (){
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => gradeDialog()  ,
+                                      );
+
+                                    }, child: Text('Add Inspection'))
+                                  ]),
+                              SizedBox(height: 10),
+                              SizedBox(
+                                  height: screenHeight - 540,
+                                  child :  ListView.builder(
+                                      padding: const EdgeInsets.only(top: 0),
+                                      itemCount:  m_inspections.length,
+                                      itemBuilder: (BuildContext context, int index) {
+                                        return  InspcetionItem(status: m_inspections[index].status,value: m_inspections[index].value, id : m_inspections[index].id!, logo: m_inspections[index].logo!,inspection_date: m_inspections[index].inspection_date,functional_condition: m_inspections[index].full_condition,asset_money_value: m_inspections[index].asset_money_value,next_inspection: m_inspections[index].next_inspect_date,comment: m_inspections[index].comment,onChange: onInspectionChange,onDelete: onInspectionDelete);
+                                      })
+                              )
+                            ],
+                          )
+
+                      )),
+
+                ],
+              ),
+            )
+        ),
+        Container(
+            margin: EdgeInsets.only(bottom:0,right:5),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios),
+                  onPressed: () {
+                    setState(() {
+                      showing_flag = true;
+                    });
+                  },
+                )
+            )
+        ),
+        if(showing_flag)
+          Container(
+              width : 300,
+              color:Colors.white,
+              padding: const EdgeInsets.all(10),
+              child: Stack(children: [
+                Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 10,bottom: 20),
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                          });
+                        },
+                        decoration: InputDecoration(
+                            labelText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    ),
+                    Text('**Search from DM and if found add to the cached list and display'),
+                    SizedBox(height: 10),
+                    Expanded(child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 0),
+                      itemCount: m_assets.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selected_asset_id = m_assets[index].id!;
+                              cur_asset = m_assets[index];
+                            });
+                            loadAssetdata();
+                          },
+                          child: MouseRegion(
+                            onEnter: (event) {
+                              setState(() {
+                                hoveredIndex = index;
+                              });
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                hoveredIndex = -1;
+                              });
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              height: 40,
+                              color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                              child: Row(
+                                children: [
+                                  Image.asset('assets/images/asset2.png'),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10),
+                                    child: Text('${m_assets[index].name}'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children:[
+                          FloatingActionButton(
+                            heroTag: "btn1",
+                            onPressed: onAdd,
+                            child: const Icon(Icons.add),
+                          ),
+                          FloatingActionButton(
+                            heroTag: "btn2",
+                            backgroundColor: Colors.red,
+                            onPressed: onDelete,
+                            child: const Icon(Icons.delete),
+                          ),
+                          FloatingActionButton(
+                            heroTag: "btn3",
+                            backgroundColor: Colors.green,
+                            onPressed : onSave,
+                            child: const Icon(Icons.save),
+                          ),
+                        ]),
+                    SizedBox(height:20),
+                    Text('**Cached Assets from filtered list'),
+                  ],
+                ),
+                Container(
+                    margin: EdgeInsets.only(bottom:0,right:5),
+                    child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back_ios_new),
+                          onPressed: () {
+                            setState(() {
+                              showing_flag = false;
+                            });
+                          },
+                        )
+                    )
+                )
+              ])
+          ),
+      ],
+    );
+  }
+  Widget getMediumWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final double textfield_width = screenWidth - 300 > 600 ? 600 : screenWidth - 300;
+    return Stack(
+      children: [
+          Expanded(
+              child:
+              Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(left:30),
+                child: ListView(
+                  children: [
+                    TitledContainer(
+                      titleText: 'Asset Details',
+                      idden: 10,
+                      child:
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              asset_logo == '' ? Image.asset('assets/images/asset2.png',width: 200,height: 150) : Image.network(asset_logo,width: 200,height: 150),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                      height: 50,
+                                      width: textfield_width,
+                                      child:
+                                      Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            controller: idEditController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Asset ID',
+                                            ),
+                                            readOnly: true,
+                                          )
+                                      )
+
+                                  ),
+                                  SizedBox(height: 5),
+                                  SizedBox(
+                                      height: 50,
+                                      width: textfield_width,
+                                      child:
+                                      Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            controller: nameEditController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Asset Name',
+                                            ),
+                                            onChanged: (value){
+                                              setState(() {
+                                                cur_asset!.name = value;
+                                              });
+                                            },
+
+                                          )
+                                      )
+
+                                  ),
+                                  SizedBox(height: 5),
+                                  SizedBox(
+                                      height: 50,
+                                      width: textfield_width,
+                                      child:
+                                      Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            controller: assetTypeEditController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Asset Type',
+                                            ),
+                                            readOnly: true,
+                                          )
+                                      )
+
+                                  ),
+                                  SizedBox(height: 5),
+                                  SizedBox(
+                                      height: 50,
+                                      width: textfield_width,
+                                      child:
+                                      Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            controller: categoryEditController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Category Name',
+                                            ),
+                                            readOnly: true,
+                                          )
+                                      )
+
+                                  )
+                                ],
+                              )
+
+                            ],
+                          ),
+                          Row(children: [
+                            SizedBox(
+                                width: 200,
+                                height:130,
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.only(top: 0),
+                                  itemCount: m_inspections.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        String url = m_inspections[index].logo!;
+                                        setState(() {
+                                          asset_logo = url;
+                                        });
+                                      },
+                                      child: MouseRegion(
+                                        onEnter: (event) {
+                                          setState(() {
+                                            hoveredIndex2 = index;
+                                          });
+                                        },
+                                        onExit: (event) {
+                                          setState(() {
+                                            hoveredIndex2 = -1;
+                                          });
+                                        },
+
+                                        child: Container(
+                                            margin: const EdgeInsets.only(top: 1),
+                                            height: 40,
+                                            alignment: Alignment.center,
+                                            color: hoveredIndex2 == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                                            child: Text('image${index + 1}',textAlign: TextAlign.center,)
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                            ),Expanded(
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                        SizedBox(
+                                            height: 50,
+                                            width: 200,
+                                            child:
+                                            Container(
+                                                margin:EdgeInsets.only(left:20),
+                                                child: TextField(
+                                                  controller: acquiredDateController,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Acquired Date',
+                                                  ),
+                                                  readOnly: true,
+                                                  onTap: () async{
+                                                    DateTime? pickedDate = await showDatePicker(
+                                                        context: context,
+                                                        initialDate: DateTime.now(), //get today's date
+                                                        firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                                        lastDate: DateTime(2101)
+                                                    );
+                                                    if(pickedDate!= null)
+                                                      setState(() {
+                                                        acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                                        cur_asset!.acquired_date = DateTime.parse(acquiredDateController.text);
+                                                      });
+
+                                                  },
+                                                )
+                                            )
+
+                                        ),
+                                        SizedBox(
+                                            height: 50,
+                                            width: 200,
+                                            child:
+                                            Container(
+                                                margin:EdgeInsets.only(left:20),
+                                                child:  TextField(
+                                                  controller: lastInspectionController,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'last Inspected Date',
+                                                  ),
+                                                  readOnly: true,
+                                                  onTap: () async{
+                                                    DateTime? pickedDate = await showDatePicker(
+                                                        context: context,
+                                                        initialDate: DateTime.now(), //get today's date
+                                                        firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                                        lastDate: DateTime(2101)
+                                                    );
+                                                    if(pickedDate!= null)
+                                                      setState(() {
+                                                        lastInspectionController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                                        cur_asset!.last_inspection_date = DateTime.parse(lastInspectionController.text);
+                                                      });
+
+                                                  },
+                                                )
+                                            )
+
+                                        ),
+                                      ]),
+                                      SizedBox(height: 15),
+                                      Row(children: [
+                                        SizedBox(width:20),
+                                        SizedBox(
+                                            width:textfield_width - 20,
+                                            child:TextField(
+                                              maxLines: 3,
+                                              controller: commentController,
+                                              decoration: InputDecoration(
+                                                labelText: 'Comments',
+                                                border: OutlineInputBorder(),
+                                              ),
+                                              onChanged: (value){
+                                                setState(() {
+                                                  cur_asset!.comment = value;
+                                                });
+                                              },
+                                            ))
+                                      ])
+                                    ]))
+                          ])
+                        ],
+                      ),
+                    ),
+                    SizedBox(height:10),
+                    SizedBox(
+                        height: 600,
+                        child: TitledContainer(
+                            titleText: 'Inspections',
+                            idden: 10,
+                            child: Column(
+                              children: [
+                                SizedBox(height: 20),
+                                Row(
+                                    mainAxisAlignment : MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(width:10),
+                                      ElevatedButton(onPressed: (){
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => gradeDialog()  ,
+                                        );
+
+                                      }, child: Text('Add Inspection'))
+                                    ]),
+                                SizedBox(height: 10),
+                                SizedBox(
+                                    height: screenHeight - 540,
+                                    child :  ListView.builder(
+                                        padding: const EdgeInsets.only(top: 0),
+                                        itemCount:  m_inspections.length,
+                                        itemBuilder: (BuildContext context, int index) {
+                                          return  InspcetionItem(status: m_inspections[index].status,value: m_inspections[index].value, id : m_inspections[index].id!, logo: m_inspections[index].logo!,inspection_date: m_inspections[index].inspection_date,functional_condition: m_inspections[index].full_condition,asset_money_value: m_inspections[index].asset_money_value,next_inspection: m_inspections[index].next_inspect_date,comment: m_inspections[index].comment,onChange: onInspectionChange,onDelete: onInspectionDelete);
+                                        })
+                                )
+                              ],
+                            )
+
+                        )),
+
+                  ],
+                ),
+              )
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom:0,right:5),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios),
+                  onPressed: () {
+                    setState(() {
+                      showing_flag = true;
+                    });
+                  },
+                )
+            )
+        ),
+          if(showing_flag)
+            Container(
+            width : 300,
+            color:Colors.white,
+            padding: const EdgeInsets.all(10),
+            child: Stack(children: [
+                Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 10,bottom: 20),
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          searchItems(value);
+                        });
+                      },
+                      decoration: InputDecoration(
+                          labelText: 'Search...',
+                          // Add a clear button to the search bar
+                          suffixIcon:  Icon(Icons.clear),
+                          // Add a search icon or button to the search bar
+                          prefixIcon:  Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          fillColor: Colors.white,
+                          filled: true
+                      ),
+                    ),
+                  ),
+                  Text('**Search from DM and if found add to the cached list and display'),
+                  SizedBox(height: 10),
+                  Expanded(child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 0),
+                    itemCount: m_assets.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selected_asset_id = m_assets[index].id!;
+                            cur_asset = m_assets[index];
+                          });
+                          loadAssetdata();
+                        },
+                        child: MouseRegion(
+                          onEnter: (event) {
+                            setState(() {
+                              hoveredIndex = index;
+                            });
+                          },
+                          onExit: (event) {
+                            setState(() {
+                              hoveredIndex = -1;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            height: 40,
+                            color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                            child: Row(
+                              children: [
+                                Image.asset('assets/images/asset2.png'),
+                                Container(
+                                  margin: const EdgeInsets.only(left: 10),
+                                  child: Text('${m_assets[index].name}'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children:[
+                        FloatingActionButton(
+                          heroTag: "btn1",
+                          onPressed: onAdd,
+                          child: const Icon(Icons.add),
+                        ),
+                        FloatingActionButton(
+                          heroTag: "btn2",
+                          backgroundColor: Colors.red,
+                          onPressed: onDelete,
+                          child: const Icon(Icons.delete),
+                        ),
+                        FloatingActionButton(
+                          heroTag: "btn3",
+                          backgroundColor: Colors.green,
+                          onPressed : onSave,
+                          child: const Icon(Icons.save),
+                        ),
+                      ]),
+                  SizedBox(height:20),
+                  Text('**Cached Assets from filtered list'),
+                ],
+              ),
+                Container(
+                    margin: EdgeInsets.only(bottom:0,right:5),
+                    child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back_ios_new),
+                          onPressed: () {
+                            setState(() {
+                              showing_flag = false;
+                            });
+                          },
+                        )
+                    )
+                )
+            ])
+        ),
+
+      ],
+    );
+  }
+  Widget getResponsiveWidget(context){
+    final screenWidth = MediaQuery.of(context).size.width;
+    if(screenWidth > 1200) return getLargeWidget(context);
+    else if(screenWidth > 950) return getMediumWidget(context);
+    else return getSmallWidget(context);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return   getResponsiveWidget(context);
   }
 }

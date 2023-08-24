@@ -22,38 +22,16 @@ class CustomAppBar extends AppBar {
           )
         ]),
     actions: [
-      // IconButton(
-      //   icon: Icon(Icons.notifications),
-      //   onPressed: () {
-      //     // Perform settings action
-      //   },
-      // ),
-      // IconButton(
-      //   icon: Icon(Icons.person),
-      //   onPressed: () {
-      //     // Perform settings action
-      //   },
-      // ),
-      // IconButton(
-      //   icon: Icon(Icons.home),
-      //   onPressed: () {
-      //     // Perform settings action
-      //   },
-      // )
-      // ,
-      // IconButton(
-      //   icon: Icon(Icons.settings),
-      //   onPressed: () {
-      //     // Perform settings action
-      //   },
-      // ),
       IconButton(
         icon: Icon(Icons.logout),
         onPressed: () {
-          Navigator.pushNamed(
-            context,
-            '/',
-          );
+          if(ModalRoute.of(context)!.isFirst != null)
+              Navigator.pop(context);
+          else
+            Navigator.pushNamed(
+              context,
+              '/',
+            );
           // Navigator.pop(context);
           // Perform settings action
         },

@@ -59,6 +59,10 @@ class  _InspcetionItem extends State<InspcetionItem> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    double textfield_width = screenWidth - 1150 > 400 ? 400 : screenWidth - 1150;
+    if (textfield_width < 100)
+        textfield_width = 100;
+    bool is_Mobile_View = screenWidth < 950;
     return Container(
         margin: const EdgeInsets.only(top: 10),
         child:
@@ -132,7 +136,7 @@ class  _InspcetionItem extends State<InspcetionItem> {
                             )
                         )
                     ),
-                    SizedBox(
+                    if(is_Mobile_View == false) SizedBox(
                         height: 35,
                         width: 150,
                         child:
@@ -162,7 +166,7 @@ class  _InspcetionItem extends State<InspcetionItem> {
                             )
                         )
                     ),
-                    SizedBox(
+                    if(is_Mobile_View == false) SizedBox(
                         width : 170,
                         height : 60,
                         child: DropdownButton<String>(
@@ -182,7 +186,7 @@ class  _InspcetionItem extends State<InspcetionItem> {
                           }).toList(),
                         )
                     ),
-                    SizedBox(
+                    if(is_Mobile_View == false) SizedBox(
                         height: 35,
                         width: 70,
                         child:
@@ -206,7 +210,7 @@ class  _InspcetionItem extends State<InspcetionItem> {
                     ),
                     SizedBox(
                         height: 35,
-                        width: screenWidth - 1150 > 400 ? 400 : screenWidth - 1150 ,
+                        width:  textfield_width,
                         child:
                         Container(
                             margin:EdgeInsets.only(left:20),

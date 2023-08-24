@@ -100,18 +100,18 @@ class  _UserView extends State<UserView> {
 
   void fetchData() async{
 
-    // String? val =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(val!);
-    // print(data);
-    // if(data?['parent_user'] != null) {
-    //   setState(() {
-    //     user_id = data?['parent_user'];
-    //     subuser_id = data?['subuser_id'];
-    //   });
-    // }
-    // else{
-    //   return;
-    // }
+    String? val =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(val!);
+    print(data);
+    if(data?['parent_user'] != null) {
+      setState(() {
+        user_id = data?['parent_user'];
+        subuser_id = data?['subuser_id'];
+      });
+    }
+    else{
+      return;
+    }
 
     Tenant? result =  await TenantService().getTenantDetails(user_id);
     List<User> users = await LoginService().getSubUser(user_id);
