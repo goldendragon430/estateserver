@@ -194,7 +194,7 @@ class  _TenantSettings extends State<TenantSettings> {
                           child: TextFormField(
                             controller: folderEditController,
                             decoration: InputDecoration(
-                              labelText: 'Folder Name',
+                              labelText: 'Folder Alias',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -239,7 +239,7 @@ class  _TenantSettings extends State<TenantSettings> {
                           child: TextFormField(
                             controller: groupEditController,
                             decoration: InputDecoration(
-                              labelText: 'Group Name',
+                              labelText: 'Group Alias',
                             ),
                             onChanged: (value){
                               setState(() {
@@ -753,6 +753,7 @@ class  _TenantSettings extends State<TenantSettings> {
          Expanded(child: TitledContainer(
              titleText: 'TENANT Details',
              idden: 10,
+             title_color: Colors.orange.withOpacity(0.8),
              child: is_Large ? getLargeWidget(context) : getSmallWidget(context)
          ))
         ],

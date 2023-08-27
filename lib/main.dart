@@ -72,7 +72,7 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title2 : '', title: 'Welcome ' + getUserName(), context : context),
-                                  body:LoginView(),
+                                  body:AdminView(),
                                 backgroundColor: Colors.white,
 
                               );
@@ -86,7 +86,6 @@ class  _MyApp extends State<MyApp>{
                                      setTitle(val);
                                   }),
                                 backgroundColor: Colors.white,
-
                               );
                             });
                       case 'user':
@@ -132,8 +131,18 @@ class  _MyApp extends State<MyApp>{
                   },
                 )),
                 Container(
-                  color:Color.fromRGBO(0, 113, 255, 1),
-                  height: 40,
+                  // color:Colors.orange.withOpacity(0.3),
+                  decoration: BoxDecoration(
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 8.0,
+                            offset: Offset(0.0, 0.75)
+                        )
+                      ],
+                      color: Colors.orange.withOpacity(0.8)
+                  ),
+                  height: 25,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

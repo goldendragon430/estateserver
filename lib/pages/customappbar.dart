@@ -39,5 +39,6 @@ class CustomAppBar extends AppBar {
     ],
     backgroundColor: Colors.orange, // Customize the background color
     elevation: 4.0, // Customize the elevation
+    toolbarHeight: 40
   );
 }

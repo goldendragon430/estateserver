@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 class TitledContainer extends StatelessWidget {
-  const TitledContainer({required this.titleText, required this.child,this.color = Colors.black12, this.idden = 8, Key? key}) : super(key: key);
+  const  TitledContainer({required this.titleText, required this.child,this.color = Colors.black12,this.title_color = Colors.white, this.idden = 8, Key? key}) : super(key: key);
   final String titleText;
   final double idden;
   final Widget child;
   final Color color;
+  final Color title_color;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -20,7 +21,7 @@ class TitledContainer extends StatelessWidget {
         ),
         if(titleText != '')
           Container(
-          color:Color.fromRGBO(0, 113, 255, 1),
+          color: title_color == Colors.white ? Color.fromRGBO(0, 113, 255, 1) : title_color,
           height: 40,
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
