@@ -4,14 +4,12 @@ import 'package:assetmamanger/pages/titledcontainer.dart';
 
 class AssetItem extends StatefulWidget {
 
-  String? folderID;
-  String? groupID;
   String? assetTypeID;
   String? assetTypeName;
-  Function(String folderID, String groupID,String assetTypeID, String assetTypeName)? onChange;
-  Function(String folder_id, String group_id, String asset_type_id)? onDelete;
+  Function(String assetTypeID, String assetTypeName)? onChange;
+  Function(String asset_type_id)? onDelete;
 
-  AssetItem({super.key, this.folderID, this.groupID,this.assetTypeID, this.assetTypeName, this.onChange, this.onDelete});
+  AssetItem({super.key, this.assetTypeID, this.assetTypeName, this.onChange, this.onDelete});
   @override
   _AssetItem createState() => _AssetItem();
 }
@@ -29,7 +27,7 @@ class  _AssetItem extends State<AssetItem> {
     });
   }
   void update(){
-    widget.onChange!(widget.folderID!, widget.groupID!,widget.assetTypeID!,assetTypeName);
+    widget.onChange!(widget.assetTypeID!,assetTypeName);
   }
   @override
   Widget build(BuildContext context) {
@@ -82,7 +80,7 @@ class  _AssetItem extends State<AssetItem> {
                                 child: IconButton(
                                   icon: Image.asset('assets/images/delete.png'),
                                   onPressed: () {
-                                    widget.onDelete!(widget.folderID!, widget.groupID!, widget.assetTypeID!);
+                                    widget.onDelete!(widget.assetTypeID!);
                                   },
                                 )
                             )

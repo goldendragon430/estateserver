@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/pages/tenant/customlistile.dart';
+import 'package:assetmamanger/pages/tenant/tenantassets.dart';
+import 'package:assetmamanger/pages/tenant/tenantcategory.dart';
 import 'package:assetmamanger/pages/tenant/tenantsettings.dart';
 import 'package:assetmamanger/utils/global.dart';
 
@@ -35,10 +37,11 @@ class  _TenantAdminView extends State<TenantAdminView> {
   Widget getTabContentWidget(int index){
     switch(index){
       case 0:
-      return TenantSettings();
-
-      case 1:
         return TenantSettings();
+      case 1:
+        return TenantAssets();
+      case 2:
+        return TenantCategory();
 
       case 6:
         return Text('Comming Soon');
@@ -55,38 +58,33 @@ class  _TenantAdminView extends State<TenantAdminView> {
             tab_index = 0;
           });
         }),
-        CustomListTile(title: Text('Folders'), icon: Icon(Icons.folder),onClick: (){
+        CustomListTile(title: Text('Asset Types'), icon: Icon(Icons.folder),onClick: (){
           widget.onTitleSelect('Folders');
           setState((){
             tab_index = 1;
           });
         }
         ),
-        CustomListTile(title: Text('Groups'), icon: Icon(Icons.group),onClick:(){
+        CustomListTile(title: Text('Asset Categories'), icon: Icon(Icons.group),onClick:(){
           widget.onTitleSelect('Groups');
           setState((){
             tab_index = 2;
           });}),
-        CustomListTile(title: Text('Types'), icon: Icon(Icons.assignment_outlined),onClick:(){
+        CustomListTile(title: Text('Assets'), icon: Icon(Icons.assignment_outlined),onClick:(){
           widget.onTitleSelect('Types');
           setState((){
             tab_index = 3;
           });}),
-        CustomListTile(title: Text('Categories'), icon: Icon(Icons.category),onClick:(){
+        CustomListTile(title: Text('Asset Reports'), icon: Icon(Icons.category),onClick:(){
           widget.onTitleSelect('Categories');
           setState((){
             tab_index = 4;
           });}),
-        CustomListTile(title: Text('Assets'), icon: Icon(Icons.category),onClick:(){
+        CustomListTile(title: Text('Sub Users'), icon: Icon(Icons.category),onClick:(){
           widget.onTitleSelect('Assets');
           setState((){
             tab_index = 6;
-          });}),
-        CustomListTile(title: Text('Subusers'), icon: Icon(Icons.account_circle_outlined),onClick:(){
-          widget.onTitleSelect('Subusers');
-          setState((){
-            tab_index = 5;
-          });}),
+          });})
       ],
     );
 
