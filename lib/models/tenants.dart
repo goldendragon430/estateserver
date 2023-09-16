@@ -3,6 +3,7 @@ class Tenant {
    // String? id ;
    String? name  = '';
    String? email = '';
+   String? password = '';
    String? address = '' ;
    String? phone = '' ;
    String? fax = '' ;
@@ -10,24 +11,20 @@ class Tenant {
    String? office = '' ;
    DateTime? renewal_date = DateTime(2023,1,1) ;
    bool? active  = false;
-   bool? unlimited_folder = false ;
-   bool? unlimited_group = false ;
-   List<Folder>? folders = [] ;
+   String cut_off_level = '1';
+   String country = '';
+   bool show_asset_types = false;
    String? user_id = '' ;
    String? logo = '' ;
    DateTime? created_date = DateTime(2023,1,1) ;
 
    Map<String,dynamic> toJson(){
-     List<Map<String,dynamic>> folder_data = [];
-     for (Folder folder in folders!){
-       folder_data.add(folder.toJson());
-     }
-
 
      return {
        // 'id' : id,
        'name' : name,
        'email' : email,
+       'password' : password,
        'address' : address,
        'phone' : phone,
        'fax' : fax,
@@ -36,11 +33,11 @@ class Tenant {
        'renewal_date' : renewal_date.toString(),
        'created_date' : created_date.toString(),
        'active' : active,
-       'unlimited_folder' : unlimited_folder,
-       'unlimited_group' : unlimited_group,
        'user_id' : user_id,
        'logo' : logo,
-       'folders': folder_data
+       'cut_off_level' : cut_off_level,
+       'country' : country,
+       'show_asset_type' : show_asset_types
      };
    }
 
@@ -58,37 +55,52 @@ class Tenant {
         created_date = DateTime.parse(data?['created_date']);
      else
        created_date = DateTime(2023,1,1);
+     if(data?['password'] == null){
+       password = '';
+     }
+     else{
+       password = data?['password'];
+     }
+     if(data?['show_asset_type'] == null){
+       show_asset_types = false;
+     }
+     else{
+       show_asset_types = data?['show_asset_type'];
+     }
+     if(data?['cut_off_level'] == null){
+       cut_off_level = '1';
+     }
+     else{
+       cut_off_level = data?['cut_off_level'];
+     }
+     if(data?['country'] == null){
+       country = '';
+     }
+     else{
+       country = data?['country'];
+     }
+
      active = data?['active'];
-     unlimited_folder = data?['unlimited_folder'];
-     unlimited_group = data?['unlimited_group'];
+
      user_id = data?['user_id'];
      logo = data?['logo'];
-     List<dynamic> folder_data = data?['folders'];
-     List<Folder> folderData = [];
-     for(dynamic folder  in folder_data){
-       Folder newFolder = Folder();
-       newFolder.fromJson(folder);
-       folderData.add(newFolder);
-     }
-     folders = folderData;
+
    }
   Tenant({
      // this.id,
      this.name,
      this.email,
      this.active,
-     this.unlimited_folder,
-     this.unlimited_group,
      this.address,
      this.phone,
      this.fax,
      this.landline,
      this.office,
      this.renewal_date,
-     this.folders,
      this.user_id,
      this.logo,
-     this.created_date
+     this.created_date,
+     this.password
   });
 
 }

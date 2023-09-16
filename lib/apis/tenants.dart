@@ -46,23 +46,7 @@ class TenantService {
     }
 
   }
-  Future<bool> isNewUser(String userID) async{
-    try {
-      CollectionReference tenantsCollection = firestore.collection('tenants');
-      QuerySnapshot querySnapshot = await tenantsCollection.where('user_id', isEqualTo: userID).get();
-      List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-      if(documents.length == 0)
-        return false;
-      Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
-      Tenant result = Tenant();
-      result.fromJson(data);
-      return result.folders!.length > 0;
 
-    } catch (e) {
-      print('$e');
-      return false;
-    }
-  }
   Future<List<Tenant>> getAllTenant() async{
     List<Tenant> result = [];
     try {

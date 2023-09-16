@@ -1,5 +1,6 @@
 import 'dart:math';
-
+import 'package:crypto/crypto.dart';
+import 'dart:convert'; // for the utf8.encode method
 import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ class  _RegisterView extends State<RegisterView> {
   String code = '';
   bool state = false;
   String sent_code = '';
+  String password = '';
+  String password_confirm = '';
   @override
   void initState() {
     super.initState();
@@ -26,7 +29,9 @@ class  _RegisterView extends State<RegisterView> {
 
   void onRegister() async{
     if(sent_code == code) {
-      bool ok = await LoginService().create(email, username, landline, mobile);
+      var bytes = utf8.encode(password); // data being hashed
+      var digest = sha256.convert(bytes);
+      bool ok = await LoginService().create(email, username, landline, mobile,digest.toString());
       if(ok){
         showSuccess('Congratulations ${username}. Your account has been successfully registered with Cloud Asset. You will be notified by email once your account has been verified and activated by Cloud Asset Administrator. \nIn the meantime, you can read some of our resources in this link to familiarize yourself on how to use the system. \nThank you.');
         Future.delayed(const Duration(milliseconds: 3000), () {
@@ -48,24 +53,34 @@ class  _RegisterView extends State<RegisterView> {
       showError('Email is invalid.');
       return;
     }
-    // setState(() {
-    //   state = true;
-    // });
+    if(password != password_confirm) {
+      showError("Password doesn't match");
+      return;
+    }
+    if(password == ''){
+      showError('Passsword is invalid.');
+      return;
+    }
+
     Random  rng = new Random();
     int varcode = rng. nextInt(900000) + 100000;
-
-    final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/send', data : {
-      'to'   : email ,
-      'code' : varcode
+    setState(() {
+      state = true;
+      sent_code = varcode.toString();
     });
-    if(response.data['result'] == 'success'){
-      setState(() {
-        state = true;
-        sent_code = varcode.toString();
-      });
-    }else{
-      showError('Mail server is error.');
-    }
+    print(sent_code);
+    // final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/send', data : {
+    //   'to'   : email ,
+    //   'code' : varcode
+    // });
+    // if(response.data['result'] == 'success'){
+    //   setState(() {
+    //     state = true;
+    //     sent_code = varcode.toString();
+    //   });
+    // }else{
+    //   showError('Mail server is error.');
+    // }
   }
 
   @override
@@ -161,6 +176,82 @@ class  _RegisterView extends State<RegisterView> {
                               ),
                             ]),
                             Row(children: [
+                              Text('Password    ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    decoration: TextDecoration.none,
+                                  )
+
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 10,bottom:10),
+                                child: SizedBox(
+                                    height: 45,
+                                    width: 400,
+                                    child:
+                                    Container(
+                                      margin:EdgeInsets.only(left:20),
+                                      child: TextField(
+                                        obscureText: true,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            this.password = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: '',
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            fillColor: Colors.white,
+                                            filled: true
+                                        ),
+                                      ),
+                                    )
+
+                                )
+                            ),
+                          ]),
+                            Row(children: [
+                                Text('Confirm      ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+
+                                ),
+                                Container(
+                                margin: EdgeInsets.only(top: 10,bottom:10),
+                                child: SizedBox(
+                                    height: 45,
+                                    width: 400,
+                                    child:
+                                    Container(
+                                      margin:EdgeInsets.only(left:20),
+                                      child: TextField(
+                                        obscureText: true,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            this.password_confirm = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: '',
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            fillColor: Colors.white,
+                                            filled: true
+                                        ),
+                                      ),
+                                    )
+
+                                )
+                            ),
+                          ]),
+                            Row(children: [
                               Text('Mobile        ',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -234,7 +325,6 @@ class  _RegisterView extends State<RegisterView> {
                                   )
                               ),
                             ]),
-
                             SizedBox(height: 20),
                             Container(
                           width: 490, // Set the desired width here

@@ -10,11 +10,11 @@ class LoginService {
 
   Future<Map<String,dynamic>?> login(
     String? email,
-    String? username,
+    String? password,
   ) async {
     try {
       CollectionReference usersCollection = firestore.collection('users');
-      QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: email).where('username', isEqualTo: username).get();
+      QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: email).where('password', isEqualTo: password).get();
       List<QueryDocumentSnapshot> documents = querySnapshot.docs;
       if(documents.length == 0)
          return null;
@@ -38,6 +38,7 @@ class LoginService {
       String? username,
       String? landline,
       String? mobile,
+      String? password
       ) async {
     try {
       CollectionReference usersCollection = firestore.collection('users');
@@ -46,19 +47,18 @@ class LoginService {
         'landline' : landline,
         'role' : 1,
         'state' : true,
-        'username' : username
+        'username' : username,
+        'password' : password
       });
       CollectionReference tenantsCollection = firestore.collection('tenants');
       await tenantsCollection.add(Tenant(
         name : username,
         email: email,
+        password: password,
         active: false,
-        unlimited_folder: false,
-        unlimited_group: false,
         address : '',
         phone:'',
         landline: landline,
-        folders: [],
         office: '',
         fax : '',
         renewal_date: DateTime(2023,1,1),

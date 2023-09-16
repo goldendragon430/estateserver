@@ -4,6 +4,7 @@ class User {
    String? username;
    String? landline;
    String? parent_user;
+   String? password;
    int role;
    bool state;
    int acess_level;
@@ -18,7 +19,8 @@ class User {
        'role' : role,
        'state' : state,
        'access_level' : acess_level,
-       'access_id'    : acess_id
+       'access_id'    : acess_id,
+       'password'     : password
      };
    }
    void fromJson(Map<String,dynamic>? data){
@@ -29,6 +31,12 @@ class User {
      parent_user = data?['parent_user'];
      role = data?['role'];
      state = data?['state'];
+     if(data?['password'] == null){
+       password = '';
+     }
+     else{
+       password = data?['password'];
+     }
      if(data?['access_level'] == null) {
        acess_level = 0;
      }

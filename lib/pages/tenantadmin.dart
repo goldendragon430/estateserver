@@ -2,12 +2,7 @@ import 'dart:convert';
 
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/pages/tenant/customlistile.dart';
-import 'package:assetmamanger/pages/tenant/tenantassets.dart';
-import 'package:assetmamanger/pages/tenant/tenantcategory.dart';
-import 'package:assetmamanger/pages/tenant/tenantgroups.dart';
 import 'package:assetmamanger/pages/tenant/tenantsettings.dart';
-import 'package:assetmamanger/pages/tenant/tenantfolders.dart';
-import 'package:assetmamanger/pages/tenant/tenantusers.dart';
 import 'package:assetmamanger/utils/global.dart';
 
 import 'package:flutter/material.dart';
@@ -24,23 +19,18 @@ class  _TenantAdminView extends State<TenantAdminView> {
   int tab_index = 0;
   String userid = 'bdMg1tPZwEUZA1kimr8b';
   bool new_flag = false;
-  void checkIsNewUser() async{
-    bool is_new =  await TenantService().isNewUser(userid);
-    setState(() {
-      new_flag = is_new;
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
-    checkIsNewUser();
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
+
   }
   Widget getTabContentWidget(int index){
     switch(index){
@@ -48,24 +38,15 @@ class  _TenantAdminView extends State<TenantAdminView> {
       return TenantSettings();
 
       case 1:
-        return TenantFolders();
-      case 2:
+        return TenantSettings();
 
-        return TenantGroups();
-      case 3:
-
-        return TenantAssets();
-      case 4:
-        return TenantCategory();
-      case 5:
-        return TenantUsers();
       case 6:
         return Text('Comming Soon');
       default: return Text('Not Found Page');
     }
   }
   Widget getLeftMenu() {
-     if(new_flag)
+
        return  ListView(
       children: <Widget>[
         CustomListTile(title: Text('Settings'), icon: Icon(Icons.settings),onClick:(){
@@ -108,17 +89,7 @@ class  _TenantAdminView extends State<TenantAdminView> {
           });}),
       ],
     );
-     else
-       return  ListView(
-         children: <Widget>[
-           CustomListTile(title: Text('Settings'), icon: Icon(Icons.settings),onClick:(){
-             widget.onTitleSelect('Settings');
-             setState((){
-               tab_index = 0;
-             });
-           })
-         ],
-       );
+
   }
   @override
   Widget build(BuildContext context) {

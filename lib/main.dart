@@ -4,8 +4,7 @@ import 'package:assetmamanger/pages/auth/login.dart';
 import 'package:assetmamanger/pages/auth/register.dart';
 import 'package:assetmamanger/pages/tenantadmin.dart';
 import 'package:assetmamanger/pages/customAppBar.dart';
-import 'package:assetmamanger/pages/user.dart';
-import 'package:assetmamanger/pages/user/assetdetail.dart';
+
 import 'package:assetmamanger/provider/app_properties_bloc.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
@@ -63,8 +62,10 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title: '',title2 : '', context : context),
-                                  body:LoginView(),
-                                backgroundColor: Colors.white,
+                                  body:TenantAdminView(onTitleSelect : (String val){
+                                    setTitle(val);
+                                  }),
+                                  backgroundColor: Colors.white,
                               );
                             });
                       case 'admin':
@@ -93,7 +94,7 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
-                                  body:UserView(),
+                                  body:Text('user'),
                                 backgroundColor: Colors.white,
 
                               );
@@ -104,7 +105,7 @@ class  _MyApp extends State<MyApp>{
                             builder: (context) {
                               return Scaffold(
                                   appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
-                                  body:AssetDetailView(data: args),
+                                  body:Text('detail'),
                                 backgroundColor: Colors.white,
 
                               );

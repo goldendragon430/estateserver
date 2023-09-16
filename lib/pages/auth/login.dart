@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
-
+import 'package:crypto/crypto.dart';
+import 'dart:convert'; // for the utf8.encode method
 import '../../apis/tenants.dart';
 import '../../models/tenants.dart';
 
@@ -13,7 +14,7 @@ class LoginView extends StatefulWidget {
   _LoginView createState() => _LoginView();
 }
 class  _LoginView extends State<LoginView> {
-  String username = '';
+  String password = '';
   String email = '';
   @override
   void initState() {
@@ -21,7 +22,7 @@ class  _LoginView extends State<LoginView> {
   }
 
   void onLogin() async{
-    if(username == '') {
+    if(password == '') {
       showError('User Name is empty.');
     return;
     }
@@ -29,7 +30,9 @@ class  _LoginView extends State<LoginView> {
       showError('Email is invalid.');
     return;
     }
-    Map<String,dynamic>? result = await LoginService().login(email,username);
+    var bytes = utf8.encode(password); // data being hashed
+    var digest = sha256.convert(bytes);
+    Map<String,dynamic>? result = await LoginService().login(email,digest.toString());
     if(result == null) {
       showError("User doesn't exist.");
     }else{
@@ -87,42 +90,7 @@ class  _LoginView extends State<LoginView> {
           children: [
             Container(
                 child: Column(children: [
-                  Row(children: [
-                    Text('User Name',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                        )
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(top: 10,bottom:10),
-                        child: SizedBox(
-                            height: 45,
-                            width: 400,
-                            child:
-                            Container(
-                              margin:EdgeInsets.only(left:20),
-                              child: TextField(
-                                onChanged: (value) {
-                                  setState(() {
-                                    this.username = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                    hintText: 'John Doe',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    fillColor: Colors.white,
-                                    filled: true
-                                ),
-                              ),
-                            )
 
-                        )
-                    ),
-                  ]),
                   Row(children: [
                     Text('Email          ',
                         style: TextStyle(
@@ -148,6 +116,43 @@ class  _LoginView extends State<LoginView> {
                                 },
                                 decoration: InputDecoration(
                                     hintText: 'example@gmail.com',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    fillColor: Colors.white,
+                                    filled: true
+                                ),
+                              ),
+                            )
+
+                        )
+                    ),
+                  ]),
+                  Row(children: [
+                    Text('Password    ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          decoration: TextDecoration.none,
+                        )
+                    ),
+                    Container(
+                        margin: EdgeInsets.only(top: 10,bottom:10),
+                        child: SizedBox(
+                            height: 45,
+                            width: 400,
+                            child:
+                            Container(
+                              margin:EdgeInsets.only(left:20),
+                              child: TextField(
+                                obscureText: true,
+                                onChanged: (value) {
+                                  setState(() {
+                                    this.password = value;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                    hintText: '******',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(5.0),
                                     ),
