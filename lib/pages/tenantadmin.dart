@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:assetmamanger/apis/tenants.dart';
+import 'package:assetmamanger/pages/tenant/assetdetail.dart';
 import 'package:assetmamanger/pages/tenant/customlistile.dart';
 import 'package:assetmamanger/pages/tenant/tenantassets.dart';
 import 'package:assetmamanger/pages/tenant/tenantcategory.dart';
@@ -37,12 +38,13 @@ class  _TenantAdminView extends State<TenantAdminView> {
   Widget getTabContentWidget(int index){
     switch(index){
       case 0:
-        return TenantSettings();
+        return AssetDetail();
       case 1:
         return TenantAssets();
       case 2:
         return TenantCategory();
 
+      case 3: return AssetDetail();
       case 6:
         return Text('Comming Soon');
       default: return Text('Not Found Page');

@@ -1,36 +1,36 @@
 
 
+
+
+import 'package:assetmamanger/models/Image.dart';
+
 class Inspection {
     String? id;
     DateTime? inspection_date;
-    bool? full_condition;
-    String? asset_money_value;
-    DateTime? next_inspect_date;
+    String? inspection_by;
     String? comment;
-    String? logo;
     String? status;
     String? value;
+    DateTime? next_inspect_date;
+    List<Image>? images = [];
+
     Map<String,dynamic> toJson(){
       return {
         'id' : id,
         'inspection_date' : inspection_date.toString(),
-        'full_condition' : full_condition,
-        'asset_money_value' : asset_money_value,
-        'next_inspect_date' : next_inspect_date.toString(),
+        'inspection_by':inspection_by,
         'comment' : comment,
-        'logo' : logo,
         'status' : status,
-        'value' : value
+        'value' : value,
+        'next_inspect_date' : next_inspect_date.toString(),
+        'images' : images == null ? [] : List.from(images!.map((x) => x.toJson())),
       };
     }
     void fromJson(Map<String,dynamic>? data){
       id = data?['id'];
       inspection_date = DateTime.parse(data?['inspection_date']);
-      full_condition = data?['full_condition'];
-      asset_money_value = data?['asset_money_value'];
+      inspection_by = data?['inspection_by'];
       comment = data?['comment'];
-      logo = data?['logo'];
-      next_inspect_date = DateTime.parse(data?['next_inspect_date']);
       if(data?['status'] == null) {
         status = 'Active';
       }
@@ -42,17 +42,26 @@ class Inspection {
         }
       else
         value = data?['value'];
+      next_inspect_date = DateTime.parse(data?['next_inspect_date']);
+
+      List<dynamic> m_images = data?['images'];
+      List<Image> imagesData = [];
+      for(dynamic ins in m_images){
+        Image newIns = Image();
+        newIns.fromJson(ins);
+        imagesData.add(newIns);
+      }
+      images = imagesData;
     }
 
   Inspection({
       this.id,
       this.inspection_date,
-      this.full_condition,
-      this.asset_money_value,
-      this.next_inspect_date,
+      this.inspection_by,
       this.comment,
-      this.logo,
       this.status,
-      this.value
-  });
+      this.value,
+      this.next_inspect_date,
+      this.images
+   });
 }

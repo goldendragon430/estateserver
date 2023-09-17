@@ -41,8 +41,8 @@ String getUserName(){
   return data?['username'];
 }
 
-String generateID() {
-  int length = 10;
+String generateID({int length = 10}) {
+
   final random = Random();
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   String result = '';

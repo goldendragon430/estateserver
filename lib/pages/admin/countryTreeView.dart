@@ -11,11 +11,14 @@ class CountryTreeView extends StatefulWidget {
   CountryTreeView({super.key}) ;
   @override
   _CountryTreeView createState() => _CountryTreeView();
+
 }
 class  _CountryTreeView extends State<CountryTreeView> {
+
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
   String current_node_title = '';
+
   StatefulBuilder gradeDialog(TreeNodeData node) {
     return StatefulBuilder(
       builder: (context, _setter) {
@@ -62,6 +65,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
       },
     );
   }
+
   void saveData() async {
      List<Map<String,dynamic>> data = [];
      List<TreeNodeData>? treeData =  _key.currentState?.getData();
@@ -75,6 +79,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
        showError('Error');
      }
   }
+
   void fetchData() async{
     List<Map<String, dynamic>> serverData = await CountryService().getCountries();
 
@@ -97,7 +102,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
               children: [],
               extra: {
                 "children": [],
-                "id": generateID(),
+                "id": "${parent.extra['id']}-${generateID(length: 3)}",
                 "level" : parent.extra['level'] + 1,
                 "text": "New",
               }
@@ -127,12 +132,14 @@ class  _CountryTreeView extends State<CountryTreeView> {
       );
     });
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchData();
   }
+
   // Map server data to tree node data
   TreeNodeData mapServerDataToTreeData(Map data) {
     return TreeNodeData(
@@ -144,6 +151,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
       List.from(data['children'].map((x) => mapServerDataToTreeData(x))),
     );
   }
+
   Map<String, dynamic> NodeToMap(TreeNodeData node){
     return {
       'id' : node.extra['id'],
@@ -152,7 +160,6 @@ class  _CountryTreeView extends State<CountryTreeView> {
       'children' : List.from(node.children.map((x) => NodeToMap(x)))
     };
   }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -176,7 +183,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
                         children: [],
                         extra: {
                           "children": [],
-                          "id": generateID(),
+                          "id": generateID(length: 3),
                           "level" : 0,
                           "text": "New Country",
                         })
