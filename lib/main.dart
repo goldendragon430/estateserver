@@ -1,12 +1,12 @@
 
 import 'package:assetmamanger/pages/admin.dart';
-import 'package:assetmamanger/pages/auth/login.dart';
 import 'package:assetmamanger/pages/auth/register.dart';
 import 'package:assetmamanger/pages/tenantadmin.dart';
 import 'package:assetmamanger/pages/customAppBar.dart';
 
-import 'package:assetmamanger/provider/app_properties_bloc.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:assetmamanger/utils/global.dart';
+import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
@@ -45,6 +45,12 @@ class  _MyApp extends State<MyApp>{
     });
   }
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    html.document.onContextMenu.listen((event) => event.preventDefault());
+  }
+  @override
   Widget build(BuildContext context) {
 
     return Scaffold(
@@ -53,84 +59,87 @@ class  _MyApp extends State<MyApp>{
             Column(
               children:[
                 Expanded(child:
-                MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  onGenerateRoute: (settings) {
-                    switch(settings.name){
-                      case '/':
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title: '',title2 : '', context : context),
-                                  body: TenantAdminView(onTitleSelect : (String val){
-                                    setTitle(val);
-                                  }),
-                                  backgroundColor: Colors.white,
-                              );
-                            });
-                      case 'admin':
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title2 : '', title: 'Welcome ' + getUserName(), context : context),
-                                  body:AdminView(),
-                                backgroundColor: Colors.white,
+                  ContextMenuOverlay(
+                    child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                onGenerateRoute: (settings) {
+                  switch(settings.name){
+                    case '/':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                              appBar: CustomAppBar(title: '',title2 : '', context : context),
+                              body: TenantAdminView(onTitleSelect : (String val){
+                                setTitle(val);
+                              }),
+                              backgroundColor: Colors.white,
+                            );
+                          });
+                    case 'admin':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                              appBar: CustomAppBar(title2 : '', title: 'Welcome ' + getUserName(), context : context),
+                              body:AdminView(),
+                              backgroundColor: Colors.white,
 
-                              );
-                            });
-                      case 'tenant':
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title2 : title2, title: 'Welcome ' +  getUserName(), context : context),
-                                  body:TenantAdminView(onTitleSelect : (String val){
-                                     setTitle(val);
-                                  }),
-                                backgroundColor: Colors.white,
-                              );
-                            });
-                      case 'user':
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
-                                  body:Text('user'),
-                                backgroundColor: Colors.white,
+                            );
+                          });
+                    case 'tenant':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                              appBar: CustomAppBar(title2 : title2, title: 'Welcome ' +  getUserName(), context : context),
+                              body:TenantAdminView(onTitleSelect : (String val){
+                                setTitle(val);
+                              }),
+                              backgroundColor: Colors.white,
+                            );
+                          });
+                    case 'user':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                              appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
+                              body:Text('user'),
+                              backgroundColor: Colors.white,
 
-                              );
-                            });
-                      case 'userdetail':
-                        final args = settings.arguments as Map<String, dynamic>;
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
-                                  body:Text('detail'),
-                                backgroundColor: Colors.white,
+                            );
+                          });
+                    case 'userdetail':
+                      final args = settings.arguments as Map<String, dynamic>;
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                              appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
+                              body:Text('detail'),
+                              backgroundColor: Colors.white,
 
-                              );
-                            });
-                      case 'register':
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title2 : '',title: '', context : context),
-                                  body:RegisterView(),
-                                backgroundColor: Colors.white,
+                            );
+                          });
+                    case 'register':
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                              appBar: CustomAppBar(title2 : '',title: '', context : context),
+                              body:RegisterView(),
+                              backgroundColor: Colors.white,
 
-                              );
-                            });
-                      default:
-                        return MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                  appBar: CustomAppBar(title2 : '',title: '', context : context),
-                                  body:Text('Not Found')
-                              );
-                            });
-                    }
-                  },
-                )),
+                            );
+                          });
+                    default:
+                      return MaterialPageRoute(
+                          builder: (context) {
+                            return Scaffold(
+                                appBar: CustomAppBar(title2 : '',title: '', context : context),
+                                body:Text('Not Found')
+                            );
+                          });
+                  }
+                },
+              )
+                )
+                  ),
                 Container(
                   // color:Colors.orange.withOpacity(0.3),
                   decoration: BoxDecoration(

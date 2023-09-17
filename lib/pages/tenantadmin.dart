@@ -50,39 +50,39 @@ class  _TenantAdminView extends State<TenantAdminView> {
       default: return Text('Not Found Page');
     }
   }
-  Widget getLeftMenu() {
+  Widget getLeftMenu(bool mode) {
 
        return  ListView(
       children: <Widget>[
-        CustomListTile(title: Text('Settings'), icon: Icon(Icons.settings),onClick:(){
+        CustomListTile(isMobileMode: mode, title: Text('Settings'), icon: Icon(Icons.settings),onClick:(){
           widget.onTitleSelect('Settings');
           setState((){
             tab_index = 0;
           });
         }),
-        CustomListTile(title: Text('Asset Types'), icon: Icon(Icons.folder),onClick: (){
+        CustomListTile(isMobileMode: mode, title: Text('Asset Types'), icon: Icon(Icons.folder),onClick: (){
           widget.onTitleSelect('Folders');
           setState((){
             tab_index = 1;
           });
         }
         ),
-        CustomListTile(title: Text('Asset Categories'), icon: Icon(Icons.group),onClick:(){
+        CustomListTile(isMobileMode: mode, title: Text('Asset Categories'), icon: Icon(Icons.group),onClick:(){
           widget.onTitleSelect('Groups');
           setState((){
             tab_index = 2;
           });}),
-        CustomListTile(title: Text('Assets'), icon: Icon(Icons.assignment_outlined),onClick:(){
+        CustomListTile(isMobileMode: mode, title: Text('Assets'), icon: Icon(Icons.assignment_outlined),onClick:(){
           widget.onTitleSelect('Types');
           setState((){
             tab_index = 3;
           });}),
-        CustomListTile(title: Text('Asset Reports'), icon: Icon(Icons.category),onClick:(){
+        CustomListTile(isMobileMode: mode, title: Text('Asset Reports'), icon: Icon(Icons.category),onClick:(){
           widget.onTitleSelect('Categories');
           setState((){
             tab_index = 4;
           });}),
-        CustomListTile(title: Text('Sub Users'), icon: Icon(Icons.category),onClick:(){
+        CustomListTile(isMobileMode: mode, title: Text('Sub Users'), icon: Icon(Icons.category),onClick:(){
           widget.onTitleSelect('Assets');
           setState((){
             tab_index = 6;
@@ -94,13 +94,13 @@ class  _TenantAdminView extends State<TenantAdminView> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    bool is_Mobile_Mode = screenWidth < 1260 ;
+    bool is_Mobile_Mode = screenWidth < 1260 || tab_index == 0;
     return   Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-            width : is_Mobile_Mode ? 90 : 250,
+            width : is_Mobile_Mode  ? 90 : 250,
             color:Colors.orange.withOpacity(0.1),
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -114,7 +114,7 @@ class  _TenantAdminView extends State<TenantAdminView> {
                         ),
                       ),
                     ),
-                Expanded(child: getLeftMenu()),
+                Expanded(child: getLeftMenu(is_Mobile_Mode)),
 
               ],
             )

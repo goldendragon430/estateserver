@@ -4,7 +4,8 @@ class CustomListTile extends StatefulWidget {
   final Text title;
   final Icon icon;
   final VoidCallback  onClick;
-  CustomListTile({required this.title,required this.icon, required this.onClick});
+  final bool isMobileMode;
+  CustomListTile({required this.title,required this.icon, required this.onClick, required this.isMobileMode});
 
   @override
   _HoverListTileState createState() => _HoverListTileState();
@@ -16,7 +17,7 @@ class _HoverListTileState extends State<CustomListTile> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    bool is_Mobile_Mode = screenWidth < 1260 ;
+    bool is_Mobile_Mode = widget.isMobileMode ;
 
     return MouseRegion(
       onEnter: (_) {
