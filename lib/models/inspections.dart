@@ -12,7 +12,7 @@ class Inspection {
     String? status;
     String? value;
     DateTime? next_inspect_date;
-    List<Image>? images = [];
+    List<CustomImage>? images = [];
 
     Map<String,dynamic> toJson(){
       return {
@@ -45,9 +45,9 @@ class Inspection {
       next_inspect_date = DateTime.parse(data?['next_inspect_date']);
 
       List<dynamic> m_images = data?['images'];
-      List<Image> imagesData = [];
+      List<CustomImage> imagesData = [];
       for(dynamic ins in m_images){
-        Image newIns = Image();
+        CustomImage newIns = CustomImage();
         newIns.fromJson(ins);
         imagesData.add(newIns);
       }

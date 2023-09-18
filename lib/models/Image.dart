@@ -1,6 +1,6 @@
 
 
-class Image {
+class CustomImage {
   String? id;
   String? url;
   String? description;
@@ -21,7 +21,7 @@ class Image {
 
   }
 
-  Image({
+  CustomImage({
     this.id,
     this.url,
     this.description,

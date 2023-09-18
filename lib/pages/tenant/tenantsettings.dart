@@ -36,8 +36,6 @@ class  _TenantSettings extends State<TenantSettings> {
   TextEditingController emailEditController = TextEditingController();
   TextEditingController addressEditController = TextEditingController();
   TextEditingController landlineEditController = TextEditingController();
-  TextEditingController folderEditController = TextEditingController();
-  TextEditingController groupEditController = TextEditingController();
   TextEditingController phoneEditController = TextEditingController();
   TextEditingController officeEditController = TextEditingController();
   TextEditingController faxEditController = TextEditingController();
