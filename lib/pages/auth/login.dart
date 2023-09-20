@@ -33,22 +33,36 @@ class  _LoginView extends State<LoginView> {
     var bytes = utf8.encode(password); // data being hashed
     var digest = sha256.convert(bytes);
     Map<String,dynamic>? result = await LoginService().login(email,digest.toString());
-    if(result == null) {
-      showError("User doesn't exist.");
-    }else{
+    Map<String, dynamic>? result_2 = await LoginService().loginByUser(email,digest.toString());
 
-      if(result['role'] == 1) {
-        String user_id = result['id'];
-        Tenant? tenant =  await TenantService().getTenantDetails(user_id);
-        if(tenant!.active == false) {
-          showError('Please wait until admin allow you.');
-          return;
+
+    if(result == null && result_2 == null) {
+        showError("User doesn't exist.");
+        return;
+    }else{
+      if(result != null) {
+        if(result['role'] == 1) {
+          String user_id = result['id'];
+          Tenant? tenant =  await TenantService().getTenantDetails(user_id);
+
+          if(tenant!.active == false) {
+            showError('Please wait until admin allow you.');
+            return;
+          }
         }
       }
-
+     else {
+        saveStorage('user', jsonEncode(result_2));
+        showSuccess('success');
+        Navigator.pushNamed(
+           context,
+           'user',
+         );
+        return;
+      }
       saveStorage('user', jsonEncode(result));
       showSuccess('success');
-      switch(result['role']){
+      switch(result!['role']){
         case 0: //admin
           Navigator.pushNamed(
             context,
@@ -59,12 +73,6 @@ class  _LoginView extends State<LoginView> {
           Navigator.pushNamed(
             context,
             'tenant',
-          );
-          break;
-        case 2: //user
-          Navigator.pushNamed(
-            context,
-            'user',
           );
           break;
         default:

@@ -38,7 +38,10 @@ String getUserName(){
     return '';
   }
   Map<String, dynamic>? data =  jsonDecode(userDataString!);
-  return data?['username'];
+  if(data?['username'] == null) {
+    return data?['name'];
+  }
+  else  return data?['username'];
 }
 
 String generateID({int length = 10}) {

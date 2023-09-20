@@ -25,12 +25,12 @@ import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
 import 'package:flutter/services.dart';
-class AssetDetail extends StatefulWidget {
-  AssetDetail({super.key});
+class UserDetail extends StatefulWidget {
+  UserDetail({super.key});
   @override
-  _AssetItem createState() => _AssetItem();
+  _UserDetail createState() => _UserDetail();
 }
-class  _AssetItem extends State<AssetDetail> {
+class  _UserDetail extends State<UserDetail> {
   //-------------Main variable------------------//
 
   String userid = 'bdMg1tPZwEUZA1kimr8b';
@@ -217,38 +217,26 @@ class  _AssetItem extends State<AssetDetail> {
   Inspection? cur_inspection = null;
   List<CustomImage> m_inspection_images = [];
 
+  //---------------------User Variables-----------------------------//
+  String user_node_id = '';
+  String user_role = '';
+  Map root_data = {};
+  void findRootNode(Map data){
+    int level = data['id'].split('-').length - 1;
+    if(data['id'] == user_node_id) {
+      root_data = data;
+      return;
+    }
+    if(level.toString() == cut_off_level)
+      return;
+    else{
+      for(Map d in data['children'])
+        findRootNode(d);
+    }
+  }
   TreeNodeData mapServerDataToTreeData(Map data) {
     int level = data['id'].split('-').length - 1;
-    List<TreeNodeData> m_asset_types = [];
-    for(AssetType type in m_types){
-      m_asset_types.add(
-          TreeNodeData(
-            extra: {
-              'id' : type.id,
-              'level' : '${int.parse(cut_off_level) + 1}',
-              'children' :[],
-              'text' : type.type,
-              'parent' : data['id']
-            },
-            title: type.type!,
-            expanded: true,
-            checked: false,
-            children:   [],
-          )
-      );
-    }
-
-    if (level.toString()  == cut_off_level) {
-      if(cur_tenant!.show_asset_types == true) {
-
-        return TreeNodeData(
-          extra: data,
-          title: data['text'],
-          expanded: false,
-          checked: false,
-          children: m_asset_types,
-        );
-      } else
+     if (level.toString()  == cut_off_level) {
         return TreeNodeData(
           extra: data,
           title: data['text'],
@@ -269,6 +257,7 @@ class  _AssetItem extends State<AssetDetail> {
 //-----------------------Load Country, Tenant, Category and AssetTypes --------------------//
     List<Map<String, dynamic>> serverData = await CountryService().getCountries();
     Tenant? tenant = await TenantService().getTenantDetails(userid);
+
     setState(() {
       cur_tenant = tenant;
       cut_off_level = tenant!.cut_off_level;
@@ -302,14 +291,16 @@ class  _AssetItem extends State<AssetDetail> {
       m_categories = result_2;
     });
 //---------------------------Generate Tree Data-----------------------------//
+
     List<TreeNodeData> treeData = [];
     for(Map<String,dynamic> data in serverData){
       if(data['id'] == cur_tenant!.country) {
-        treeData  = [mapServerDataToTreeData(data)];
+        findRootNode(data);
         break;
       }
     }
-
+    if(root_data != {})
+      treeData = [mapServerDataToTreeData(root_data)];
 
     setState(() {
       m_treeview = TreeView(
@@ -399,6 +390,10 @@ class  _AssetItem extends State<AssetDetail> {
     });
   }
   void onDeleteAsset() async{
+    if(int.parse(user_role) > 0) {
+      showWarning("You are not allowed to Edit Asset.");
+      return;
+    }
     bool isOk =  await AssetService().deleteAsset(cur_asset!);
     if(isOk){
       showSuccess('Success');
@@ -414,8 +409,11 @@ class  _AssetItem extends State<AssetDetail> {
     String? userDataString =  getStorage('user');
     Map<String, dynamic>? data =  jsonDecode(userDataString!);
     setState(() {
-      userid = data?['id'];
+      userid = data?['user_id'];
+      user_node_id = data?['node_id'];
+      user_role = data!['role'].toString();
     });
+
     fetchData();
   }
   String getAssetTypeName(String ID){
@@ -584,6 +582,10 @@ class  _AssetItem extends State<AssetDetail> {
     });
   }
   void onDeleteInspection() {
+    if(int.parse(user_role) > 1) {
+      showWarning('You are not allowed to edit Inspections.');
+      return;
+    }
     if(cur_inspection != null) {
       m_inspections.remove(cur_inspection);
     }
@@ -845,7 +847,7 @@ class  _AssetItem extends State<AssetDetail> {
           ),
 
           actions: [
-            ElevatedButton(
+            if(int.parse(user_role) < 1) ElevatedButton(
               onPressed:() async{
                 if(logo_image != null) {
                   String url =  await uploadFile(logo_image);
@@ -867,7 +869,7 @@ class  _AssetItem extends State<AssetDetail> {
               },
               child: Text('Save'),
             ),
-            ElevatedButton(
+            if(int.parse(user_role) < 1) ElevatedButton(
               onPressed:() async{
                 _setter((){
                   m_images.remove(m_image);
@@ -889,7 +891,7 @@ class  _AssetItem extends State<AssetDetail> {
                 });
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: Text('OK'),
             ),
           ],
         );
@@ -948,7 +950,7 @@ class  _AssetItem extends State<AssetDetail> {
           ),
 
           actions: [
-            ElevatedButton(
+            if(int.parse(user_role) < 2) ElevatedButton(
               onPressed:() async{
                 if(logo_image != null) {
                   String url =  await uploadFile(logo_image);
@@ -970,7 +972,7 @@ class  _AssetItem extends State<AssetDetail> {
               },
               child: Text('Save'),
             ),
-            ElevatedButton(
+            if(int.parse(user_role) < 2) ElevatedButton(
               onPressed:() async{
                 _setter((){
                   m_inspection_images.remove(m_image);
@@ -992,7 +994,7 @@ class  _AssetItem extends State<AssetDetail> {
                 });
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: Text('OK'),
             ),
           ],
         );
@@ -1060,72 +1062,76 @@ class  _AssetItem extends State<AssetDetail> {
           ),
           SizedBox(height: screenHeight - 260,
               child: ContextMenuRegion(
-                  contextMenu: GenericContextMenu(
-                    buttonConfigs: [
-                      ContextMenuButtonConfig(
-                        "Add New Asset",
-                        onPressed: () {
-                          setState(() {
-                            pageMode = 2;
-                            onAddNewAsset();
-                          });
-                        },
-                      ),
-                      ContextMenuButtonConfig(
-                        "View Asset Details",
-                        onPressed: onAssetDetails,
-                      ),
-                      ContextMenuButtonConfig(
-                        "Delete Asset",
-                        onPressed: onDeleteAsset,
-                      ),
-                      ContextMenuButtonConfig(
-                        "Export to CSV",
-                        onPressed:() async {
-                          String title = "pluto_grid_export";
-                          if(stateManager == null) return;
-                          var exported = const Utf8Encoder()
-                              .convert(pluto_grid_export.PlutoGridExport.exportCSV(stateManager!));
-                          // use file_saver from pub.dev
-                          await FileSaver.instance.saveFile(name: "download",bytes: exported, ext: 'csv');
-                        },
-                      ),
-                      ContextMenuButtonConfig(
-                        "Asset List Report(PDF)",
-                        onPressed: (){},
-                      ),
-                      ContextMenuButtonConfig(
-                        "Asset Value Report(PDF)",
-                        onPressed: (){},
-                      ),
-                      ContextMenuButtonConfig(
-                        "Asset Value Graph Report(PDF)",
-                        onPressed: (){},
-                      )
-                    ],
-                  ),
-                  child: LayoutBuilder(
-                              builder: (context, constraint) {
-                                if (constraint.maxWidth == 0) {
-                                  return Container();
-                                }
-                                return PlutoGrid(
-                                  columns: columns,
-                                  rows: rows,
-                                  onLoaded: (PlutoGridOnLoadedEvent event) {
-                                    if(stateManager == null){
-                                      stateManager = event.stateManager;
-                                      stateManager!.setShowColumnFilter(true);
-                                    }
-                                  },
-                                  onSelected: (PlutoGridOnSelectedEvent event){
-                                    String selected_cell_id = event.row!.cells['id']!.value;
-                                    updateAssetDetailInfo(selected_cell_id);
-                                  },
-                                  mode: PlutoGridMode.selectWithOneTap,
-                                );
-                              },
-                            ),
+                contextMenu: GenericContextMenu(
+                  buttonConfigs: [
+                    ContextMenuButtonConfig(
+                      "Add New Asset",
+                      onPressed: () {
+                        if(int.parse(user_role) > 0) {
+                          showWarning("You are not allowed to Edit Asset.");
+                        return;
+                        }
+                        setState(() {
+                          pageMode = 2;
+                          onAddNewAsset();
+                        });
+                      },
+                    ),
+                    ContextMenuButtonConfig(
+                      "View Asset Details",
+                      onPressed: onAssetDetails,
+                    ),
+                    ContextMenuButtonConfig(
+                      "Delete Asset",
+                      onPressed: onDeleteAsset,
+                    ),
+                    ContextMenuButtonConfig(
+                      "Export to CSV",
+                      onPressed:() async {
+                        String title = "pluto_grid_export";
+                        if(stateManager == null) return;
+                        var exported = const Utf8Encoder()
+                            .convert(pluto_grid_export.PlutoGridExport.exportCSV(stateManager!));
+                        // use file_saver from pub.dev
+                        await FileSaver.instance.saveFile(name: "download",bytes: exported, ext: 'csv');
+                      },
+                    ),
+                    ContextMenuButtonConfig(
+                      "Asset List Report(PDF)",
+                      onPressed: (){},
+                    ),
+                    ContextMenuButtonConfig(
+                      "Asset Value Report(PDF)",
+                      onPressed: (){},
+                    ),
+                    ContextMenuButtonConfig(
+                      "Asset Value Graph Report(PDF)",
+                      onPressed: (){},
+                    )
+                  ],
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraint) {
+                    if (constraint.maxWidth == 0) {
+                      return Container();
+                    }
+                    return PlutoGrid(
+                      columns: columns,
+                      rows: rows,
+                      onLoaded: (PlutoGridOnLoadedEvent event) {
+                        if(stateManager == null){
+                          stateManager = event.stateManager;
+                          stateManager!.setShowColumnFilter(true);
+                        }
+                      },
+                      onSelected: (PlutoGridOnSelectedEvent event){
+                        String selected_cell_id = event.row!.cells['id']!.value;
+                        updateAssetDetailInfo(selected_cell_id);
+                      },
+                      mode: PlutoGridMode.selectWithOneTap,
+                    );
+                  },
+                ),
 
 
               )),
@@ -1166,6 +1172,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Name',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1187,6 +1194,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Description',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1228,6 +1236,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Address',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1249,6 +1258,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Contact',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1270,6 +1280,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Phone',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1293,6 +1304,10 @@ class  _AssetItem extends State<AssetDetail> {
                             ),
                             readOnly: true,
                             onTap: () async{
+                             if(int.parse(user_role) > 0) {
+                               return;
+                              }
+
                               DateTime? pickedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(), //get today's date
@@ -1325,6 +1340,7 @@ class  _AssetItem extends State<AssetDetail> {
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.digitsOnly
                               ],
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1346,6 +1362,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Cost Center',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1371,6 +1388,9 @@ class  _AssetItem extends State<AssetDetail> {
                                     value: cur_asset == null ? default_type_id : cur_asset!.asset_type_id,
                                     isExpanded: true,
                                     onChanged: (String? newValue) {
+                                      if(int.parse(user_role) > 0){
+                                        return;
+                                      }
                                       setState(() {
                                         cur_asset!.asset_type_id = newValue;
                                       });
@@ -1402,6 +1422,9 @@ class  _AssetItem extends State<AssetDetail> {
                                     value: cur_asset == null ? default_category_id : cur_asset!.category_id,
                                     isExpanded: true,
                                     onChanged: (String? newValue) {
+                                      if(int.parse(user_role) > 0){
+                                        return;
+                                      }
                                       setState(() {
                                         cur_asset!.category_id = newValue;
                                       });
@@ -1431,6 +1454,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Status',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1454,6 +1478,9 @@ class  _AssetItem extends State<AssetDetail> {
                             ),
                             readOnly: true,
                             onTap: () async{
+                              if(int.parse(user_role) > 0) {
+                                return;
+                              }
                               DateTime? pickedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(), //get today's date
@@ -1480,6 +1507,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Registered By',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1501,6 +1529,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Comment',
                               ),
+                              readOnly: int.parse(user_role) > 0,
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1519,7 +1548,7 @@ class  _AssetItem extends State<AssetDetail> {
             Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ElevatedButton(
+                  if(user_role == '0') ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(Colors.red),
                           padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
@@ -1545,7 +1574,7 @@ class  _AssetItem extends State<AssetDetail> {
                 child:  SizedBox(height: 200,
                     child: Column(
                       children: [
-                        Row(
+                        if(user_role == '0') Row(
                             mainAxisAlignment : MainAxisAlignment.end,
                             children: [
                               SizedBox(
@@ -1605,7 +1634,7 @@ class  _AssetItem extends State<AssetDetail> {
                 child :
                 Column(
                   children: [
-                    Row(
+                    if(int.parse(user_role) < 2) Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width:150,height:40,child:
@@ -1715,6 +1744,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Inspection By',
                               ),
+                              readOnly: int.parse(user_role) > 1,
                               onChanged: (value){
 
                                 setState(() {
@@ -1735,6 +1765,8 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Inspection Status',
                               ),
+                              readOnly: int.parse(user_role) > 1,
+
                               onChanged: (value){
                                 setState(() {
 
@@ -1759,6 +1791,8 @@ class  _AssetItem extends State<AssetDetail> {
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.digitsOnly
                               ],
+                              readOnly: int.parse(user_role) > 1,
+
                               onChanged: (value){
                                 setState(() {
 
@@ -1783,6 +1817,7 @@ class  _AssetItem extends State<AssetDetail> {
                               ),
                               readOnly: true,
                               onTap: () async{
+                                if(int.parse(user_role) > 1) return;
                                 DateTime? pickedDate = await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now(), //get today's date
@@ -1809,6 +1844,7 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Asset Inspection Comment',
                               ),
+                              readOnly: int.parse(user_role) > 1,
                               onChanged: (value){
                                 setState(() {
                                   cur_inspection!.comment = value;
@@ -1834,7 +1870,7 @@ class  _AssetItem extends State<AssetDetail> {
             Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ElevatedButton(
+                 if(int.parse(user_role) < 2) ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(Colors.red),
                           padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
@@ -1858,7 +1894,7 @@ class  _AssetItem extends State<AssetDetail> {
             SizedBox(height: 10),
             TitledContainer(titleText: 'Inspection Images',
                 child:  SizedBox(height: 200, child : Column(children: [
-                  Row(
+                  if(int.parse(user_role) < 2) Row(
                       mainAxisAlignment : MainAxisAlignment.end,
                       children: [
                         SizedBox(
@@ -1923,23 +1959,23 @@ class  _AssetItem extends State<AssetDetail> {
         child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            m_treeview == null?
-            SizedBox(
-              height: screenHeight - 50,
-              width: 300,
-              child:   Center(
-                child: new SizedBox(
-                  height: 50.0,
-                  width: 50.0,
-                  child:  CircularProgressIndicator(
-                    value: null,
-                    strokeWidth: 4.0,
+              m_treeview == null?
+              SizedBox(
+                height: screenHeight - 50,
+                width: 300,
+                child:   Center(
+                  child: new SizedBox(
+                    height: 50.0,
+                    width: 50.0,
+                    child:  CircularProgressIndicator(
+                      value: null,
+                      strokeWidth: 4.0,
+                    ),
                   ),
                 ),
-              ),
-            ) : SizedBox(width:300,child : m_treeview!),
-            Expanded(child:getRightContent(context))
-          ])
+              ) : SizedBox(width:300,child : m_treeview!),
+              Expanded(child:getRightContent(context))
+            ])
 
     );
   }

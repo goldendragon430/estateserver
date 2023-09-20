@@ -85,11 +85,11 @@ class  _TenantSettings extends State<TenantSettings> {
     // TODO: implement initState
     super.initState();
 
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     loadData();
 
   }

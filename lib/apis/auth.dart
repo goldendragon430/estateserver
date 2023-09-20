@@ -1,5 +1,7 @@
 import 'dart:html';
 
+import 'package:assetmamanger/apis/countries.dart';
+import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/tenants.dart';
 import 'package:assetmamanger/models/users.dart';
 import 'package:assetmamanger/utils/global.dart';
@@ -32,7 +34,29 @@ class LoginService {
       throw Exception('$e');
     }
   }
+  Future<Map<String,dynamic>?> loginByUser(
+      String? email,
+      String? password,
+      ) async {
+    try {
+      CollectionReference usersCollection = firestore.collection('subusers');
+      QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: email).where('password', isEqualTo: password).get();
+      List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+      if(documents.length == 0)
+        return null;
+      Map<String, dynamic>? data = documents[0].data() as Map<String, dynamic>?;
 
+      if (data != null) {
+        return data;
+      }
+      else{
+        return null;
+      }
+    } catch (e) {
+      return null;
+      throw Exception('$e');
+    }
+  }
   Future<bool> create(
       String? email,
       String? username,
@@ -51,7 +75,12 @@ class LoginService {
         'password' : password
       });
       CollectionReference tenantsCollection = firestore.collection('tenants');
-      await tenantsCollection.add(Tenant(
+      String country_id = '';
+      List<Map<String, dynamic>> m_list = await CountryService().getCountries();
+      if(m_list.length > 0) {
+        country_id = m_list[0]['id'];
+      }
+      Tenant new_user = Tenant(
         name : username,
         email: email,
         password: password,
@@ -64,9 +93,10 @@ class LoginService {
         renewal_date: DateTime(2023,1,1),
         created_date: DateTime.now(),
         logo : '',
-        user_id: newDocumentRef.id
-        ).toJson()
+        user_id: newDocumentRef.id,
       );
+      new_user.country = country_id;
+      await tenantsCollection.add(new_user.toJson());
       return true;
     } catch (e) {
       return false;
@@ -95,33 +125,5 @@ class LoginService {
       return false;
     }
   }
-  Future<List<User>> getSubUser(String? user_id)async{
-    CollectionReference usersCollection = firestore.collection('users');
-    QuerySnapshot querySnapshot = await usersCollection.where('parent_user', isEqualTo: user_id).get();
-    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-    List<User> result = [];
-    for(QueryDocumentSnapshot snapshot in documents){
-      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-      User user = User();
-      user.fromJson(data);
-      result.add(user);
-    }
-    return result;
-  }
-  Future<bool> saveSubuser(String user_id, List<User> users) async{
-    CollectionReference usersCollection = firestore.collection('users');
-    QuerySnapshot querySnapshot = await usersCollection.where('parent_user', isEqualTo: user_id).get();
-    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-    try{
-      for(QueryDocumentSnapshot snapshot in documents){
-        await usersCollection.doc(snapshot.id).delete();
-      }
-      for(User user in users){
-        await usersCollection.add(user.toJson());
-      }
-      return true;
-    }catch(err){
-      return false;
-    }
-  }
+
 }

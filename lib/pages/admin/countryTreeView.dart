@@ -164,7 +164,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Column(
+    return ListView(
       children: [
         Row(
             mainAxisAlignment: MainAxisAlignment.end,

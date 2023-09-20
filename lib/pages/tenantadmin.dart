@@ -6,6 +6,7 @@ import 'package:assetmamanger/pages/tenant/customlistile.dart';
 import 'package:assetmamanger/pages/tenant/tenantassets.dart';
 import 'package:assetmamanger/pages/tenant/tenantcategory.dart';
 import 'package:assetmamanger/pages/tenant/tenantsettings.dart';
+import 'package:assetmamanger/pages/tenant/tenantusers.dart';
 import 'package:assetmamanger/utils/global.dart';
 
 import 'package:flutter/material.dart';
@@ -28,25 +29,26 @@ class  _TenantAdminView extends State<TenantAdminView> {
     // TODO: implement initState
     super.initState();
 
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
+
 
   }
   Widget getTabContentWidget(int index){
     switch(index){
       case 0:
-        return AssetDetail();
+        return TenantSettings();
       case 1:
         return TenantAssets();
       case 2:
         return TenantCategory();
-
-      case 3: return AssetDetail();
-      case 6:
-        return Text('Comming Soon');
+      case 3:
+        return AssetDetail();
+      case 4:
+        return TenantUser();
       default: return Text('Not Found Page');
     }
   }
@@ -61,31 +63,26 @@ class  _TenantAdminView extends State<TenantAdminView> {
           });
         }),
         CustomListTile(isMobileMode: mode, title: Text('Asset Types'), icon: Icon(Icons.folder),onClick: (){
-          widget.onTitleSelect('Folders');
+          widget.onTitleSelect('Asset Types');
           setState((){
             tab_index = 1;
           });
         }
         ),
         CustomListTile(isMobileMode: mode, title: Text('Asset Categories'), icon: Icon(Icons.group),onClick:(){
-          widget.onTitleSelect('Groups');
+          widget.onTitleSelect('Asset Categories');
           setState((){
             tab_index = 2;
           });}),
         CustomListTile(isMobileMode: mode, title: Text('Assets'), icon: Icon(Icons.assignment_outlined),onClick:(){
-          widget.onTitleSelect('Types');
+          widget.onTitleSelect('Assets');
           setState((){
             tab_index = 3;
           });}),
-        CustomListTile(isMobileMode: mode, title: Text('Asset Reports'), icon: Icon(Icons.category),onClick:(){
-          widget.onTitleSelect('Categories');
+        CustomListTile(isMobileMode: mode, title: Text('Sub Users'), icon: Icon(Icons.category),onClick:(){
+          widget.onTitleSelect('Subusers');
           setState((){
             tab_index = 4;
-          });}),
-        CustomListTile(isMobileMode: mode, title: Text('Sub Users'), icon: Icon(Icons.category),onClick:(){
-          widget.onTitleSelect('Assets');
-          setState((){
-            tab_index = 6;
           });})
       ],
     );
@@ -94,7 +91,7 @@ class  _TenantAdminView extends State<TenantAdminView> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    bool is_Mobile_Mode = screenWidth < 1260 || tab_index == 0;
+    bool is_Mobile_Mode = screenWidth < 1260 || tab_index == 3;
     return   Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,

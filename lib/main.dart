@@ -1,8 +1,10 @@
 
 import 'package:assetmamanger/pages/admin.dart';
+import 'package:assetmamanger/pages/auth/login.dart';
 import 'package:assetmamanger/pages/auth/register.dart';
 import 'package:assetmamanger/pages/tenantadmin.dart';
 import 'package:assetmamanger/pages/customAppBar.dart';
+import 'package:assetmamanger/pages/user/tenantuser.dart';
 
 import 'package:universal_html/html.dart' as html;
 import 'package:assetmamanger/utils/global.dart';
@@ -69,9 +71,7 @@ class  _MyApp extends State<MyApp>{
                           builder: (context) {
                             return Scaffold(
                               appBar: CustomAppBar(title: '',title2 : '', context : context),
-                              body: TenantAdminView(onTitleSelect : (String val){
-                                setTitle(val);
-                              }),
+                              body: LoginView(),
                               backgroundColor: Colors.white,
                             );
                           });
@@ -101,7 +101,7 @@ class  _MyApp extends State<MyApp>{
                           builder: (context) {
                             return Scaffold(
                               appBar: CustomAppBar(title2 : '',title: 'Welcome ' +  getUserName(), context : context),
-                              body:Text('user'),
+                              body:UserDetail(),
                               backgroundColor: Colors.white,
 
                             );

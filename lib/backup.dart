@@ -24,7 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
-import 'package:flutter/services.dart';
+
 class AssetDetail extends StatefulWidget {
   AssetDetail({super.key});
   @override
@@ -50,10 +50,10 @@ class  _AssetItem extends State<AssetDetail> {
   List<PlutoColumn> columns = [
     /// Text Column definition
     PlutoColumn(
-        title: 'ID',
-        field: 'id',
-        type: PlutoColumnType.text(),
-        hide :true
+      title: 'ID',
+      field: 'id',
+      type: PlutoColumnType.text(),
+      hide :true
     ),
     PlutoColumn(
       title: 'Name',
@@ -138,10 +138,10 @@ class  _AssetItem extends State<AssetDetail> {
   //----------------Inspection Table----------------//
   List<PlutoColumn> columns_2 = [
     PlutoColumn(
-        title: 'ID',
-        field: 'id',
-        type: PlutoColumnType.text(),
-        hide: true
+      title: 'ID',
+      field: 'id',
+      type: PlutoColumnType.text(),
+      hide: true
     ),
     PlutoColumn(
       title: 'Inspection Date',
@@ -302,14 +302,11 @@ class  _AssetItem extends State<AssetDetail> {
       m_categories = result_2;
     });
 //---------------------------Generate Tree Data-----------------------------//
-    List<TreeNodeData> treeData = [];
-    for(Map<String,dynamic> data in serverData){
-      if(data['id'] == cur_tenant!.country) {
-        treeData  = [mapServerDataToTreeData(data)];
-        break;
-      }
-    }
 
+    List<TreeNodeData> treeData = List.generate(
+      serverData.length,
+          (index) => mapServerDataToTreeData(serverData[index]),
+    );
 
     setState(() {
       m_treeview = TreeView(
@@ -353,7 +350,7 @@ class  _AssetItem extends State<AssetDetail> {
     });
 //--------------------------Generate Table Data-----------------------------//
 
-    // stateManager_2.appendRows(m_rows_2);
+   // stateManager_2.appendRows(m_rows_2);
 
 //-------------------------Get Asset Data-----------------------------------//
 
@@ -363,38 +360,32 @@ class  _AssetItem extends State<AssetDetail> {
     setState(() {
       m_assets.clear();
       stateManager!.removeAllRows();
-      selected_asset_type = 'No Selected';
-      selected_category = 'No Selected';
-      selected_acquired_year = 'No Selected';
-      selected_year_registered = 'No Selected';
-      selected_last_inspection = 'No Selected';
-      selected_asset_status = 'No Selected';
     });
     Future.delayed(const Duration(milliseconds: 100), () async{
-      List<Asset> result =  await AssetService().getAssets(cur_tenant!.user_id!, cur_node_id, cur_asset_type_id);
-      setState(() {
-        m_assets = result;
-      });
+     List<Asset> result =  await AssetService().getAssets(cur_tenant!.user_id!, cur_node_id, cur_asset_type_id);
+     setState(() {
+       m_assets = result;
+     });
 
-      List<PlutoRow> m_rows = [];
-      for(Asset asset in m_assets){
-        m_rows.add(PlutoRow(cells: {
-          'name': PlutoCell(value: asset.name),
-          'description': PlutoCell(value: asset.description),
-          'address': PlutoCell(value: asset.address),
-          'contact': PlutoCell(value: asset.contact),
-          'phone': PlutoCell(value: asset.phone),
-          'acquired_date'  : PlutoCell(value: DateFormat('yyyy-MM-dd').format(asset.acquired_date!)),
-          'acquired_value'  : PlutoCell(value: asset.acquired_value),
-          'cost_center'  : PlutoCell(value: asset.cost_center),
-          'asset_type'  : PlutoCell(value: getAssetTypeName(asset.asset_type_id!)),
-          'category_id'  : PlutoCell(value: getCategoryName(asset.category_id!)),
-          'status'  : PlutoCell(value: asset.status),
-          'registred_date'  : PlutoCell(value: DateFormat('yyyy-MM-dd').format(asset.registered_date!)),
-          'registred_by'  : PlutoCell(value: asset.registered_by),
-          'id' : PlutoCell(value: asset.id)
-        }));
-      }
+     List<PlutoRow> m_rows = [];
+     for(Asset asset in m_assets){
+       m_rows.add(PlutoRow(cells: {
+         'name': PlutoCell(value: asset.name),
+         'description': PlutoCell(value: asset.description),
+         'address': PlutoCell(value: asset.address),
+         'contact': PlutoCell(value: asset.contact),
+         'phone': PlutoCell(value: asset.phone),
+         'acquired_date'  : PlutoCell(value: DateFormat('yyyy-MM-dd').format(asset.acquired_date!)),
+         'acquired_value'  : PlutoCell(value: asset.acquired_value),
+         'cost_center'  : PlutoCell(value: asset.cost_center),
+         'asset_type'  : PlutoCell(value: getAssetTypeName(asset.asset_type_id!)),
+         'category_id'  : PlutoCell(value: getCategoryName(asset.category_id!)),
+         'status'  : PlutoCell(value: asset.status),
+         'registred_date'  : PlutoCell(value: DateFormat('yyyy-MM-dd').format(asset.registered_date!)),
+         'registred_by'  : PlutoCell(value: asset.registered_by),
+         'id' : PlutoCell(value: asset.id)
+       }));
+     }
       stateManager!.appendRows(m_rows);
     });
   }
@@ -411,12 +402,7 @@ class  _AssetItem extends State<AssetDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
-    fetchData();
+    // fetchData();
   }
   String getAssetTypeName(String ID){
     String result = '';
@@ -476,7 +462,7 @@ class  _AssetItem extends State<AssetDetail> {
         setState(() {
           m_inspections = m_ins;
           if(cur_asset != null)
-            cur_asset!.inspections = m_inspections;
+              cur_asset!.inspections = m_inspections;
         });
         for(Inspection ins in m_inspections){
           m_rows_2.add(PlutoRow(cells: {
@@ -496,10 +482,6 @@ class  _AssetItem extends State<AssetDetail> {
   void onAddNewAsset(){
     setState(() {
       cur_asset = Asset(owner_id: cur_tenant!.user_id, node_id: cur_node_id, id:generateID(),code : generateAssetID(default_type_id,default_category_id),name : 'New',description: '',address : '',contact: '',phone:'',acquired_date: DateTime(2022,2,2),acquired_value: '',cost_center: '',asset_type_id: default_type_id,category_id: default_category_id,status: '',comment: '',registered_date: DateTime(2022,2,2),registered_by: '',inspections: [],images: []);
-      m_images = [];
-      m_inspections = [];
-      if(stateManager_2 != null)
-        stateManager_2!.removeAllRows();
     });
     assetIDController.text = cur_asset!.id!;
     assetCodeController.text = cur_asset!.code!;
@@ -519,8 +501,7 @@ class  _AssetItem extends State<AssetDetail> {
   }
   void onAddInspection(){
     setState(() {
-      cur_inspection = Inspection(id:generateID(),inspection_date: DateTime(2022,2,2),inspection_by: '',comment:'',status:'',value:'0',next_inspect_date: DateTime(2022,2,2),images: []);
-      m_inspection_images = [];
+     cur_inspection = Inspection(id:generateID(),inspection_date: DateTime(2022,2,2),inspection_by: '',comment:'',status:'',value:'0',next_inspect_date: DateTime(2022,2,2),images: []);
     });
     inspectionByController.text = '';
     inspectionCommentController.text = '';
@@ -558,7 +539,6 @@ class  _AssetItem extends State<AssetDetail> {
     }
   }
   void onChangeInspection() {
-    print(cur_inspection!.toJson());
     bool isExist = false;
     for(Inspection ins in m_inspections){
       if(ins.id == cur_inspection!.id){
@@ -584,11 +564,11 @@ class  _AssetItem extends State<AssetDetail> {
     });
   }
   void onDeleteInspection() {
-    if(cur_inspection != null) {
-      m_inspections.remove(cur_inspection);
-    }
+     if(cur_inspection != null) {
+       m_inspections.remove(cur_inspection);
+     }
     onSaveChanges();
-    updateInspectionTableContent();
+     updateInspectionTableContent();
   }
 
   void refreshImages(){
@@ -680,7 +660,7 @@ class  _AssetItem extends State<AssetDetail> {
                     m_images.add(newImage);
                   });
                   refreshImages();
-                }
+                 }
                 else{
                   showError('Please select Image');
                   return;
@@ -691,9 +671,9 @@ class  _AssetItem extends State<AssetDetail> {
             ElevatedButton(
               onPressed: () {
                 _setter(() {
-                  description_str = '';
-                  logoDescriptionController.text = '';
-                  logo_image = null;
+                description_str = '';
+                logoDescriptionController.text = '';
+                logo_image = null;
                 });
                 Navigator.pop(context);
               },
@@ -849,7 +829,7 @@ class  _AssetItem extends State<AssetDetail> {
               onPressed:() async{
                 if(logo_image != null) {
                   String url =  await uploadFile(logo_image);
-                  Navigator.pop(context);
+                   Navigator.pop(context);
                   _setter(() {
                     m_image.description = description_str;
                     m_image.url = url;
@@ -869,14 +849,14 @@ class  _AssetItem extends State<AssetDetail> {
             ),
             ElevatedButton(
               onPressed:() async{
-                _setter((){
-                  m_images.remove(m_image);
-                  description_str = '';
-                  logoDescriptionController.text = '';
-                  logo_image = null;
-                });
-                refreshImages();
-                Navigator.pop(context);
+                  _setter((){
+                    m_images.remove(m_image);
+                    description_str = '';
+                    logoDescriptionController.text = '';
+                    logo_image = null;
+                  });
+                  refreshImages();
+                  Navigator.pop(context);
               },
               child: Text('Delete'),
             ),
@@ -1058,77 +1038,60 @@ class  _AssetItem extends State<AssetDetail> {
                 ],
               )
           ),
-          SizedBox(height: screenHeight - 260,
+          SizedBox(height: screenHeight - 300,
               child: ContextMenuRegion(
-                  contextMenu: GenericContextMenu(
-                    buttonConfigs: [
-                      ContextMenuButtonConfig(
-                        "Add New Asset",
-                        onPressed: () {
-                          setState(() {
-                            pageMode = 2;
-                            onAddNewAsset();
-                          });
+                contextMenu: GenericContextMenu(
+                  buttonConfigs: [
+                    ContextMenuButtonConfig(
+                      "Add New Asset",
+                      onPressed: () {
+                        setState(() {
+                          pageMode = 2;
+                          onAddNewAsset();
+                        });
+                      },
+                    ),
+                    ContextMenuButtonConfig(
+                      "View Asset Details",
+                      onPressed: onAssetDetails,
+                    ),
+                    ContextMenuButtonConfig(
+                      "Delete Asset",
+                      onPressed: onDeleteAsset,
+                    ),
+                    ContextMenuButtonConfig(
+                      "Export to CSV",
+                      onPressed:() async {
+                        String title = "pluto_grid_export";
+                        if(stateManager == null) return;
+                        var exported = const Utf8Encoder()
+                            .convert(pluto_grid_export.PlutoGridExport.exportCSV(stateManager!));
+                        // use file_saver from pub.dev
+                        await FileSaver.instance.saveFile(name: "download",bytes: exported, ext: 'csv');
+                      },
+                    ),
+                    ContextMenuButtonConfig(
+                      "View Report",
+                      onPressed: (){},
+                    )
+                  ],
+                ),
+                child: PlutoGrid(
+                      columns: columns,
+                      rows: rows,
+                      onLoaded: (PlutoGridOnLoadedEvent event) {
+                        if(stateManager == null){
+                          stateManager = event.stateManager;
+                          stateManager!.setShowColumnFilter(true);
+                        }
+                      },
+                      onSelected: (PlutoGridOnSelectedEvent event){
+                        String selected_cell_id = event.row!.cells['id']!.value;
+                        updateAssetDetailInfo(selected_cell_id);
                         },
-                      ),
-                      ContextMenuButtonConfig(
-                        "View Asset Details",
-                        onPressed: onAssetDetails,
-                      ),
-                      ContextMenuButtonConfig(
-                        "Delete Asset",
-                        onPressed: onDeleteAsset,
-                      ),
-                      ContextMenuButtonConfig(
-                        "Export to CSV",
-                        onPressed:() async {
-                          String title = "pluto_grid_export";
-                          if(stateManager == null) return;
-                          var exported = const Utf8Encoder()
-                              .convert(pluto_grid_export.PlutoGridExport.exportCSV(stateManager!));
-                          // use file_saver from pub.dev
-                          await FileSaver.instance.saveFile(name: "download",bytes: exported, ext: 'csv');
-                        },
-                      ),
-                      ContextMenuButtonConfig(
-                        "Asset List Report(PDF)",
-                        onPressed: (){},
-                      ),
-                      ContextMenuButtonConfig(
-                        "Asset Value Report(PDF)",
-                        onPressed: (){},
-                      ),
-                      ContextMenuButtonConfig(
-                        "Asset Value Graph Report(PDF)",
-                        onPressed: (){},
-                      )
-                    ],
-                  ),
-                  child: LayoutBuilder(
-                              builder: (context, constraint) {
-                                if (constraint.maxWidth == 0) {
-                                  return Container();
-                                }
-                                return PlutoGrid(
-                                  columns: columns,
-                                  rows: rows,
-                                  onLoaded: (PlutoGridOnLoadedEvent event) {
-                                    if(stateManager == null){
-                                      stateManager = event.stateManager;
-                                      stateManager!.setShowColumnFilter(true);
-                                    }
-                                  },
-                                  onSelected: (PlutoGridOnSelectedEvent event){
-                                    String selected_cell_id = event.row!.cells['id']!.value;
-                                    updateAssetDetailInfo(selected_cell_id);
-                                  },
-                                  mode: PlutoGridMode.selectWithOneTap,
-                                );
-                              },
-                            ),
-
-
-              )),
+                      mode: PlutoGridMode.selectWithOneTap,
+                    )
+          )),
         ],
       );
     }
@@ -1147,7 +1110,7 @@ class  _AssetItem extends State<AssetDetail> {
                           child: TextFormField(
                               controller: assetIDController,
                               decoration: InputDecoration(
-                                  labelText: 'Asset ID'
+                                labelText: 'Asset ID'
                               ),
                               readOnly: true,
                               onChanged: (value){
@@ -1287,24 +1250,24 @@ class  _AssetItem extends State<AssetDetail> {
                       Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
-                            controller: acquiredDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Acquired Date',
-                            ),
-                            readOnly: true,
-                            onTap: () async{
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(), //get today's date
-                                  firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101)
-                              );
-                              if(pickedDate!= null)
-                                setState(() {
-                                  acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                  cur_asset!.acquired_date = pickedDate;
-                                });
-                            },
+                              controller: acquiredDateController,
+                              decoration: InputDecoration(
+                                labelText: 'Acquired Date',
+                              ),
+                              readOnly: true,
+                              onTap: () async{
+                                DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(), //get today's date
+                                    firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                    lastDate: DateTime(2101)
+                                );
+                                if(pickedDate!= null)
+                                  setState(() {
+                                    acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                    cur_asset!.acquired_date = pickedDate;
+                                  });
+                              },
                           )
                       )
                   ),
@@ -1321,10 +1284,6 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Acquired Value',
                               ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
                               onChanged: (value){
                                 if(cur_asset != null) {
                                   setState(() {
@@ -1360,32 +1319,32 @@ class  _AssetItem extends State<AssetDetail> {
                     width : textfield_width,
                     child:
                     Row(
+                    children: [
+                      SizedBox(width: 20),
+                      Column(
                         children: [
-                          SizedBox(width: 20),
-                          Column(
-                            children: [
-                              SizedBox(height: 18),
-                              SizedBox(
-                                  width: textfield_width - 20 ,
-                                  child: DropdownButton<String>(
-                                    value: cur_asset == null ? default_type_id : cur_asset!.asset_type_id,
-                                    isExpanded: true,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        cur_asset!.asset_type_id = newValue;
-                                      });
-                                    },
-                                    items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(getAssetTypeName(value)),
-                                      );
-                                    }).toList(),
-                                  )
+                          SizedBox(height: 18),
+                          SizedBox(
+                              width: textfield_width - 20 ,
+                              child: DropdownButton<String>(
+                                value: cur_asset == null ? default_type_id : cur_asset!.asset_type_id,
+                                isExpanded: true,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    cur_asset!.asset_type_id = newValue;
+                                  });
+                                },
+                                items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(getAssetTypeName(value)),
+                                  );
+                                }).toList(),
                               )
-                            ],
                           )
-                        ]),
+                        ],
+                      )
+                    ]),
                   ),
                   SizedBox(
                     width : textfield_width,
@@ -1448,24 +1407,24 @@ class  _AssetItem extends State<AssetDetail> {
                       Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
-                            controller: registredDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Registered Date',
-                            ),
-                            readOnly: true,
-                            onTap: () async{
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(), //get today's date
-                                  firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101)
-                              );
-                              if(pickedDate!= null)
-                                setState(() {
-                                  registredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                  cur_asset!.registered_date = pickedDate;
-                                });
-                            },
+                              controller: registredDateController,
+                              decoration: InputDecoration(
+                                labelText: 'Registered Date',
+                              ),
+                              readOnly: true,
+                              onTap: () async{
+                                DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(), //get today's date
+                                    firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                    lastDate: DateTime(2101)
+                                );
+                                if(pickedDate!= null)
+                                  setState(() {
+                                    registredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                    cur_asset!.registered_date = pickedDate;
+                                  });
+                              },
                           )
                       )
                   ),
@@ -1543,60 +1502,60 @@ class  _AssetItem extends State<AssetDetail> {
             SizedBox(height: 10),
             TitledContainer(titleText: 'Asset Images',
                 child:  SizedBox(height: 200,
-                    child: Column(
-                      children: [
-                        Row(
-                            mainAxisAlignment : MainAxisAlignment.end,
+                          child: Column(
                             children: [
-                              SizedBox(
-                                  width: 80,
-                                  height:50,
-                                  child : FloatingActionButton(
-                                    heroTag: "btn1",
-                                    onPressed: (){
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => gradeDialog()  ,
-                                      );
-                                    },
-                                    child: const Icon(Icons.add),
-                                  ) )
-
-                            ]
-                        ),
-                        SizedBox(height:150,child : ListView.builder(
-                            padding: const EdgeInsets.only(top: 0),
-                            itemCount: (m_images.length / rowCount).ceil() ,
-                            itemBuilder: (BuildContext context, int index) {
-                              List<Widget> m_list = [];
-                              for(int i = 0; i < rowCount; i ++ ){
-                                if(index * rowCount + i < m_images.length)
-                                  m_list.add(
-                                      GestureDetector(
-                                          onTap: (){
+                              Row(
+                                  mainAxisAlignment : MainAxisAlignment.end,
+                                  children: [
+                                    SizedBox(
+                                        width: 80,
+                                        height:50,
+                                        child : FloatingActionButton(
+                                          heroTag: "btn1",
+                                          onPressed: (){
                                             showDialog(
                                               context: context,
-                                              builder: (context) => changeDialog(m_images![index * rowCount + i]!)  ,
+                                              builder: (context) => gradeDialog()  ,
                                             );
                                           },
-                                          child : Image.network(m_images![index * rowCount + i]!.url!,width: 100)
-                                      )
+                                          child: const Icon(Icons.add),
+                                        ) )
 
-                                  );
-                                else
-                                  m_list.add(
-                                      SizedBox(width:70)
-                                  );
-                              }
-                              return  Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children : m_list
-                              );
-                            }))
+                              ]
+                              ),
+                              SizedBox(height:150,child : ListView.builder(
+                                  padding: const EdgeInsets.only(top: 0),
+                                  itemCount: (m_images.length / rowCount).ceil() ,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    List<Widget> m_list = [];
+                                    for(int i = 0; i < rowCount; i ++ ){
+                                      if(index * rowCount + i < m_images.length)
+                                        m_list.add(
+                                            GestureDetector(
+                                              onTap: (){
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => changeDialog(m_images![index * rowCount + i]!)  ,
+                                                );
+                                              },
+                                              child : Image.network(m_images![index * rowCount + i]!.url!,width: 100)
+                                            )
 
-                      ],
-                    )
-                )
+                                        );
+                                      else
+                                        m_list.add(
+                                            SizedBox(width:70)
+                                        );
+                                    }
+                                    return  Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children : m_list
+                                    );
+                                  }))
+
+                            ],
+                          )
+                  )
 
             ),
             SizedBox(height: 10),
@@ -1626,43 +1585,43 @@ class  _AssetItem extends State<AssetDetail> {
                     SizedBox(height: 10),
                     SizedBox(height: 320,
                         child: ContextMenuRegion(
-                            contextMenu: GenericContextMenu(
-                              buttonConfigs: [
-                                ContextMenuButtonConfig(
-                                  "View Inspection Details",
-                                  onPressed: onInspectionDetail,
-                                ),
-                                ContextMenuButtonConfig(
-                                  "Delete Inspection",
-                                  onPressed: onDeleteInspection,
-                                )
-                              ],
+                        contextMenu: GenericContextMenu(
+                          buttonConfigs: [
+                             ContextMenuButtonConfig(
+                              "View Inspection Details",
+                              onPressed: onInspectionDetail,
                             ),
-                            child:  PlutoGrid(
-                              columns: columns_2,
-                              rows: rows_2,
-                              onLoaded: (PlutoGridOnLoadedEvent event) {
-                                if(stateManager_2 == null){
-                                  stateManager_2 = event.stateManager;
-                                  stateManager_2!.setShowColumnFilter(true);
-                                  updateInspectionTableContent();
-                                }
-                              },
-                              onSelected: (PlutoGridOnSelectedEvent event){
-                                String cur_ins_id = (event.row!.cells['id']!.value);
-                                for(Inspection ins in m_inspections){
-                                  if(ins.id == cur_ins_id) {
-                                    setState(() {
-                                      cur_inspection = ins;
-                                      m_inspection_images = ins.images!;
-                                    });
-                                    break;
-                                  }
-                                }
-                              },
-                              mode: PlutoGridMode.selectWithOneTap,
+                            ContextMenuButtonConfig(
+                              "Delete Inspection",
+                              onPressed: onDeleteInspection,
                             )
+                          ],
+                        ),
+                        child:  PlutoGrid(
+                          columns: columns_2,
+                          rows: rows_2,
+                          onLoaded: (PlutoGridOnLoadedEvent event) {
+                            if(stateManager_2 == null){
+                              stateManager_2 = event.stateManager;
+                              stateManager_2!.setShowColumnFilter(true);
+                              updateInspectionTableContent();
+                            }
+                          },
+                          onSelected: (PlutoGridOnSelectedEvent event){
+                           String cur_ins_id = (event.row!.cells['id']!.value);
+                           for(Inspection ins in m_inspections){
+                             if(ins.id == cur_ins_id) {
+                               setState(() {
+                                 cur_inspection = ins;
+                                 m_inspection_images = ins.images!;
+                               });
+                               break;
+                             }
+                           }
+                          },
+                          mode: PlutoGridMode.selectWithOneTap,
                         )
+                    )
                     )
                   ],
                 )
@@ -1683,24 +1642,24 @@ class  _AssetItem extends State<AssetDetail> {
                       Container(
                           margin:EdgeInsets.only(left:20),
                           child: TextFormField(
-                            controller: inspectionDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Inspection Date',
-                            ),
-                            readOnly: true,
-                            onTap: () async{
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(), //get today's date
-                                  firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101)
-                              );
-                              if(pickedDate!= null)
-                                setState(() {
-                                  inspectionDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                  cur_inspection!.inspection_date = pickedDate;
-                                });
-                            },
+                              controller: inspectionDateController,
+                              decoration: InputDecoration(
+                                labelText: 'Inspection Date',
+                              ),
+                              readOnly: true,
+                              onTap: () async{
+                                DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(), //get today's date
+                                    firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                    lastDate: DateTime(2101)
+                                );
+                                if(pickedDate!= null)
+                                  setState(() {
+                                    inspectionDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                    cur_inspection!.inspection_date = pickedDate;
+                                  });
+                              },
                           )
                       )
                   ),
@@ -1717,8 +1676,8 @@ class  _AssetItem extends State<AssetDetail> {
                               ),
                               onChanged: (value){
 
-                                setState(() {
-                                  cur_inspection!.inspection_by = value;
+                                  setState(() {
+                                    cur_inspection!.inspection_by = value;
                                 });
                               }
                           )
@@ -1755,15 +1714,11 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Inspection Value',
                               ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
                               onChanged: (value){
-                                setState(() {
+                                  setState(() {
 
-                                  cur_inspection!.value = value;
-                                });
+                                    cur_inspection!.value = value;
+                                  });
                               }
                           )
                       )
@@ -1781,20 +1736,20 @@ class  _AssetItem extends State<AssetDetail> {
                               decoration: InputDecoration(
                                 labelText: 'Next Inspection Date',
                               ),
-                              readOnly: true,
-                              onTap: () async{
-                                DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(), //get today's date
-                                    firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                    lastDate: DateTime(2101)
-                                );
-                                if(pickedDate!= null)
-                                  setState(() {
-                                    inspectionNextDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                    cur_inspection!.next_inspect_date = pickedDate;
-                                  });
-                              }
+                               readOnly: true,
+                               onTap: () async{
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(), //get today's date
+                                      firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                      lastDate: DateTime(2101)
+                                  );
+                                  if(pickedDate!= null)
+                                    setState(() {
+                                      inspectionNextDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                      cur_inspection!.next_inspect_date = pickedDate;
+                                    });
+                                }
                           )
                       )
                   ),
@@ -1811,7 +1766,7 @@ class  _AssetItem extends State<AssetDetail> {
                               ),
                               onChanged: (value){
                                 setState(() {
-                                  cur_inspection!.comment = value;
+                                          cur_inspection!.comment = value;
                                 });
                               }
                           )
@@ -1858,56 +1813,56 @@ class  _AssetItem extends State<AssetDetail> {
             SizedBox(height: 10),
             TitledContainer(titleText: 'Inspection Images',
                 child:  SizedBox(height: 200, child : Column(children: [
-                  Row(
-                      mainAxisAlignment : MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                            width: 80,
-                            height:50,
-                            child : FloatingActionButton(
-                              heroTag: "btn1",
-                              onPressed: (){
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => gradeDialog_2()  ,
+                      Row(
+                          mainAxisAlignment : MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                                width: 80,
+                                height:50,
+                                child : FloatingActionButton(
+                                  heroTag: "btn1",
+                                  onPressed: (){
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => gradeDialog_2()  ,
+                                    );
+                                  },
+                                  child: const Icon(Icons.add),
+                                ) )
+
+                          ]
+                      ),
+                      SizedBox(height:150,child : ListView.builder(
+                          padding: const EdgeInsets.only(top: 0),
+                          itemCount: (m_inspection_images.length / rowCount).ceil() ,
+                          itemBuilder: (BuildContext context, int index) {
+                            List<Widget> m_list = [];
+                            for(int i = 0; i < rowCount; i ++ ){
+                              if(index * rowCount + i < m_inspection_images.length)
+                                m_list.add(
+                                    GestureDetector(
+                                        onTap: (){
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => changeInspectionDialog(m_inspection_images![index * rowCount + i]!)  ,
+                                          );
+                                        },
+                                        child : Image.network(m_inspection_images![index * rowCount + i]!.url!,width: 100)
+                                    )
+
                                 );
-                              },
-                              child: const Icon(Icons.add),
-                            ) )
-
-                      ]
-                  ),
-                  SizedBox(height:150,child : ListView.builder(
-                      padding: const EdgeInsets.only(top: 0),
-                      itemCount: (m_inspection_images.length / rowCount).ceil() ,
-                      itemBuilder: (BuildContext context, int index) {
-                        List<Widget> m_list = [];
-                        for(int i = 0; i < rowCount; i ++ ){
-                          if(index * rowCount + i < m_inspection_images.length)
-                            m_list.add(
-                                GestureDetector(
-                                    onTap: (){
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => changeInspectionDialog(m_inspection_images![index * rowCount + i]!)  ,
-                                      );
-                                    },
-                                    child : Image.network(m_inspection_images![index * rowCount + i]!.url!,width: 100)
-                                )
-
+                              else
+                                m_list.add(
+                                    SizedBox(width:70)
+                                );
+                            }
+                            return  Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children : m_list
                             );
-                          else
-                            m_list.add(
-                                SizedBox(width:70)
-                            );
-                        }
-                        return  Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children : m_list
-                        );
-                      })
-                  )
-                ]))
+                          })
+                      )
+                    ]))
 
             ),
           ]);
@@ -1916,31 +1871,21 @@ class  _AssetItem extends State<AssetDetail> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
     return Container(
         padding: EdgeInsets.all(20),
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            m_treeview == null?
-            SizedBox(
-              height: screenHeight - 50,
-              width: 300,
-              child:   Center(
-                child: new SizedBox(
-                  height: 50.0,
-                  width: 50.0,
-                  child:  CircularProgressIndicator(
-                    value: null,
-                    strokeWidth: 4.0,
-                  ),
-                ),
-              ),
-            ) : SizedBox(width:300,child : m_treeview!),
-            Expanded(child:getRightContent(context))
-          ])
+        child: SizedBox(height: 400, child : PlutoGrid(
+          columns: columns,
+          rows: rows,
+          onLoaded: (PlutoGridOnLoadedEvent event) {
 
+          },
+          onSelected: (PlutoGridOnSelectedEvent event){
+
+          },
+          mode: PlutoGridMode.selectWithOneTap,
+        ))
     );
   }
 }
