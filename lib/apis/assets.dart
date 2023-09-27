@@ -64,5 +64,22 @@ class AssetService {
     }
     return result;
   }
+  Future<bool> checkNode(String id) async{
+    try {
+      CollectionReference subUserCollection = firestore.collection('assets');
+      QuerySnapshot querySnapshot = await subUserCollection.get();
+      List<DocumentSnapshot> documents = querySnapshot.docs;
+      for(DocumentSnapshot document in documents){
+        Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
+        if((data!['node_id'] as String).contains(id)) return true;
+      }
 
+      return false;
+    } catch (e) {
+      print('$e');
+      return false;
+      throw Exception('$e');
+    }
+
+  }
 }

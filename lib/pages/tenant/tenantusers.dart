@@ -117,7 +117,7 @@ class  _TenantUser extends State<TenantUser> {
       );
     });
 
-    List<SubUser> users =  await UserService().getSubUsers();
+    List<SubUser> users =  await UserService().getSubUsers(userid);
     setState(() {
       subusers = users;
     });
@@ -162,7 +162,7 @@ class  _TenantUser extends State<TenantUser> {
   }
   //-----------------save features-------------------------------//
   void onSave() async{
-   bool isOK = await UserService().saveChanges(subusers);
+   bool isOK = await UserService().saveChanges(subusers,userid);
    if(isOK) {
       showSuccess('Success');
     }

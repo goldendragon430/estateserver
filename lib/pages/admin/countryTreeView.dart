@@ -1,6 +1,8 @@
 import 'dart:html';
 
+import 'package:assetmamanger/apis/assets.dart';
 import 'package:assetmamanger/apis/countries.dart';
+import 'package:assetmamanger/apis/users.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/pages/customFlutterTree/flutter_tree.dart';
@@ -18,7 +20,16 @@ class  CountryTreeViewState extends State<CountryTreeView> {
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
   String current_node_title = '';
-
+  void deleteNode(TreeNodeData node, BuildContext context) async{
+    bool isOK =  await AssetService().checkNode(node.extra['id']);
+    if(isOK == true){
+      showWarning('This Node is used for some assets.');
+    }
+    else{
+      _key.currentState?.remove(node);
+    }
+    Navigator.pop(context);
+  }
   StatefulBuilder gradeDialog(TreeNodeData node) {
     return StatefulBuilder(
       builder: (context, _setter) {
@@ -54,9 +65,10 @@ class  CountryTreeViewState extends State<CountryTreeView> {
             ),
             ElevatedButton(
               onPressed: () {
-                _key.currentState?.remove(node);
+
+                deleteNode(node,context);
                 // print(_key.currentState?.getData());
-                Navigator.pop(context);
+
               },
               child: Text('Delete'),
             ),

@@ -5,10 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<bool> saveChanges(List<SubUser> data) async{
+  Future<bool> saveChanges(List<SubUser> data,String id) async{
     try {
       CollectionReference subUserCollection = firestore.collection('subusers');
-      QuerySnapshot querySnapshot = await subUserCollection.get();
+      QuerySnapshot querySnapshot = await subUserCollection.where('user_id',isEqualTo: id).get();
 
       for (var document in querySnapshot.docs) {
         document.reference.delete();
@@ -25,10 +25,11 @@ class UserService {
 
   }
 
-  Future<List<SubUser>> getSubUsers() async{
+
+  Future<List<SubUser>> getSubUsers(String userid) async{
     try {
       CollectionReference subUserCollection = firestore.collection('subusers');
-      QuerySnapshot querySnapshot = await subUserCollection.get();
+      QuerySnapshot querySnapshot = await subUserCollection.where('user_id', isEqualTo: userid).get();
       List<DocumentSnapshot> documents = querySnapshot.docs;
       List<SubUser> result = [];
       for(DocumentSnapshot document in documents){

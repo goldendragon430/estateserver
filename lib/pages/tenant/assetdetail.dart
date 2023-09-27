@@ -1366,11 +1366,14 @@ class  _AssetItem extends State<AssetDetail> {
                               SizedBox(
                                   width: textfield_width - 20 ,
                                   child: DropdownButton<String>(
-                                    value: cur_asset == null ? default_type_id : cur_asset!.asset_type_id,
+                                    value: cur_asset_type_id == '0' ? (cur_asset == null ? default_type_id : cur_asset!.asset_type_id) : cur_asset_type_id ,
                                     isExpanded: true,
                                     onChanged: (String? newValue) {
                                       setState(() {
-                                        cur_asset!.asset_type_id = newValue;
+                                        if(cur_asset_type_id == '0')
+                                            cur_asset!.asset_type_id = newValue;
+                                        else
+                                          cur_asset!.asset_type_id = cur_asset_type_id;
                                       });
                                     },
                                     items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
