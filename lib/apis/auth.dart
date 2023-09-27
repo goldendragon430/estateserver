@@ -62,7 +62,11 @@ class LoginService {
       String? username,
       String? landline,
       String? mobile,
-      String? password
+      String? password,
+      String? firstname,
+      String? lastname,
+      bool hasOffice,
+      String? countryID
       ) async {
     try {
       CollectionReference usersCollection = firestore.collection('users');
@@ -75,18 +79,14 @@ class LoginService {
         'password' : password
       });
       CollectionReference tenantsCollection = firestore.collection('tenants');
-      String country_id = '';
-      List<Map<String, dynamic>> m_list = await CountryService().getCountries();
-      if(m_list.length > 0) {
-        country_id = m_list[0]['id'];
-      }
+
       Tenant new_user = Tenant(
         name : username,
         email: email,
         password: password,
         active: false,
         address : '',
-        phone:'',
+        phone:mobile,
         landline: landline,
         office: '',
         fax : '',
@@ -95,7 +95,11 @@ class LoginService {
         logo : '',
         user_id: newDocumentRef.id,
       );
-      new_user.country = country_id;
+      new_user.country = countryID!;
+      new_user.firstname = firstname!;
+      new_user.lastname = lastname!;
+      new_user.hasOffice = hasOffice;
+
       await tenantsCollection.add(new_user.toJson());
       return true;
     } catch (e) {

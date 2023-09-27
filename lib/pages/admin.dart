@@ -1,3 +1,4 @@
+import 'package:assetmamanger/apis/countries.dart';
 import 'package:assetmamanger/apis/tenants.dart';
 import 'package:assetmamanger/models/folders.dart';
 import 'package:assetmamanger/models/groups.dart';
@@ -6,6 +7,7 @@ import 'package:assetmamanger/pages/admin/countryTreeView.dart';
 import 'package:assetmamanger/pages/titledcontainer.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 class AdminView extends StatefulWidget {
   AdminView({super.key});
   @override
@@ -17,7 +19,7 @@ class  _AdminViewState extends State<AdminView> {
   List<Tenant> m_tenants = [];
   //---------------------hover style-------------------------------//
   int hoveredIndex = -1;
-
+  int hoveredIndex_2 = -1;
  //----------------------Tenant Details----------------------------//
   Tenant cur_tenant = Tenant();
   bool active_value = false;
@@ -25,21 +27,32 @@ class  _AdminViewState extends State<AdminView> {
   TextEditingController emailAddressEditController = TextEditingController();
   TextEditingController expiryDateEditController = TextEditingController();
   TextEditingController registerationEditController = TextEditingController();
+  TextEditingController firstNameEditController = TextEditingController();
+  TextEditingController lastNameEditController = TextEditingController();
+
  //-------------------- Reason Input Dialog--------------------------//
   String reason = '';
  //----------------------search Data--------------------------------//
   List<Tenant> filteredItems = [];
   //---------------------Left Side Bar -------------------------------//
   bool showing_bar = false;
+  //---------------------Load Country Data----------------------------//
+  List<Map<String, dynamic>> countryData = [];
+  Map<String, dynamic> detailData = {};
+  final _key = GlobalKey<CountryTreeViewState>();
+  String new_country_name = '';
 
   void fetchData() async{
     List<Tenant> tenants =  await TenantService().getAllTenant();
+    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
     setState((){
       m_tenants = tenants;
       filteredItems = List.from(m_tenants);
       if(m_tenants.length > 0)
       onLeftItemClicked(m_tenants[0].user_id!);
+      countryData = serverData;
     });
+
   }
   @override
   void initState() {
@@ -57,13 +70,15 @@ class  _AdminViewState extends State<AdminView> {
     setState(() {
 
        cur_tenant = results[0];
+       firstNameEditController.text = cur_tenant.firstname!;
+       lastNameEditController.text = cur_tenant.lastname!;
        tenantNameEditController.text = cur_tenant.name!;
        emailAddressEditController.text = cur_tenant.email!;
-       registerationEditController.text = cur_tenant.created_date.toString();
-
+       registerationEditController.text = DateFormat('yyyy-MM-dd').format(cur_tenant.created_date!);
+       expiryDateEditController.text =  DateFormat('yyyy-MM-dd').format(cur_tenant.created_date!.add(Duration(days: 30)));
      });
   }
-   void onSave() async{
+  void onSave() async{
     bool isOk = await TenantService().createTenantDetails(cur_tenant);
     if(isOk){
       showSuccess('Success');
@@ -73,35 +88,108 @@ class  _AdminViewState extends State<AdminView> {
   }
   void sendActiveAccountEmail() async{
     String email = cur_tenant.email!;
-    String title = '${cur_tenant.name} Account Activated';
-    String Body  = '<html><body><p>Welcome ${cur_tenant.name}. Your account has been activated by Cloud Asset. You can now use your username and email to sign into Cloud Asset. Simply get started by doing the following in order.</p>'
-        '<p style = "margin-top:10px">1. Create Asset Folder</p>'
-        '<p>2. Create Asset Groups</p>'
-        '<p>3. Create Asset Types</p>'
-        '<p>4. Create Asset Categories</p>'
-        '<p>5. Register Asset Cloud users for your company or organization.</p>'
-        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
-        '<p style = "margin-top:10px">Thank You</p>'
-        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+    String title = 'Account Activated';
+    String Body  = '<html><body>'
+        '<p>Dear ${cur_tenant.firstname} ${cur_tenant.lastname}.</p>'
+        '<p>The account for ${cur_tenant.name} has been activated because $reason.</p>'
+        '<p style = "margin-top:10px">If you have further quereies, please contact us on the following.</p>'
+        '<p>Email: geoAssetManager@gmail.com</p>'
+        '<p>Landline: (+675) 325 2552</p>'
+        '<p style = "margin-top:10px">Thank you</p>'
+        '<p style = "margin-top:10px">Geo Asset Manager</p>'
+        '<p>System Admin</p>'
         '</body></html>';
     sendEmail(email, title, Body);
   }
   void sendDeActiveAccountEmail() async{
     String email = cur_tenant.email!;
-    String title = '${cur_tenant.name} Account Deactivated';
-    String Body  = '<html><body><p>Your account ${cur_tenant.name} has been inactivated for the following reasons by Cloud Asset:</p>'
-        '<p style = "margin-top:10px">${reason}</p>'
-        '<p style = "margin-top:10px">If you have any queries, please contact CloudAsset@minsoft.com.pg or telephone on (675) 3221 2551.</p>'
-        '<p style = "margin-top:10px">Thank You</p>'
-        '<p style = "margin-top:10px">Cloud Asset Admin</p>'
+    String title = 'Account Deactivated';
+    String Body  = '<html><body>'
+        '<p>Dear ${cur_tenant.firstname} ${cur_tenant.lastname}.</p>'
+        '<p>The account for ${cur_tenant.name} has been deactivated because $reason.</p>'
+        '<p style = "margin-top:10px">If you have further quereies, please contact us on the following.</p>'
+        '<p>Email: geoAssetManager@gmail.com</p>'
+        '<p>Landline: (+675) 325 2552</p>'
+        '<p style = "margin-top:10px">Thank you</p>'
+        '<p style = "margin-top:10px">Geo Asset Manager</p>'
+        '<p>System Admin</p>'
         '</body></html>';
     sendEmail(email, title, Body);
   }
-  StatefulBuilder gradeDialog() {
+  void addNewCountry() async{
+    bool isOK = await CountryService().createCountry(new_country_name, generateID(length: 3));
+    if(isOK == true){
+      showSuccess('Success');
+    }else{
+      showError('Error');
+    }
+    setState(() {
+      countryData = [];
+    });
+    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+    Future.delayed(const Duration(milliseconds: 20), () {
+      setState(() {
+        countryData = serverData;
+      });
+    });
+  }
+  void deleteCountry() async{
+    String id  = detailData['id'];
+    bool isOK = await CountryService().deleteCountry(id);
+    if(isOK == true){
+      showSuccess('Success');
+    }else{
+      showError('Error');
+    }
+    setState(() {
+      countryData = [];
+    });
+    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+    Future.delayed(const Duration(milliseconds: 20), () {
+      setState(() {
+        countryData = serverData;
+        detailData = {};
+        _key.currentState!.fetchData();
+      });
+    });
+
+  }
+  void changeCountry() async{
+    String id = detailData['id'];
+    bool isOk = await CountryService().saveChanges(detailData);
+    if(isOk){
+      showSuccess('Success');
+    }else{
+      showError('Error');
+    }
+    setState(() {
+      countryData = [];
+      detailData = {};
+    });
+    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+    Future.delayed(const Duration(milliseconds: 20), () {
+      setState(() {
+        countryData = serverData;
+      });
+      for(Map<String, dynamic> item in countryData) {
+        if(item['id'] == id) {
+          setState(() {
+            detailData = item;
+          });
+          Future.delayed(const Duration(milliseconds: 20), () {
+            _key.currentState!.fetchData();
+          });
+          break;
+        }
+      }
+
+    });
+  }
+  StatefulBuilder gradeDialog(bool? value) {
     return StatefulBuilder(
       builder: (context, _setter) {
         return AlertDialog(
-          title: Text('Please enter the reason for deactivation.'),
+          title: Text('Please enter the reason for action.'),
           content:
           Container(
               height: 150,
@@ -127,9 +215,12 @@ class  _AdminViewState extends State<AdminView> {
             ElevatedButton(
               onPressed:(){
                 setState(() {
-                  cur_tenant.active = false;
+                  cur_tenant.active = value!;
                 });
-                sendDeActiveAccountEmail();
+                if(value == true)
+                  sendActiveAccountEmail();
+                else
+                  sendDeActiveAccountEmail();
                 Navigator.pop(context);
               },
               child: Text('Confirm'),
@@ -145,8 +236,129 @@ class  _AdminViewState extends State<AdminView> {
       },
     );
   }
+  StatefulBuilder createDialog() {
+    return StatefulBuilder(
+      builder: (context, _setter) {
+        return AlertDialog(
+          title: Text( 'Add Country', style: TextStyle(fontSize: 16)),
+          content:
+          Container(
+              height: 50,
+              child:
+              SizedBox(
+                  width:200,
+                  child: TextFormField(
+                    initialValue: '',
+                    decoration: InputDecoration(
+                      labelText: 'Country Title',
+                    ),
+                    onChanged: (value){
+                      setState(() {
+                        new_country_name = value;
+                      });
+                    },
+                  ))
+
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed:(){
+                addNewCountry();
+                Navigator.pop(context);
+              },
+              child: Text('Add'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  StatefulBuilder deleteDialog() {
+    return StatefulBuilder(
+      builder: (context, _setter) {
+        return AlertDialog(
+          title: Text( 'Delete Country - ${detailData['text']}', style: TextStyle(fontSize: 16)),
+          content:
+          Container(
+              height: 50,
+              child:
+              SizedBox(
+                  width:200,
+                  child:  Text('Would you really delete this country?')
+              )
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed:(){
+                deleteCountry();
+                Navigator.pop(context);
+              },
+              child: Text('Yes'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('No'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  StatefulBuilder editDialog() {
+    return StatefulBuilder(
+      builder: (context, _setter) {
+        return AlertDialog(
+          title: Text( 'Edit Country', style: TextStyle(fontSize: 16)),
+          content:
+          Container(
+              height: 50,
+              child:
+              SizedBox(
+                  width:200,
+                  child: TextFormField(
+                    initialValue: detailData['text'],
+                    decoration: InputDecoration(
+                      labelText: 'Country Title',
+                    ),
+                    onChanged: (value){
+                      setState(() {
+                        detailData['text'] = value;
+                      });
+                    },
+                  ))
+
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed:(){
+                changeCountry();
+                Navigator.pop(context);
+              },
+              child: Text('Save'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget getLargeWidget(BuildContext context){
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final double textfield_width = (screenWidth - 600)/2;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -158,78 +370,183 @@ class  _AdminViewState extends State<AdminView> {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.only(top:10),
-                  child:  Text('Tenants',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10,bottom: 20),
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchItems(value);
-                      });
-                    },
-                    decoration: InputDecoration(
-                        labelText: 'Search...',
-                        // Add a clear button to the search bar
-                        suffixIcon:  Icon(Icons.clear),
-                        // Add a search icon or button to the search bar
-                        prefixIcon:  Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                        fillColor: Colors.white,
-                        filled: true
-                    ),
-                  ),
-                ),
-                Expanded(child: ListView.builder(
-                  padding: const EdgeInsets.only(top: 0),
-                  itemCount: filteredItems.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        // Handle mouse press event
-                        onLeftItemClicked(filteredItems[index].user_id!);
-                        print('Item pressed: ${filteredItems[index].name}');
-                      },
-                      child: MouseRegion(
-                        onEnter: (event) {
-                          setState(() {
-                            hoveredIndex = index;
-                          });
-                        },
-                        onExit: (event) {
-                          setState(() {
-                            hoveredIndex = -1;
-                          });
-                        },
-
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          height: 40,
-                          color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
-                          child: Row(
-                            children: [
-                              Image.asset('assets/images/tenant.png'),
-                              Container(
-                                margin: const EdgeInsets.only(left: 10),
-                                child: Text('${filteredItems[index].name}'),
-                              ),
-                            ],
-                          ),
+                SizedBox(height: screenHeight - 490, child : Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top:10),
+                      child:  Text('Tenants',
+                        style: TextStyle(
+                          fontSize: 20,
                         ),
                       ),
-                    );
-                  },
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10,bottom: 20),
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            searchItems(value);
+                          });
+                        },
+                        decoration: InputDecoration(
+                            labelText: 'Search...',
+                            // Add a clear button to the search bar
+                            suffixIcon:  Icon(Icons.clear),
+                            // Add a search icon or button to the search bar
+                            prefixIcon:  Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true
+                        ),
+                      ),
+                    ),
+                    Expanded(child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 0),
+                      itemCount: filteredItems.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            // Handle mouse press event
+                            onLeftItemClicked(filteredItems[index].user_id!);
+                            print('Item pressed: ${filteredItems[index].name}');
+                          },
+                          child: MouseRegion(
+                            onEnter: (event) {
+                              setState(() {
+                                hoveredIndex = index;
+                              });
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                hoveredIndex = -1;
+                              });
+                            },
+
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              height: 40,
+                              color: hoveredIndex == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                              child: Row(
+                                children: [
+                                  Image.asset('assets/images/tenant.png'),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10),
+                                    child: Text('${filteredItems[index].name}'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )),
+                  ],
                 )),
+                SizedBox(height: 400, child : Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top:10),
+                      child:  Text('Allowed Countries',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 0),
+                      itemCount: countryData.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              detailData = countryData[index];
+                            });
+                            Future.delayed(const Duration(milliseconds: 20), () {
+                              _key.currentState!.fetchData();
+                            });
+                          },
+                          child: MouseRegion(
+                            onEnter: (event) {
+                              setState(() {
+                                hoveredIndex_2 = index;
+                              });
+                            },
+                            onExit: (event) {
+                              setState(() {
+                                hoveredIndex_2 = -1;
+                              });
+                            },
+
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              height: 40,
+                              color: hoveredIndex_2 == index ? Color.fromRGBO(150, 150, 150, 0.2) : Colors.white,
+                              child: Row(
+                                children: [
+                                  Image.asset('assets/images/country.png'),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10),
+                                    child: Text('${countryData[index]['text']}'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SizedBox(
+                              width: 80,
+                              height:50,
+                              child : FloatingActionButton(
+                                heroTag: "btn1",
+                                onPressed: (){
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => createDialog(),
+                                  );
+                                },
+                                child: const Icon(Icons.add),
+                              ) ),
+                          SizedBox(
+                              width: 80,
+                              height:50,
+                              child : FloatingActionButton(
+                                heroTag: "btn2",
+                                onPressed: (){
+                                  if(detailData['id'] == null) return;
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => deleteDialog(),
+                                  );
+                                },
+                                child: const Icon(Icons.delete),
+                              ) ),
+                          SizedBox(
+                              width: 80,
+                              height:50,
+                              child : FloatingActionButton(
+                                heroTag: "btn3",
+                                onPressed: (){
+                                  if(detailData['id'] == null) return;
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => editDialog(),
+                                  );
+                                },
+                                child: const Icon(Icons.edit),
+                              ) )
+                    ])
+                  ],
+                ))
               ],
             )
+
         ),
         Expanded(
             child:
@@ -247,6 +564,40 @@ class  _AdminViewState extends State<AdminView> {
                           Expanded(child:
                           Column(
                             children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                      height: 50,
+                                      width: textfield_width,
+                                      child: Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextFormField(
+                                            controller: firstNameEditController,
+                                            decoration: InputDecoration(
+                                                labelText: 'First Name'
+                                            ),
+                                            style: TextStyle(fontSize: 16),
+                                            readOnly: true,
+                                          )
+                                      )
+
+                                  ),
+                                  SizedBox(
+                                    height: 50,
+                                    width: textfield_width,
+                                    child:  Container(
+                                        margin:EdgeInsets.only(left:20),
+                                        child: TextFormField(
+                                          controller: lastNameEditController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Last Name',
+                                          ),
+                                          readOnly: true,
+                                        )
+                                    ),
+                                  )
+                                ],
+                              ),
                               Row(
                                 children: [
                                   SizedBox(
@@ -329,16 +680,12 @@ class  _AdminViewState extends State<AdminView> {
                                         value: cur_tenant.active==null?false:cur_tenant.active,
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            if(value == true){
-                                              sendActiveAccountEmail();
-                                              cur_tenant.active = value;
-                                            }
-                                            else{
+
                                               showDialog(
                                                 context: context,
-                                                builder: (context) => gradeDialog()  ,
+                                                builder: (context) => gradeDialog(value)  ,
                                               );
-                                            }
+
 
                                           });
                                         },
@@ -368,12 +715,12 @@ class  _AdminViewState extends State<AdminView> {
                       )
                   ),
                   TitledContainer(
-                      titleText: 'Allowed Countries',
+                      titleText: 'Country Details',
                       idden: 10,
                       child:  Container(
-                        height: 800,
+                        height: 600,
                         alignment: Alignment.topCenter,
-                        child: CountryTreeView(),
+                        child: CountryTreeView(key : _key, id :  detailData['id'] == null ? '' : detailData['id']),
                       )
                   )
                 ],

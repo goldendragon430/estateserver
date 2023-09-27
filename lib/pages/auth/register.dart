@@ -1,11 +1,12 @@
 import 'dart:math';
+import 'package:assetmamanger/apis/countries.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert'; // for the utf8.encode method
 import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/utils/global.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 class RegisterView extends StatefulWidget {
   RegisterView({super.key});
   @override
@@ -13,6 +14,8 @@ class RegisterView extends StatefulWidget {
 }
 class  _RegisterView extends State<RegisterView> {
   final dio = Dio();
+  String firstname = '';
+  String lastname = '';
   String username = '';
   String email = '';
   String mobile = '';
@@ -22,18 +25,66 @@ class  _RegisterView extends State<RegisterView> {
   String sent_code = '';
   String password = '';
   String password_confirm = '';
+  List<Map<String, dynamic>> m_countries = [];
+  List<String> country_list = [];
+  String selected_country_id = '';
+  bool hasOffice = false;
+  void fetchData() async{
+
+    List<Map<String, dynamic>> data =  await CountryService().getCountries();
+    setState(() {
+      m_countries = data;
+    });
+    country_list = [];
+    for (Map<String, dynamic> item in data){
+      setState(() {
+        country_list.add(item['id']);
+      });
+    }
+    if(country_list.length > 0)
+        selected_country_id = country_list[0];
+  }
   @override
   void initState() {
     super.initState();
+    fetchData();
   }
-
+  String getCountryName(String id){
+    for (Map<String, dynamic> item in m_countries){
+      if(item['id'] == id) return item['text'];
+    }
+    return '';
+  }
   void onRegister() async{
     if(sent_code == code) {
       var bytes = utf8.encode(password); // data being hashed
       var digest = sha256.convert(bytes);
-      bool ok = await LoginService().create(email, username, landline, mobile,digest.toString());
+      bool ok = await LoginService().create(email, username, landline, mobile, digest.toString(),firstname,lastname,hasOffice,selected_country_id);
       if(ok){
-        showSuccess('Congratulations ${username}. Your account has been successfully registered with Cloud Asset. You will be notified by email once your account has been verified and activated by Cloud Asset Administrator. \nIn the meantime, you can read some of our resources in this link to familiarize yourself on how to use the system. \nThank you.');
+        showSuccess('Congratulations ${username}.You will be notified by email once your account has been approved.');
+        final dio = Dio();
+        String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        String endDate = DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 30)));
+
+        final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/active', data : {
+          'to'   : email ,
+          'title' : 'Geo Asset Manager Account Approved',
+          'body'  :
+          '<html> '
+              '<body>'
+              '<p>'
+              'Welcome <b>$firstname $lastname </b> to Geo Asset Manager. We are pleased to inform you that your account for <b>$username</b> has been approved.'
+              ' </p>'
+              '<p>Your account details are provided below.</p>'
+              '<p>User name: $username </p>'
+              '<p>Password: $password </p>'
+              '<p>You will be given a trial period of 30 days starting from $todayDate to $endDate. We will be happy to assist you during this trial period to better understand the Geo Asset Management System. You can contact us on the following:</p>'
+              '<p>Email: geoAssetManager@gmail.com </p>'
+              '<p>Landline: (+675) 325 2552 </p>'
+              '<p>Thank you, System Admin</p>'
+              '</body>'
+              '</html>'
+        });
         Future.delayed(const Duration(milliseconds: 3000), () {
           Navigator.pop(context);
         });
@@ -44,9 +95,18 @@ class  _RegisterView extends State<RegisterView> {
       showError('Not Matches Digits');
     }
   }
+
   void onNext() async{
+    if(firstname == '') {
+      showError('First Name is empty.');
+      return;
+    }
+    if(lastname == '') {
+      showError('Last Name is empty.');
+      return;
+    }
     if(username == '') {
-      showError('User Name is empty.');
+      showError('Account Name is empty.');
       return;
     }
     if(email == '' || isEmailValid(email) == false){
@@ -61,7 +121,10 @@ class  _RegisterView extends State<RegisterView> {
       showError('Passsword is invalid.');
       return;
     }
-
+    if(selected_country_id == '') {
+      showError('Country is empty.');
+      return;
+    }
     Random  rng = new Random();
     int varcode = rng. nextInt(900000) + 100000;
     setState(() {
@@ -69,22 +132,30 @@ class  _RegisterView extends State<RegisterView> {
       sent_code = varcode.toString();
     });
     print(sent_code);
-    // final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/send', data : {
-    //   'to'   : email ,
-    //   'code' : varcode
-    // });
-    // if(response.data['result'] == 'success'){
-    //   setState(() {
-    //     state = true;
-    //     sent_code = varcode.toString();
-    //   });
-    // }else{
-    //   showError('Mail server is error.');
-    // }
+    final dio = Dio();
+    final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/active', data : {
+      'to'   : email ,
+      'title' : 'Geo Asset Manager Account Registeration',
+      'body'  :
+      '<html> '
+          '<body>'
+          '<p>'
+            'Thank you <b>$firstname $lastname </b> for registering your organization or company <b> $username </b> with Geo Asset Manager. You will be notified by email when your account is approved. '
+          ' </p>'
+          '<center>Active Code:  <h3> $varcode </h3></center>'
+          '<p>Thank you, System Admin</p>'
+          '</body>'
+          '</html>'
+    });
+    setState(() {
+      state = true;
+      sent_code = varcode.toString();
+    });
   }
-
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return
       Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -100,121 +171,124 @@ class  _RegisterView extends State<RegisterView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                state == false ? Container(
-                    child: Column(
-                        children: [
-                            Row(children: [
-                              Text('User Name',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    decoration: TextDecoration.none,
-                                  )
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 10,bottom:10),
-                                  child: SizedBox(
-                                      height: 45,
-                                      width: 400,
-                                      child:
-                                      Container(
-                                        margin:EdgeInsets.only(left:20),
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            setState(() {
-                                              this.username = value;
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                              hintText: 'John Doe',
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                              ),
-                                              fillColor: Colors.white,
-                                              filled: true
-                                          ),
-                                        ),
-                                      )
-
-                                  )
-                              ),
-                            ]),
-                            Row(children: [
-                              Text('Email          ',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    decoration: TextDecoration.none,
-                                  )
-
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 10,bottom:10),
-                                  child: SizedBox(
-                                      height: 45,
-                                      width: 400,
-                                      child:
-                                      Container(
-                                        margin:EdgeInsets.only(left:20),
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            setState(() {
-                                              this.email = value;
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                              hintText: 'example@gmail.com',
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                              ),
-                                              fillColor: Colors.white,
-                                              filled: true
-                                          ),
-                                        ),
-                                      )
-
-                                  )
-                              ),
-                            ]),
-                            Row(children: [
-                              Text('Password    ',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    decoration: TextDecoration.none,
-                                  )
-
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10,bottom:10),
-                                child: SizedBox(
-                                    height: 45,
-                                    width: 400,
-                                    child:
-                                    Container(
-                                      margin:EdgeInsets.only(left:20),
-                                      child: TextField(
-                                        obscureText: true,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            this.password = value;
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: '',
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            fillColor: Colors.white,
-                                            filled: true
-                                        ),
-                                      ),
+                    child:  SizedBox(
+                        height: screenHeight - 200 > 700 ? 700 : screenHeight - 200 ,
+                        width : 520,
+                        child: ListView(
+                            children: [
+                              Row(children: [
+                                Text('First Name',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
                                     )
+                                ),
+                                SizedBox(width : 30),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.firstname = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: 'John',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
+                                          ),
+                                        )
 
-                                )
-                            ),
-                          ]),
-                            Row(children: [
-                                Text('Confirm      ',
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Last Name',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+                                ),
+                                SizedBox(width : 32),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.lastname = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: 'Doe',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Account Name',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+                                ),
+                                SizedBox(width : 2),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.username = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: 'John Doe',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Email                ',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.black,
@@ -223,121 +297,259 @@ class  _RegisterView extends State<RegisterView> {
 
                                 ),
                                 Container(
-                                margin: EdgeInsets.only(top: 10,bottom:10),
-                                child: SizedBox(
-                                    height: 45,
-                                    width: 400,
-                                    child:
-                                    Container(
-                                      margin:EdgeInsets.only(left:20),
-                                      child: TextField(
-                                        obscureText: true,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            this.password_confirm = value;
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: '',
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(5.0),
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.email = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: 'example@gmail.com',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
                                             ),
-                                            fillColor: Colors.white,
-                                            filled: true
-                                        ),
-                                      ),
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Password         ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
                                     )
 
-                                )
-                            ),
-                          ]),
-                            Row(children: [
-                              Text('Mobile        ',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    decoration: TextDecoration.none,
-                                  )
-
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 10,bottom:10),
-                                  child: SizedBox(
-                                      height: 45,
-                                      width: 400,
-                                      child:
-                                      Container(
-                                        margin:EdgeInsets.only(left:20),
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            setState(() {
-                                              this.mobile = value;
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                              hintText: '',
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                              ),
-                                              fillColor: Colors.white,
-                                              filled: true
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            obscureText: true,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.password = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: '',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
                                           ),
-                                        ),
-                                      )
+                                        )
 
-                                  )
-                              ),
-                            ]),
-                            Row(children: [
-                              Text('Landline     ',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    decoration: TextDecoration.none,
-                                  )
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Confirm           ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
 
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 10,bottom:10),
-                                  child: SizedBox(
-                                      height: 45,
-                                      width: 400,
-                                      child:
-                                      Container(
-                                        margin:EdgeInsets.only(left:20),
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            setState(() {
-                                              this.landline = value;
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                              hintText: '',
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                              ),
-                                              fillColor: Colors.white,
-                                              filled: true
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            obscureText: true,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.password_confirm = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: '',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
                                           ),
-                                        ),
-                                      )
+                                        )
 
-                                  )
-                              ),
-                            ]),
-                            SizedBox(height: 20),
-                            Container(
-                          width: 490, // Set the desired width here
-                          child: ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.green),
-                                  padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Mobile             ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
 
-                                  textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                              onPressed: onNext,
-                              child: const Text('Sign up'))
-                      )
-                    ])
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.mobile = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: '',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Landline           ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 400,
+                                        child:
+                                        Container(
+                                          margin:EdgeInsets.only(left:20),
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.landline = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: '',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5.0),
+                                                ),
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Country                ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 380,
+                                        child:
+                                        DropdownButton<String>(
+                                          value: selected_country_id,
+                                          isExpanded: true,
+                                          onChanged: (String? newValue) {
+                                             setState(() {
+                                               selected_country_id = newValue!;
+                                             });
+                                          },
+                                          items: country_list.map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(getCountryName(value)),
+                                            );
+                                          }).toList(),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              Row(children: [
+                                Text('Have office?       ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width:5
+                                    ),
+                                    Checkbox(
+                                      value: hasOffice,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          hasOffice = value!;
+                                        });
+                                      },
+                                    ),
+                                    SizedBox(
+                                        width:3
+                                    ),
+                                    Text('Yes')
+                                  ],
+                                ),
+                              ]),
+                              SizedBox(height: 20),
+                              Container(
+                                  margin: EdgeInsets.only(left:128,right: 10),
+                                  width:  100, // Set the desired width here
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Colors.green),
+                                          padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                                          textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                                      onPressed: onNext,
+                                      child: const Text('Sign up'))
+                              )
+                            ]) )
                 ) : Container(
                    child: Column(
                        children: [

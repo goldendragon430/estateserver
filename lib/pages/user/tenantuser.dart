@@ -221,6 +221,7 @@ class  _UserDetail extends State<UserDetail> {
   String user_node_id = '';
   String user_role = '';
   Map root_data = {};
+
   void findRootNode(Map data){
     int level = data['id'].split('-').length - 1;
     if(data['id'] == user_node_id) {
@@ -236,14 +237,42 @@ class  _UserDetail extends State<UserDetail> {
   }
   TreeNodeData mapServerDataToTreeData(Map data) {
     int level = data['id'].split('-').length - 1;
+    List<TreeNodeData> m_asset_types = [];
+    for(AssetType type in m_types){
+      m_asset_types.add(
+          TreeNodeData(
+            extra: {
+              'id' : type.id,
+              'level' : '${int.parse(cut_off_level) + 1}',
+              'children' :[],
+              'text' : type.type,
+              'parent' : data['id']
+            },
+            title: type.type!,
+            expanded: true,
+            checked: false,
+            children:   [],
+          )
+      );
+    }
+
      if (level.toString()  == cut_off_level) {
-        return TreeNodeData(
-          extra: data,
-          title: data['text'],
-          expanded: false,
-          checked: false,
-          children: [],
-        );
+       if(cur_tenant!.show_asset_types == true) {
+           return TreeNodeData(
+             extra: data,
+             title: data['text'],
+             expanded: true,
+             checked: false,
+             children: m_asset_types,
+           );
+         } else
+           return TreeNodeData(
+             extra: data,
+             title: data['text'],
+             expanded: false,
+             checked: false,
+             children: [],
+           );
     } else
       return TreeNodeData(
         extra: data,
@@ -299,7 +328,8 @@ class  _UserDetail extends State<UserDetail> {
         break;
       }
     }
-    if(root_data != {})
+
+    if(root_data['id'] != null)
       treeData = [mapServerDataToTreeData(root_data)];
 
     setState(() {
@@ -413,7 +443,6 @@ class  _UserDetail extends State<UserDetail> {
       user_node_id = data?['node_id'];
       user_role = data!['role'].toString();
     });
-
     fetchData();
   }
   String getAssetTypeName(String ID){

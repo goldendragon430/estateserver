@@ -7,13 +7,13 @@ import 'package:assetmamanger/pages/customFlutterTree/flutter_tree.dart';
 
 
 class CountryTreeView extends StatefulWidget {
-
-  CountryTreeView({super.key}) ;
+  final String id;
+  CountryTreeView({super.key, required this.id}) ;
   @override
-  _CountryTreeView createState() => _CountryTreeView();
+  CountryTreeViewState createState() => CountryTreeViewState();
 
 }
-class  _CountryTreeView extends State<CountryTreeView> {
+class  CountryTreeViewState extends State<CountryTreeView> {
 
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
@@ -23,7 +23,7 @@ class  _CountryTreeView extends State<CountryTreeView> {
     return StatefulBuilder(
       builder: (context, _setter) {
         return AlertDialog(
-          title: Text( node.extra['level'] > 0 ? 'Level ${node.extra['level']} Node' : 'Country Node',style: TextStyle(fontSize: 16)),
+          title: Text( 'Level ${node.extra['level']} Node', style: TextStyle(fontSize: 16)),
           content:
           Container(
               height: 50,
@@ -72,7 +72,8 @@ class  _CountryTreeView extends State<CountryTreeView> {
      for(int i = 0; i < treeData!.length; i ++){
         data.add(NodeToMap(treeData[i]));
      }
-     bool isOk = await CountryService().saveChanges(data);
+     if(data.length == 0) return;
+     bool isOk = await CountryService().saveChanges(data[0]);
      if(isOk){
        showSuccess('Success');
      }else{
@@ -81,55 +82,60 @@ class  _CountryTreeView extends State<CountryTreeView> {
   }
 
   void fetchData() async{
-    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+    setState(() {
+      m_treeview = null;
+    });
+    if(widget.id == '' ) return;
+    Map<String, dynamic>? data = await CountryService().getCountry(widget.id);
 
     // Generate tree data
-    List<TreeNodeData> treeData = List.generate(
-      serverData.length,
-          (index) => mapServerDataToTreeData(serverData[index]),
-    );
-    setState(() {
-      m_treeview = TreeView(
-        key : _key,
-        data: treeData,
-        showActions: true,
-        contentTappable: true,
-        append: (parent) {
-          return TreeNodeData(
-              title: 'New',
-              expanded: true,
-              checked: false,
-              children: [],
-              extra: {
-                "children": [],
-                "id": "${parent.extra['id']}-${generateID(length: 3)}",
-                "level" : parent.extra['level'] + 1,
-                "text": "New",
-              }
-          );
-        },
-        onTap: (node) {
-          showDialog(
-            context: context,
-            builder: (context) => gradeDialog(node)  ,
-          );
-        },
-        onCheck: (checked, node) {
+    List<TreeNodeData> treeData = [mapServerDataToTreeData(data!)];
 
-        },
-        onCollapse: (node) {
+    Future.delayed(const Duration(milliseconds: 20), () {
+      setState(() {
+        m_treeview = TreeView(
+          key : _key,
+          data: treeData,
+          showActions: true,
+          contentTappable: true,
+          append: (parent) {
+            return TreeNodeData(
+                title: 'New',
+                expanded: true,
+                checked: false,
+                children: [],
+                extra: {
+                  "children": [],
+                  "id": "${parent.extra['id']}-${generateID(length: 3)}",
+                  "level" : parent.extra['level'] + 1,
+                  "text": "New",
+                }
+            );
+          },
+          onTap: (node) {
+            if(node.extra['level'] > 0)
+              showDialog(
+                context: context,
+                builder: (context) => gradeDialog(node)  ,
+              );
+          },
+          onCheck: (checked, node) {
 
-        },
-        onExpand: (node) {
+          },
+          onCollapse: (node) {
 
-        },
-        onAppend: (node, parent) {
+          },
+          onExpand: (node) {
 
-        },
-        onRemove: (node, parent) {
+          },
+          onAppend: (node, parent) {
 
-        },
-      );
+          },
+          onRemove: (node, parent) {
+
+          },
+        );
+      });
     });
   }
 
@@ -151,7 +157,6 @@ class  _CountryTreeView extends State<CountryTreeView> {
       List.from(data['children'].map((x) => mapServerDataToTreeData(x))),
     );
   }
-
   Map<String, dynamic> NodeToMap(TreeNodeData node){
     return {
       'id' : node.extra['id'],
@@ -169,28 +174,6 @@ class  _CountryTreeView extends State<CountryTreeView> {
         Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.red),
-                      padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                      textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                  onPressed:  (){
-                    _key.currentState?.addCountry(
-                        TreeNodeData(
-                        title: 'New Country',
-                        expanded: true,
-                        checked: false,
-                        children: [],
-                        extra: {
-                          "children": [],
-                          "id": generateID(length: 3),
-                          "level" : 0,
-                          "text": "New Country",
-                        })
-                    ) ;
-                  },
-                  child: const Text('Add Country')),
-              SizedBox(width: 10),
               ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(Colors.red),

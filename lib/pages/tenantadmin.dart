@@ -21,19 +21,19 @@ class TenantAdminView extends StatefulWidget {
 class  _TenantAdminView extends State<TenantAdminView> {
   int hoveredIndex = -1;
   int tab_index = 0;
-  String userid = 'bdMg1tPZwEUZA1kimr8b';
+
   bool new_flag = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    //
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
 
 
   }

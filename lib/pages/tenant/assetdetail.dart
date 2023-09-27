@@ -33,7 +33,7 @@ class AssetDetail extends StatefulWidget {
 class  _AssetItem extends State<AssetDetail> {
   //-------------Main variable------------------//
 
-  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  String userid = 'tdAMqNmvrCg7CixiqYKi';
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
   Tenant? cur_tenant = null;
@@ -244,7 +244,7 @@ class  _AssetItem extends State<AssetDetail> {
         return TreeNodeData(
           extra: data,
           title: data['text'],
-          expanded: false,
+          expanded: true,
           checked: false,
           children: m_asset_types,
         );
@@ -309,8 +309,6 @@ class  _AssetItem extends State<AssetDetail> {
         break;
       }
     }
-
-
     setState(() {
       m_treeview = TreeView(
         key : _key,

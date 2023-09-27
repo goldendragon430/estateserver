@@ -20,7 +20,7 @@ class  _TenantSettings extends State<TenantSettings> {
 
   int hoveredIndex = -1;
   Tenant tenant_data = Tenant(name: '', email: '', active: false,   address: '', phone: '', fax: '', landline: '', office: '', renewal_date: DateTime(2023,1,1),   user_id: '',logo : 'https://coinscipher.com/wp-content/uploads/2023/07/file-48.jpg');
-  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  String userid = '5htCrPBuhLjoNE46l09O';
   String group = '';
   String folder = '';
   Uint8List? logo_image = null;
@@ -39,6 +39,8 @@ class  _TenantSettings extends State<TenantSettings> {
   TextEditingController phoneEditController = TextEditingController();
   TextEditingController officeEditController = TextEditingController();
   TextEditingController faxEditController = TextEditingController();
+  TextEditingController firstEditController = TextEditingController();
+  TextEditingController lastEditController = TextEditingController();
 
   void loadData () async{
     Tenant? result =  await TenantService().getTenantDetails(userid);
@@ -56,7 +58,8 @@ class  _TenantSettings extends State<TenantSettings> {
     emailEditController.text = tenant_data.email!;
     addressEditController.text = tenant_data.address!;
     landlineEditController.text = tenant_data.landline!;
-
+    firstEditController.text = tenant_data.firstname!;
+    lastEditController.text = tenant_data.lastname!;
     phoneEditController.text = tenant_data.phone!;
     officeEditController.text = tenant_data.office!;
     faxEditController.text = tenant_data.fax!;
@@ -150,6 +153,49 @@ class  _TenantSettings extends State<TenantSettings> {
                         Container(
                             margin:EdgeInsets.only(left:20),
                             child: TextFormField(
+                              controller: firstEditController,
+                              decoration: InputDecoration(
+                                labelText: 'First Name',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.firstname = value;
+                                });
+                              },
+                            )
+                        )
+
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: textfield_width,
+                      child:  Container(
+                          margin:EdgeInsets.only(left:20),
+                          child: TextFormField(
+                              controller: lastEditController,
+                              decoration: InputDecoration(
+                                labelText: 'Last Name',
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  tenant_data.lastname = value;
+                                });
+                              }
+                          )
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    SizedBox(
+                        height: 50,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
                               controller: nameEditController,
                               decoration: InputDecoration(
                                 labelText: 'Tenant Name',
@@ -163,29 +209,6 @@ class  _TenantSettings extends State<TenantSettings> {
                         )
 
                     ),
-                    SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:  Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: addressEditController,
-                              decoration: InputDecoration(
-                                labelText: 'POSTAL ADDRESS',
-                              ),
-                              onChanged: (value){
-                                setState(() {
-                                  tenant_data.address = value;
-                                });
-                              }
-                          )
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 5),
-                Row(
-                  children: [
                     SizedBox(
                         height: 50,
                         width: textfield_width,
@@ -205,81 +228,78 @@ class  _TenantSettings extends State<TenantSettings> {
                             )
                         )
 
-                    ),
-                    SizedBox(width: 20),
-                    Column(
-                      children: [
-                        SizedBox(height: 15),
-                        SizedBox(
-                            width: textfield_width - 20 ,
-                            child: DropdownButton<String>(
-                              value: tenant_data.cut_off_level,
-                              isExpanded: true,
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  tenant_data.cut_off_level = newValue!;
-                                });
-                              },
-                              items: level_list.map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                            )
-                        )
-                      ],
                     )
                   ],
                 ),
                 SizedBox(height: 5),
                 Row(
                   children: [
-                    SizedBox(
-                        height: 50,
-                        width: textfield_width,
-                        child:
-                        Container(
-                            margin:EdgeInsets.only(left:20),
-                            child: TextFormField(
-                              controller: landlineEditController,
-                              decoration: InputDecoration(
-                                labelText: 'Tenant Landline',
-                              ),
-                              onChanged: (value){
-                                setState(() {
-                                  tenant_data.landline = value;
-                                });
-                              },
-
-                            )
-                        )
-
-                    ),
                     SizedBox(width: 20),
-                    Column(
+                    Row(
+                        children: [
+                          Container(
+                              margin: EdgeInsets.only(top:15),
+                              child: Text('Cut Off Level:', style: TextStyle(fontWeight: FontWeight.w600))
+                          ),
+                          SizedBox(width : 20),
+                          Column(
+                            children: [
+                              SizedBox(height: 15),
+                              SizedBox(
+                                  width: textfield_width - 130 ,
+                                  child: DropdownButton<String>(
+                                    value: tenant_data.cut_off_level,
+                                    isExpanded: true,
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        tenant_data.cut_off_level = newValue!;
+                                      });
+                                    },
+                                    items: level_list.map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  )
+                              )
+                            ],
+                          )
+                        ]),
+                    SizedBox(width: 20),
+                    Row(
                       children: [
-                        SizedBox(height: 15),
-                        SizedBox(
-                            width: textfield_width - 20 ,
-                            child: DropdownButton<String>(
-                              value: tenant_data.country,
-                              isExpanded: true,
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  tenant_data.country = newValue!;
-                                });
-                              },
-                              items: country_list.map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(getCountryName(value)),
-                                );
-                              }).toList(),
+                        Container(
+                            margin: EdgeInsets.only(top:15),
+                            child: Text('Country:', style: TextStyle(fontWeight: FontWeight.w600))
+                        ),
+                        SizedBox(width : 50),
+                        Column(
+                          children: [
+                            SizedBox(height: 15),
+                            SizedBox(
+                                width: textfield_width - 130 ,
+                                child: DropdownButton<String>(
+                                  value: tenant_data.country,
+                                  isExpanded: true,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      tenant_data.country = newValue!;
+                                    });
+                                  },
+                                  items: country_list.map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(getCountryName(value)),
+                                    );
+                                  }).toList(),
+                                )
                             )
+                          ],
                         )
                       ],
                     )
+
                   ],
                 ),
                 SizedBox(height: 5),
@@ -308,23 +328,26 @@ class  _TenantSettings extends State<TenantSettings> {
 
                         ),
                         SizedBox(
-                          height: 50,
-                          width: textfield_width,
-                          child:  Container(
-                              margin:EdgeInsets.only(left:20),
-                              child: TextFormField(
-                                  controller: faxEditController,
+                            height: 50,
+                            width: textfield_width,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                  controller: landlineEditController,
                                   decoration: InputDecoration(
-                                    labelText: 'Faxline',
+                                    labelText: 'Tenant Landline',
                                   ),
                                   onChanged: (value){
                                     setState(() {
-                                      tenant_data.fax = value;
+                                      tenant_data.landline = value;
                                     });
-                                  }
-                              )
-                          ),
-                        )
+                                  },
+
+                                )
+                            )
+
+                        ),
                       ],
                     ),
                     Column(

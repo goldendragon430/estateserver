@@ -17,6 +17,9 @@ class Tenant {
    String? user_id = '' ;
    String? logo = '' ;
    DateTime? created_date = DateTime(2023,1,1) ;
+   String firstname = '';
+   String lastname = '';
+   bool hasOffice = false;
 
    Map<String,dynamic> toJson(){
 
@@ -37,7 +40,10 @@ class Tenant {
        'logo' : logo,
        'cut_off_level' : cut_off_level,
        'country' : country,
-       'show_asset_type' : show_asset_types
+       'show_asset_type' : show_asset_types,
+       'firstname' : firstname,
+       'lastname' : lastname,
+       'hasOffice' : hasOffice
      };
    }
 
@@ -79,7 +85,24 @@ class Tenant {
      else{
        country = data?['country'];
      }
-
+     if(data?['firstname'] == null){
+       firstname = '';
+     }
+     else{
+       firstname = data?['firstname'];
+     }
+     if(data?['lastname'] == null){
+       lastname = '';
+     }
+     else{
+       lastname = data?['lastname'];
+     }
+     if(data?['hasOffice'] == null){
+       hasOffice = false;
+     }
+     else{
+       hasOffice = data?['hasOffice'];
+     }
      active = data?['active'];
 
      user_id = data?['user_id'];

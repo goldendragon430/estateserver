@@ -198,7 +198,8 @@ class  _LoginView extends State<LoginView> {
                   ),
                   SizedBox(height: 20),
                   Container(
-                      width: 490, // Set the desired width here
+                      margin: EdgeInsets.only(left:105),
+                      width: 380, // Set the desired width here
                       child: ElevatedButton(
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(Colors.green),
@@ -206,7 +207,7 @@ class  _LoginView extends State<LoginView> {
 
                               textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
                           onPressed: onLogin,
-                          child: const Text('Log in'))
+                          child: const Text('Sign in'))
                   )
 
                 ])
