@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:assetmamanger/apis/auth.dart';
 import 'package:assetmamanger/utils/global.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert'; // for the utf8.encode method
@@ -46,9 +47,10 @@ class  _LoginView extends State<LoginView> {
           Tenant? tenant =  await TenantService().getTenantDetails(user_id);
 
           if(tenant!.active == false) {
-            showError('Please wait until admin allow you.');
+            showError('We have received your account registration and in the process of establishing your trial account. You can follow up on your account by emailing geoAssetManager@gmail.com.');
             return;
           }
+
         }
       }
      else {
@@ -186,7 +188,7 @@ class  _LoginView extends State<LoginView> {
                           alignment: Alignment.centerRight,
                           width:470,
                           child: Text(
-                            'Not Registered?',
+                            'Register Me?',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.blue,

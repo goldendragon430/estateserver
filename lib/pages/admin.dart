@@ -41,7 +41,8 @@ class  _AdminViewState extends State<AdminView> {
   Map<String, dynamic> detailData = {};
   final _key = GlobalKey<CountryTreeViewState>();
   String new_country_name = '';
-
+  //----------------------Right Content Select------------------------//
+  bool isTenantorCountry = true;
   void fetchData() async{
     List<Tenant> tenants =  await TenantService().getAllTenant();
     List<Map<String, dynamic>> serverData = await CountryService().getCountries();
@@ -87,17 +88,21 @@ class  _AdminViewState extends State<AdminView> {
     }
   }
   void sendActiveAccountEmail() async{
+    String registered_date = DateFormat('yyyy-MM-dd').format(cur_tenant.created_date!);
+    String expired_date =  DateFormat('yyyy-MM-dd').format(cur_tenant.created_date!.add(Duration(days: 30)));
+
     String email = cur_tenant.email!;
-    String title = 'Account Activated';
+    String title = '${cur_tenant.name} Account Approved';
     String Body  = '<html><body>'
-        '<p>Dear ${cur_tenant.firstname} ${cur_tenant.lastname}.</p>'
-        '<p>The account for ${cur_tenant.name} has been activated because $reason.</p>'
-        '<p style = "margin-top:10px">If you have further quereies, please contact us on the following.</p>'
+        '<p>Geo Asset Manager has approved a trial account for ${cur_tenant.name}. Details of your account and trial period is provided below.</p>'
+        '<p>Account Name: ${cur_tenant.name}</p>'
+        '<p>Email: ${cur_tenant.email}</p>'
+        '<p>Trial Period: From: $registered_date -to $expired_date </p>'
+        '<p style = "margin-top:10px">Thank you for your patient and If you require assistance, do get in touch with us on the following email address.</p>'
         '<p>Email: geoAssetManager@gmail.com</p>'
-        '<p>Landline: (+675) 325 2552</p>'
         '<p style = "margin-top:10px">Thank you</p>'
-        '<p style = "margin-top:10px">Geo Asset Manager</p>'
         '<p>System Admin</p>'
+        '<p style = "margin-top:10px">Geo Asset Manager</p>'
         '</body></html>';
     sendEmail(email, title, Body);
   }
@@ -217,9 +222,6 @@ class  _AdminViewState extends State<AdminView> {
                 setState(() {
                   cur_tenant.active = value!;
                 });
-                if(value == true)
-                  sendActiveAccountEmail();
-                else
                   sendDeActiveAccountEmail();
                 Navigator.pop(context);
               },
@@ -355,11 +357,18 @@ class  _AdminViewState extends State<AdminView> {
       },
     );
   }
-
+  String getCountryName(String id) {
+    for(Map<String, dynamic> item in countryData) {
+      if(item['id'] == id) {
+          return item['text'];
+      }
+    }
+    return '';
+  }
   Widget getLargeWidget(BuildContext context){
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final double textfield_width = (screenWidth - 600)/2;
+    final double textfield_width = (screenWidth - 600);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -370,7 +379,7 @@ class  _AdminViewState extends State<AdminView> {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                SizedBox(height: screenHeight - 490, child : Column(
+                SizedBox(height: screenHeight - 390, child : Column(
                   children: [
                     Container(
                       margin: EdgeInsets.only(top:10),
@@ -408,9 +417,15 @@ class  _AdminViewState extends State<AdminView> {
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onTap: () {
-                            // Handle mouse press event
-                            onLeftItemClicked(filteredItems[index].user_id!);
-                            print('Item pressed: ${filteredItems[index].name}');
+                            setState(() {
+                              isTenantorCountry = true;
+                            });
+                            Future.delayed(const Duration(milliseconds: 20), () {
+                              // Handle mouse press event
+                              onLeftItemClicked(filteredItems[index].user_id!);
+                              print('Item pressed: ${filteredItems[index].name}');
+                            });
+
                           },
                           child: MouseRegion(
                             onEnter: (event) {
@@ -444,7 +459,7 @@ class  _AdminViewState extends State<AdminView> {
                     )),
                   ],
                 )),
-                SizedBox(height: 400, child : Column(
+                SizedBox(height: 300, child : Column(
                   children: [
                     Container(
                       margin: EdgeInsets.only(top:10),
@@ -460,7 +475,9 @@ class  _AdminViewState extends State<AdminView> {
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onTap: () {
+
                             setState(() {
+                              isTenantorCountry = false;
                               detailData = countryData[index];
                             });
                             Future.delayed(const Duration(milliseconds: 20), () {
@@ -555,7 +572,7 @@ class  _AdminViewState extends State<AdminView> {
               margin: const EdgeInsets.only(left:30),
               child: ListView(
                 children: [
-                  TitledContainer(
+                  if(isTenantorCountry) TitledContainer(
                       titleText: 'TENANT Details',
                       idden: 10,
                       child: Row(
@@ -564,149 +581,101 @@ class  _AdminViewState extends State<AdminView> {
                           Expanded(child:
                           Column(
                             children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                      height: 50,
-                                      width: textfield_width,
-                                      child: Container(
-                                          margin:EdgeInsets.only(left:20),
-                                          child: TextFormField(
-                                            controller: firstNameEditController,
-                                            decoration: InputDecoration(
-                                                labelText: 'First Name'
-                                            ),
-                                            style: TextStyle(fontSize: 16),
-                                            readOnly: true,
-                                          )
-                                      )
-
-                                  ),
-                                  SizedBox(
-                                    height: 50,
-                                    width: textfield_width,
-                                    child:  Container(
-                                        margin:EdgeInsets.only(left:20),
-                                        child: TextFormField(
-                                          controller: lastNameEditController,
-                                          decoration: InputDecoration(
-                                            labelText: 'Last Name',
-                                          ),
-                                          readOnly: true,
+                                  Row(children: [
+                                    Text("First Name: "),
+                                    SizedBox(width: 75),
+                                    Text(cur_tenant == null ? "Not Selected" : cur_tenant!.firstname, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Last Name: "),
+                                    SizedBox(width: 75),
+                                    Text(cur_tenant == null ? "Not Selected" : cur_tenant!.lastname, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Account Name: "),
+                                    SizedBox(width: 47),
+                                    Text(cur_tenant.name == null ? "Not Selected" : cur_tenant!.name!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Account Email: "),
+                                    SizedBox(width: 51),
+                                    Text(cur_tenant.email == null ? "Not Selected" : cur_tenant!.email!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Country: "),
+                                    SizedBox(width: 90),
+                                    Text(cur_tenant.country == null ? "Not Selected" : getCountryName(cur_tenant!.country) , style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Cut of Level: "),
+                                    SizedBox(width: 67),
+                                    Text(cur_tenant.cut_off_level == null ? "Not Selected" : cur_tenant!.cut_off_level, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Office Location: "),
+                                    SizedBox(width: 47),
+                                    Text(cur_tenant.office == null ? "Not Selected" : cur_tenant!.office!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Landline: "),
+                                    SizedBox(width: 88),
+                                    Text(cur_tenant.landline == null ? "Not Selected" : cur_tenant!.landline!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Mobile: "),
+                                    SizedBox(width: 96),
+                                    Text(cur_tenant.phone == null ? "Not Selected" : cur_tenant!.phone!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Account Activated?: "),
+                                    SizedBox(width: 15),
+                                    SizedBox(width:120,height:30,child: Row(
+                                      children: [
+                                         Checkbox(
+                                          value: cur_tenant.active==null?false:cur_tenant.active,
+                                          onChanged: (bool? value) {
+                                            if(value! == true) {
+                                            cur_tenant.active = value;
+                                            sendActiveAccountEmail();
+                                            } else
+                                              setState(() {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => gradeDialog(value)  ,
+                                                );
+                                              });
+                                          },
                                         )
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                      height: 50,
-                                      width: textfield_width,
-                                      child: Container(
-                                          margin:EdgeInsets.only(left:20),
-                                          child: TextField(
-                                            controller: tenantNameEditController,
-                                            decoration: InputDecoration(
-                                              labelText: 'Tenant Name'
-                                            ),
-                                            style: TextStyle(fontSize: 16),
-                                            readOnly: true,
-                                          )
-                                      )
+                                      ],
+                                    ))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Renewal Date: "),
+                                    SizedBox(width: 55),
+                                    Text(cur_tenant.renewal_date == null ? "Not Selected" : DateFormat('yyyy-MM-dd').format(cur_tenant.renewal_date!), style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 25),
+                                  Row(children: [
+                                    SizedBox(width:135,height:40,child:
+                                    ElevatedButton(
+                                        style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.all(Colors.red),
+                                            padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                                            textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                                        onPressed:  onSave,
+                                        child: const Text('Save Changes')))
+                                  ])
 
-                                  ),
-                                  SizedBox(
-                                    height: 50,
-                                    width: textfield_width,
-                                    child:  Container(
-                                        margin:EdgeInsets.only(left:20),
-                                        child: TextField(
-                                          controller: expiryDateEditController,
-                                          decoration: InputDecoration(
-                                            labelText: 'Expiry Date',
-                                          ),
-                                          readOnly: true,
-                                        )
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                      height: 50,
-                                      width: textfield_width,
-                                      child:
-                                      Container(
-                                          margin:EdgeInsets.only(left:20),
-                                          child: TextField(
-                                            controller: emailAddressEditController,
-                                            decoration: InputDecoration(
-                                              labelText: 'Email Address',
-                                            ),
-                                            readOnly: true,
-                                          )
-                                      )
-
-                                  ),
-                                  SizedBox(
-                                      height: 50,
-                                      width: textfield_width,
-                                      child:
-                                      Container(
-                                          margin:EdgeInsets.only(left:20),
-                                          child: TextField(
-                                            controller: registerationEditController,
-                                            decoration: InputDecoration(
-                                              labelText: 'Registeration Date',
-                                            ),
-                                            readOnly: true,
-                                          )
-                                      )
-                                  )
-                                ],
-                              ),
-
-                              SizedBox(height:10),
-                              Row(
-                                children: [
-                                  SizedBox(width:120,height:40,child: Row(
-                                    children: [
-                                      SizedBox(
-                                          width:15
-                                      ),
-                                      Checkbox(
-                                        value: cur_tenant.active==null?false:cur_tenant.active,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => gradeDialog(value)  ,
-                                              );
-
-
-                                          });
-                                        },
-                                      ),
-                                      SizedBox(
-                                          width:10
-                                      ),
-                                      Text('Active?')
-
-                                    ],
-                                  )),
-                                  SizedBox(width:150,height:40,child:
-                                  ElevatedButton(
-                                      style: ButtonStyle(
-                                          backgroundColor: MaterialStateProperty.all(Colors.red),
-                                          padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
-                                          textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                                      onPressed:  onSave,
-                                      child: const Text('Save Changes')))
-                                ],
-                              )
                             ],
                           )
 
@@ -714,11 +683,11 @@ class  _AdminViewState extends State<AdminView> {
                         ],
                       )
                   ),
-                  TitledContainer(
+                  if(!isTenantorCountry) TitledContainer(
                       titleText: 'Country Details',
                       idden: 10,
                       child:  Container(
-                        height: 600,
+                        height: screenHeight - 200,
                         alignment: Alignment.topCenter,
                         child: CountryTreeView(key : _key, id :  detailData['id'] == null ? '' : detailData['id']),
                       )

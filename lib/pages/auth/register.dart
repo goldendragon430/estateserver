@@ -68,20 +68,16 @@ class  _RegisterView extends State<RegisterView> {
 
         final response = await dio.post('https://mailserver-p4vx.onrender.com/mail/active', data : {
           'to'   : email ,
-          'title' : 'Geo Asset Manager Account Approved',
+          'title' : '$username Account Registered',
           'body'  :
           '<html> '
               '<body>'
               '<p>'
-              'Welcome <b>$firstname $lastname </b> to Geo Asset Manager. We are pleased to inform you that your account for <b>$username</b> has been approved.'
+              'Thank you <b>$firstname $lastname </b> for registering $username with Geo Asset Manager. We confirm receiving your registration and upon setting up your trial account will advise you by email.'
               ' </p>'
-              '<p>Your account details are provided below.</p>'
-              '<p>User name: $username </p>'
-              '<p>Password: $password </p>'
-              '<p>You will be given a trial period of 30 days starting from $todayDate to $endDate. We will be happy to assist you during this trial period to better understand the Geo Asset Management System. You can contact us on the following:</p>'
-              '<p>Email: geoAssetManager@gmail.com </p>'
-              '<p>Landline: (+675) 325 2552 </p>'
+              '<p>We will be providing your account details shortly.</p>'
               '<p>Thank you, System Admin</p>'
+              '<p>Geo Asset Manager</p>'
               '</body>'
               '</html>'
         });
@@ -140,9 +136,9 @@ class  _RegisterView extends State<RegisterView> {
       '<html> '
           '<body>'
           '<p>'
-            'Thank you <b>$firstname $lastname </b> for registering your organization or company <b> $username </b> with Geo Asset Manager. You will be notified by email when your account is approved. '
+            'Thank you <b>$firstname $lastname </b> for registering your organization or company <b> $username </b> with Geo Asset Manager. To confirm your ownership, enter the following activation code in the registration process. '
           ' </p>'
-          '<center>Active Code:  <h3> $varcode </h3></center>'
+          '<center>Activation Code:  <h3> $varcode </h3></center>'
           '<p>Thank you, System Admin</p>'
           '</body>'
           '</html>'

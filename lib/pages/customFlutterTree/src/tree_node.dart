@@ -185,7 +185,7 @@ class _TreeNodeState extends State<TreeNode> with SingleTickerProviderStateMixin
                     ),
                   ),
                 ),
-                if (widget.showActions && widget.data.checked == false&&widget.data.extra['level'] < 6)
+                if (widget.showActions && widget.data.checked == false&&( widget.data.extra['depth'] == null ? widget.data.extra['level'] < 6 : widget.data.extra['level'] < widget.data.extra['depth'] - 1 ))
                   TextButton(
                     onPressed: () {
                       widget.append(widget.data);

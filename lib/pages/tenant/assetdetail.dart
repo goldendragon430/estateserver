@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:assetmamanger/apis/assets.dart';
+import 'package:assetmamanger/apis/organizations.dart';
 import 'package:assetmamanger/models/Image.dart';
 import 'package:assetmamanger/models/inspections.dart';
 import 'package:image_picker_web/image_picker_web.dart';
@@ -33,7 +34,7 @@ class AssetDetail extends StatefulWidget {
 class  _AssetItem extends State<AssetDetail> {
   //-------------Main variable------------------//
 
-  String userid = 'tdAMqNmvrCg7CixiqYKi';
+  String userid = 'DHIKw96a6xWlS8K1DKxl';
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
   Tenant? cur_tenant = null;
@@ -216,6 +217,17 @@ class  _AssetItem extends State<AssetDetail> {
   TextEditingController inspectionNextDateController = TextEditingController();
   Inspection? cur_inspection = null;
   List<CustomImage> m_inspection_images = [];
+ //-----------------------Owner Dropdowns------------------------------//
+  List<String> node_ids_1 = [];
+  List<Map<String, dynamic>> level_nodes_1 = [];
+  List<String> node_ids_2 = [];
+  List<Map<String, dynamic>> level_nodes_2 = [];
+  List<String> node_ids_3 = [];
+  List<Map<String, dynamic>> level_nodes_3 = [];
+
+  String cur_node_id_1 = '';
+  String cur_node_id_2 = '';
+  String cur_node_id_3 = '';
 
   TreeNodeData mapServerDataToTreeData(Map data) {
     int level = data['id'].split('-').length - 1;
@@ -356,7 +368,61 @@ class  _AssetItem extends State<AssetDetail> {
 //-------------------------Get Asset Data-----------------------------------//
 
   }
+  void LoadOwnerList() async{
+    List<Map<String, dynamic>> m_list = await OrganizationService().getOrganizations(userid);
+    for (Map<String, dynamic> item_1 in m_list) {
+      node_ids_1.add(item_1['id']);
+      level_nodes_1.add(item_1);
+      for(Map<String, dynamic> item_2 in item_1['children']){
+        node_ids_2.add(item_2['id']);
+        level_nodes_2.add(item_2);
+        for(Map<String, dynamic> item_3 in item_2['children']) {
+          node_ids_3.add(item_3['id']);
+          level_nodes_3.add(item_3);
+        }
+      }
+    }
+    if(level_nodes_1.length > 0) {
+      cur_node_id_1 = node_ids_1[0];
 
+      onUpdateLevel1Org();
+    }
+  }
+  void onUpdateLevel1Org(){
+    for(Map<String, dynamic> item in level_nodes_1){
+      if(item['id'] == cur_node_id_1) {
+        if(item['children'].length > 0) {
+          cur_node_id_2 = item['children'][0]['id'];
+          onUpdateLevel2Org();
+        }
+        break;
+      }
+    }
+  }
+  void onUpdateLevel2Org(){
+    for(Map<String, dynamic> item in level_nodes_2){
+      if(item['id'] == cur_node_id_2) {
+        if(item['children'].length > 0) {
+          cur_node_id_3 = item['children'][0]['id'];
+          if(cur_asset != null)
+              cur_asset!.org_id = cur_node_id_3;
+        }
+        break;
+      }
+    }
+  }
+  String getOrganizationName(String id, int level) {
+
+    List<Map<String, dynamic>> data = level_nodes_1;
+    if(level == 2) data = level_nodes_2;
+    else if(level == 3) data = level_nodes_3;
+
+    for(Map<String, dynamic> item in data) {
+      if(item['id'] == id)
+        return item['text'];
+    }
+    return '';
+  }
   void LoadAssets(){
     setState(() {
       m_assets.clear();
@@ -414,6 +480,7 @@ class  _AssetItem extends State<AssetDetail> {
     setState(() {
       userid = data?['id'];
     });
+    LoadOwnerList();
     fetchData();
   }
   String getAssetTypeName(String ID){
@@ -449,6 +516,10 @@ class  _AssetItem extends State<AssetDetail> {
       if(asset.id == selected_cell_id) {
         setState(() {
           cur_asset = asset;
+          List<String> list = cur_asset!.org_id!.split('-');
+          cur_node_id_1 = list[0];
+          cur_node_id_2 = list[0] + '-' + list[1];
+          cur_node_id_3 = cur_asset!.org_id!;
           selected_asset_type = getAssetTypeName(asset.asset_type_id!);
           selected_category = getCategoryName(asset.category_id!);
           selected_acquired_year = DateFormat('yyyy').format(asset.acquired_date!);
@@ -1001,7 +1072,7 @@ class  _AssetItem extends State<AssetDetail> {
   Widget getRightContent(BuildContext context){
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final double textfield_width = (screenWidth - 470)/4;
+    final double textfield_width = (screenWidth - 470);
     int rowCount = ((screenWidth - 470)/100 ).floor();
     if(pageMode == 1) {
       return  Column(
@@ -1133,389 +1204,523 @@ class  _AssetItem extends State<AssetDetail> {
     else if(pageMode == 2) {
       return ListView(
           children: [
-            TitledContainer(titleText: 'Asset Details', child: Column(
-              children: [
-                Row(children: [
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: assetIDController,
-                              decoration: InputDecoration(
-                                  labelText: 'Asset ID'
-                              ),
-                              readOnly: true,
-                              onChanged: (value){
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: assetNameController,
-                              decoration: InputDecoration(
-                                labelText: 'Name',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.name = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: descriptionController,
-                              decoration: InputDecoration(
-                                labelText: 'Description',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.description = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: assetCodeController,
-                              decoration: InputDecoration(
-                                labelText: 'Asset Code',
-                              ),
-                              readOnly: true,
-                              onChanged: (value){
+            TitledContainer(titleText: 'Asset Details',
+                child: Row(children: [
+                  Column(
+                    children: [
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset ID')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: assetIDController,
 
-                              }
-                          )
-                      )
-                  ),
-                ]),
-                Row(children: [
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: addressController,
-                              decoration: InputDecoration(
-                                labelText: 'Address',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.address = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: contactController,
-                              decoration: InputDecoration(
-                                labelText: 'Contact',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.contact = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: phoneController,
-                              decoration: InputDecoration(
-                                labelText: 'Phone',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.phone = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                            controller: acquiredDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Acquired Date',
-                            ),
-                            readOnly: true,
-                            onTap: () async{
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(), //get today's date
-                                  firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101)
-                              );
-                              if(pickedDate!= null)
-                                setState(() {
-                                  acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                  cur_asset!.acquired_date = pickedDate;
-                                });
-                            },
-                          )
-                      )
-                  ),
-                ]),
-                Row(children: [
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: acquiredValueController,
-                              decoration: InputDecoration(
-                                labelText: 'Acquired Value',
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.acquired_value = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller:  costCenterController,
-                              decoration: InputDecoration(
-                                labelText: 'Cost Center',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.cost_center = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                    width : textfield_width,
-                    child:
-                    Row(
-                        children: [
-                          SizedBox(width: 20),
-                          Column(
-                            children: [
-                              SizedBox(height: 18),
-                              SizedBox(
-                                  width: textfield_width - 20 ,
-                                  child: DropdownButton<String>(
-                                    value: cur_asset_type_id == '0' ? (cur_asset == null ? default_type_id : cur_asset!.asset_type_id) : cur_asset_type_id ,
-                                    isExpanded: true,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        if(cur_asset_type_id == '0')
-                                            cur_asset!.asset_type_id = newValue;
-                                        else
-                                          cur_asset!.asset_type_id = cur_asset_type_id;
-                                      });
-                                    },
-                                    items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(getAssetTypeName(value)),
-                                      );
-                                    }).toList(),
-                                  )
-                              )
-                            ],
-                          )
-                        ]),
-                  ),
-                  SizedBox(
-                    width : textfield_width,
-                    child:
-                    Row(
-                        children: [
-                          SizedBox(width: 20),
-                          Column(
-                            children: [
-                              SizedBox(height: 18),
-                              SizedBox(
-                                  width: textfield_width - 20 ,
-                                  child: DropdownButton<String>(
-                                    value: cur_asset == null ? default_category_id : cur_asset!.category_id,
-                                    isExpanded: true,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        cur_asset!.category_id = newValue;
-                                      });
-                                    },
-                                    items: m_asset_category_ids.map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(getCategoryName(value)),
-                                      );
-                                    }).toList(),
-                                  )
-                              )
-                            ],
-                          )
-                        ]),
-                  ),
-                ]),
-                Row(children: [
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: assetStatusController,
-                              decoration: InputDecoration(
-                                labelText: 'Status',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.status = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                            controller: registredDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Registered Date',
-                            ),
-                            readOnly: true,
-                            onTap: () async{
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(), //get today's date
-                                  firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101)
-                              );
-                              if(pickedDate!= null)
-                                setState(() {
-                                  registredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                  cur_asset!.registered_date = pickedDate;
-                                });
-                            },
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: registeredByController,
-                              decoration: InputDecoration(
-                                labelText: 'Registered By',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.registered_by = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: commentController,
-                              decoration: InputDecoration(
-                                labelText: 'Comment',
-                              ),
-                              onChanged: (value){
-                                if(cur_asset != null) {
-                                  setState(() {
-                                    cur_asset!.comment = value;
-                                  });
-                                }
-                              }
-                          )
-                      )
-                  ),
-                ]),
+                                    readOnly: true,
+                                    onChanged: (value){
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset Name')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: assetNameController,
 
-              ],
-            )),
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.name = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Description')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: descriptionController,
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.description = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset Code')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: assetCodeController,
+
+                                    readOnly: true,
+                                    onChanged: (value){
+
+                                    }
+                                )
+                            )
+                        ),
+
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Address')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: addressController,
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.address = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Contact')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: contactController,
+
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.contact = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Phone')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: phoneController,
+
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.phone = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Acquired Date')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                  controller: acquiredDateController,
+
+
+                                  readOnly: true,
+                                  onTap: () async{
+                                    DateTime? pickedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(), //get today's date
+                                        firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                        lastDate: DateTime(2101)
+                                    );
+                                    if(pickedDate!= null)
+                                      setState(() {
+                                        acquiredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                        cur_asset!.acquired_date = pickedDate;
+                                      });
+                                  },
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Value')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: acquiredValueController,
+
+
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.acquired_value = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Cost Center')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller:  costCenterController,
+
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.cost_center = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset Type')),
+                        SizedBox(
+                          width : textfield_width - 100,
+                          child:
+                          Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Column(
+                                  children: [
+                                    SizedBox(height: 18),
+                                    SizedBox(
+                                        width: textfield_width - 120 ,
+                                        child: DropdownButton<String>(
+                                          value: cur_asset_type_id == '0' ? (cur_asset == null ? default_type_id : cur_asset!.asset_type_id) : cur_asset_type_id ,
+                                          isExpanded: true,
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              if(cur_asset_type_id == '0')
+                                                cur_asset!.asset_type_id = newValue;
+                                              else
+                                                cur_asset!.asset_type_id = cur_asset_type_id;
+                                            });
+                                          },
+                                          items: m_asset_type_ids.map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(getAssetTypeName(value)),
+                                            );
+                                          }).toList(),
+                                        )
+                                    )
+                                  ],
+                                )
+                              ]),
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Category')),
+                        SizedBox(
+                          width : textfield_width - 100,
+                          child:
+                          Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Column(
+                                  children: [
+                                    SizedBox(height: 18),
+                                    SizedBox(
+                                        width: textfield_width - 120 ,
+                                        child: DropdownButton<String>(
+                                          value: cur_asset == null ? default_category_id : cur_asset!.category_id,
+                                          isExpanded: true,
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              cur_asset!.category_id = newValue;
+                                            });
+                                          },
+                                          items: m_asset_category_ids.map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(getCategoryName(value)),
+                                            );
+                                          }).toList(),
+                                        )
+                                    )
+                                  ],
+                                )
+                              ]),
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Status')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: assetStatusController,
+
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.status = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Registered Date')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                  controller: registredDateController,
+
+                                  readOnly: true,
+                                  onTap: () async{
+                                    DateTime? pickedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(), //get today's date
+                                        firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                        lastDate: DateTime(2101)
+                                    );
+                                    if(pickedDate!= null)
+                                      setState(() {
+                                        registredDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                        cur_asset!.registered_date = pickedDate;
+                                      });
+                                  },
+                                )
+                            )
+                        ),
+
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Registered By')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: registeredByController,
+
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.registered_by = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Comment')),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 100,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: commentController,
+
+
+                                    onChanged: (value){
+                                      if(cur_asset != null) {
+                                        setState(() {
+                                          cur_asset!.comment = value;
+                                        });
+                                      }
+                                    }
+                                )
+                            )
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Organization:')),
+                        SizedBox(
+                          width : textfield_width - 100,
+                          child:
+                          Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Column(
+                                  children: [
+                                    SizedBox(height: 18),
+                                    SizedBox(
+                                        width: textfield_width - 120 ,
+                                        child: DropdownButton<String>(
+                                          value: cur_node_id_1 ,
+                                          isExpanded: true,
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              cur_node_id_1 = newValue!;
+                                            });
+                                            onUpdateLevel1Org();
+                                          },
+                                          items: node_ids_1.map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(getOrganizationName(value,1)),
+                                            );
+                                          }).toList(),
+                                        )
+                                    )
+                                  ],
+                                )
+                              ]),
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('')),
+                        SizedBox(
+                          width : textfield_width - 100,
+                          child:
+                          Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Column(
+                                  children: [
+                                    SizedBox(height: 18),
+                                    SizedBox(
+                                        width: textfield_width - 120 ,
+                                        child: DropdownButton<String>(
+                                          value: cur_node_id_2 ,
+                                          isExpanded: true,
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              cur_node_id_2 = newValue!;
+                                            });
+                                            onUpdateLevel2Org();
+                                          },
+                                          items: node_ids_2.where((element) => element.contains(cur_node_id_1)).map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(getOrganizationName(value,2)),
+                                            );
+                                          }).toList(),
+                                        )
+                                    )
+                                  ],
+                                )
+                              ]),
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('')),
+                        SizedBox(
+                          width : textfield_width - 100,
+                          child:
+                          Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Column(
+                                  children: [
+                                    SizedBox(height: 18),
+                                    SizedBox(
+                                        width: textfield_width - 120 ,
+                                        child: DropdownButton<String>(
+                                          value: cur_node_id_3 ,
+                                          isExpanded: true,
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                               cur_node_id_3 = newValue!;
+                                               cur_asset!.org_id = cur_node_id_3;
+                                            });
+                                          },
+                                          items: node_ids_3.where((element) => element.contains(cur_node_id_2)).map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(getOrganizationName(value,3)),
+                                            );
+                                          }).toList(),
+                                        )
+                                    )
+                                  ],
+                                )
+                              ]),
+                        ),
+                      ]),
+
+                    ],
+                  )
+                ])
+            ),
             SizedBox(height: 10),
             Row(
                 mainAxisAlignment: MainAxisAlignment.end,

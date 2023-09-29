@@ -22,6 +22,7 @@ class Asset {
   String? registered_by;
   String? comment;
   String? owner_id;
+  String? org_id;
   List<Inspection>? inspections;
   List<CustomImage>? images = [];
 
@@ -51,7 +52,8 @@ class Asset {
       'inspections' : inspect_data,
       'images' : images == null ? [] : List.from(images!.map((x) => x.toJson())),
       'node_id' : node_id,
-      'owner_id' : owner_id
+      'owner_id' : owner_id,
+      'org_id' : org_id
     };
   }
   void fromJson(Map<String,dynamic>? data){
@@ -73,6 +75,7 @@ class Asset {
     registered_by = data?['registered_by'];
     node_id = data?['node_id'];
     owner_id = data?['owner_id'];
+    org_id = data?['org_id'];
 
     List<dynamic> inspection_data = data?['inspections'];
     List<Inspection> inspectionData = [];
@@ -113,6 +116,7 @@ class Asset {
     this.inspections,
     this.images,
     this.node_id,
-    this.owner_id
+    this.owner_id,
+    this.org_id
   });
 }

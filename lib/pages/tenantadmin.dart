@@ -5,6 +5,7 @@ import 'package:assetmamanger/pages/tenant/assetdetail.dart';
 import 'package:assetmamanger/pages/tenant/customlistile.dart';
 import 'package:assetmamanger/pages/tenant/tenantassets.dart';
 import 'package:assetmamanger/pages/tenant/tenantcategory.dart';
+import 'package:assetmamanger/pages/tenant/tenantorganization.dart';
 import 'package:assetmamanger/pages/tenant/tenantsettings.dart';
 import 'package:assetmamanger/pages/tenant/tenantusers.dart';
 import 'package:assetmamanger/utils/global.dart';
@@ -49,6 +50,8 @@ class  _TenantAdminView extends State<TenantAdminView> {
         return AssetDetail();
       case 4:
         return TenantUser();
+      case 5:
+        return OrganizationView();
       default: return Text('Not Found Page');
     }
   }
@@ -73,6 +76,11 @@ class  _TenantAdminView extends State<TenantAdminView> {
           widget.onTitleSelect('Asset Categories');
           setState((){
             tab_index = 2;
+          });}),
+        CustomListTile(isMobileMode: mode, title: Text('Asset Organization'), icon: Icon(Icons.account_balance_rounded),onClick:(){
+          widget.onTitleSelect('Organization');
+          setState((){
+            tab_index = 5;
           });}),
         CustomListTile(isMobileMode: mode, title: Text('Assets'), icon: Icon(Icons.assignment_outlined),onClick:(){
           widget.onTitleSelect('Assets');
