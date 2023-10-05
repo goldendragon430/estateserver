@@ -583,68 +583,77 @@ class  _AdminViewState extends State<AdminView> {
                             children: [
                                   Row(children: [
                                     Text("First Name: "),
-                                    SizedBox(width: 75),
+                                    SizedBox(width: 165),
                                     Text(cur_tenant == null ? "Not Selected" : cur_tenant!.firstname, style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
                                     Text("Last Name: "),
-                                    SizedBox(width: 75),
+                                    SizedBox(width: 165),
                                     Text(cur_tenant == null ? "Not Selected" : cur_tenant!.lastname, style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
-                                    Text("Account Name: "),
-                                    SizedBox(width: 47),
+                                    Text("Tenant Name: "),
+                                    SizedBox(width: 147),
                                     Text(cur_tenant.name == null ? "Not Selected" : cur_tenant!.name!, style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
-                                    Text("Account Email: "),
-                                    SizedBox(width: 51),
+                                    Text("Tenant Email: "),
+                                    SizedBox(width: 151),
                                     Text(cur_tenant.email == null ? "Not Selected" : cur_tenant!.email!, style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
+                                    Text("Mobile: "),
+                                    SizedBox(width: 186),
+                                    Text(cur_tenant.phone == null ? "Not Selected" : cur_tenant!.phone!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Landline: "),
+                                    SizedBox(width: 178),
+                                    Text(cur_tenant.landline == null ? "Not Selected" : cur_tenant!.landline!, style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
                                     Text("Country: "),
-                                    SizedBox(width: 90),
+                                    SizedBox(width: 180),
                                     Text(cur_tenant.country == null ? "Not Selected" : getCountryName(cur_tenant!.country) , style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
-                                    Text("Cut of Level: "),
+                                    Text("Branches in more than 1 location: "),
+                                    SizedBox(width: 24),
+                                    Text(cur_tenant.hasOffice == null ? "Not Selected" : cur_tenant!.hasOffice ? 'Yes' : 'No', style: TextStyle(fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Text("Geo Structure Cut of Level: "),
                                     SizedBox(width: 67),
                                     Text(cur_tenant.cut_off_level == null ? "Not Selected" : cur_tenant!.cut_off_level, style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
-                                    Text("Office Location: "),
-                                    SizedBox(width: 47),
-                                    Text(cur_tenant.office == null ? "Not Selected" : cur_tenant!.office!, style: TextStyle(fontWeight: FontWeight.w600))
-                                  ]),
-                                  SizedBox(height: 10),
-                                  Row(children: [
-                                    Text("Landline: "),
-                                    SizedBox(width: 88),
-                                    Text(cur_tenant.landline == null ? "Not Selected" : cur_tenant!.landline!, style: TextStyle(fontWeight: FontWeight.w600))
-                                  ]),
-                                  SizedBox(height: 10),
-                                  Row(children: [
-                                    Text("Mobile: "),
-                                    SizedBox(width: 96),
-                                    Text(cur_tenant.phone == null ? "Not Selected" : cur_tenant!.phone!, style: TextStyle(fontWeight: FontWeight.w600))
+                                    Text("Show Asset Type in Asset Tree View: "),
+                                    SizedBox(width: 10),
+                                    Text(cur_tenant.show_asset_types == null ? "Not Selected" : cur_tenant!.show_asset_types ? 'Yes' : 'No', style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
                                     Text("Account Activated?: "),
-                                    SizedBox(width: 15),
+                                    SizedBox(width: 102),
                                     SizedBox(width:120,height:30,child: Row(
                                       children: [
                                          Checkbox(
                                           value: cur_tenant.active==null?false:cur_tenant.active,
                                           onChanged: (bool? value) {
                                             if(value! == true) {
-                                            cur_tenant.active = value;
+                                              setState((){
+                                                  cur_tenant.active = value;
+                                              });
+
                                             sendActiveAccountEmail();
                                             } else
                                               setState(() {
@@ -660,8 +669,8 @@ class  _AdminViewState extends State<AdminView> {
                                   ]),
                                   SizedBox(height: 10),
                                   Row(children: [
-                                    Text("Renewal Date: "),
-                                    SizedBox(width: 55),
+                                    Text("Account Renewal Date: "),
+                                    SizedBox(width: 88),
                                     Text(cur_tenant.renewal_date == null ? "Not Selected" : DateFormat('yyyy-MM-dd').format(cur_tenant.renewal_date!), style: TextStyle(fontWeight: FontWeight.w600))
                                   ]),
                                   SizedBox(height: 25),

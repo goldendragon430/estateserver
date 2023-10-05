@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class TypeService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<bool> saveChanges(List<AssetType> data) async{
+  Future<bool> saveChanges(List<AssetType> data,String id) async{
     try {
       CollectionReference typesCollection = firestore.collection('assettypes');
-      QuerySnapshot querySnapshot = await typesCollection.get();
+      QuerySnapshot querySnapshot = await typesCollection.where('userid',isEqualTo: id).get();
 
       for (var document in querySnapshot.docs) {
         document.reference.delete();
@@ -23,10 +23,10 @@ class TypeService {
 
   }
 
-  Future<List<AssetType>> getTypes() async{
+  Future<List<AssetType>> getTypes(String id) async{
     try {
       CollectionReference typesCollection = firestore.collection('assettypes');
-      QuerySnapshot querySnapshot = await typesCollection.get();
+      QuerySnapshot querySnapshot = await typesCollection.where('userid',isEqualTo: id).get();
       List<DocumentSnapshot> documents = querySnapshot.docs;
       List<AssetType> result = [];
       for(DocumentSnapshot document in documents){

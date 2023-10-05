@@ -304,8 +304,8 @@ class  _UserDetail extends State<UserDetail> {
       cur_tenant = tenant;
       cut_off_level = tenant!.cut_off_level;
     });
-    List<AssetType> result = await TypeService().getTypes();
-    List<Category> result_2 = await CategoryService().getCategory();
+    List<AssetType> result = await TypeService().getTypes(userid);
+    List<Category> result_2 = await CategoryService().getCategory(userid);
 
     m_asset_type_ids = List.from(result.map((x)=>x.id));
     m_asset_category_ids = List.from(result_2.map((x)=>x.id));

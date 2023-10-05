@@ -505,19 +505,8 @@ class  _RegisterView extends State<RegisterView> {
                                 ),
                               ]),
                               Row(children: [
-                                Text('Have office?       ',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                      decoration: TextDecoration.none,
-                                    )
-
-                                ),
                                 Row(
                                   children: [
-                                    SizedBox(
-                                        width:5
-                                    ),
                                     Checkbox(
                                       value: hasOffice,
                                       onChanged: (bool? value) {
@@ -528,9 +517,16 @@ class  _RegisterView extends State<RegisterView> {
                                     ),
                                     SizedBox(
                                         width:3
-                                    ),
-                                    Text('Yes')
+                                    )
                                   ],
+                                ),
+                                Text('Have one or more office branch in different parts of the country?',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      decoration: TextDecoration.none,
+                                    )
+
                                 ),
                               ]),
                               SizedBox(height: 20),

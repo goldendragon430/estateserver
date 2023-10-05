@@ -15,7 +15,7 @@ class TenantCategory extends StatefulWidget {
   _TenantCategory createState() => _TenantCategory();
 }
 class  _TenantCategory extends State<TenantCategory> {
-  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  String userid = 'yC1ntHsOuPgVS4yGhjqG';
   //-------------------Search Features-------------------------------//
   List<Category> categories = [] ;
   List<Category> search_asset_types = [] ;
@@ -24,7 +24,7 @@ class  _TenantCategory extends State<TenantCategory> {
   String search_str = '';
 
   void getcategories() async{
-    List<Category> dd = await CategoryService().getCategory();
+    List<Category> dd = await CategoryService().getCategory(userid);
     setState(() {
       categories = dd;
     });
@@ -34,7 +34,7 @@ class  _TenantCategory extends State<TenantCategory> {
 
   void onAdd() {
     setState(() {
-      categories.add(Category(id: generateID(),name : 'New Category'));
+      categories.add(Category(id: generateID(),name : 'New Category', userid: userid));
       search_str = '';
       searchEditController.text = '';
     });
@@ -57,7 +57,7 @@ class  _TenantCategory extends State<TenantCategory> {
 
   //-----------------save features-------------------------------//
   void onSave() async{
-    bool IsOk = await CategoryService().saveChanges(categories);
+    bool IsOk = await CategoryService().saveChanges(categories,userid);
     if(IsOk){
       showSuccess('Success');
     }
@@ -94,11 +94,11 @@ class  _TenantCategory extends State<TenantCategory> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     getcategories();
   }
 

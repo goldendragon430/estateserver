@@ -18,7 +18,7 @@ class TenantAssets extends StatefulWidget {
   _TenantAssets createState() => _TenantAssets();
 }
 class  _TenantAssets extends State<TenantAssets> {
-  String userid = 'tdAMqNmvrCg7CixiqYKi';
+  String userid = 'yC1ntHsOuPgVS4yGhjqG';
 
   //-------------------Search Features-------------------------------//
   List<AssetType> assetTypes = [] ;
@@ -28,7 +28,7 @@ class  _TenantAssets extends State<TenantAssets> {
   String search_str = '';
 
   void getAssetTypes() async{
-    List<AssetType> dd = await TypeService().getTypes();
+    List<AssetType> dd = await TypeService().getTypes(userid);
     setState(() {
       assetTypes = dd;
     });
@@ -38,7 +38,7 @@ class  _TenantAssets extends State<TenantAssets> {
 
   void onAdd() {
     setState(() {
-      assetTypes.add(AssetType(id: generateID(),type : 'New Asset Type'));
+      assetTypes.add(AssetType(id: generateID(),type : 'New Asset Type',userid: userid));
       search_str = '';
       searchEditController.text = '';
     });
@@ -61,7 +61,7 @@ class  _TenantAssets extends State<TenantAssets> {
 
   //-----------------save features-------------------------------//
   void onSave() async{
-    bool IsOk = await TypeService().saveChanges(assetTypes);
+    bool IsOk = await TypeService().saveChanges(assetTypes,userid);
     if(IsOk){
       showSuccess('Success');
     }
@@ -98,11 +98,11 @@ class  _TenantAssets extends State<TenantAssets> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     getAssetTypes();
   }
 

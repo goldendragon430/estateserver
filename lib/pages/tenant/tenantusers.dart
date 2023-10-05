@@ -22,7 +22,7 @@ class TenantUser extends StatefulWidget {
   _TenantUser createState() => _TenantUser();
 }
 class  _TenantUser extends State<TenantUser> {
-  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  String userid = 'yC1ntHsOuPgVS4yGhjqG';
   List<SubUser> subusers = [] ;
   Tenant? cur_tenant;
 
@@ -212,11 +212,11 @@ class  _TenantUser extends State<TenantUser> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     fetchData();
   }
   StatefulBuilder changeDialog() {
@@ -409,8 +409,9 @@ class  _TenantUser extends State<TenantUser> {
           title: Text('Create Subuser'),
           content:
           Container(
-              height: 750,
-              child: Column(
+              height: screenHeight - 250,
+              width: 400,
+              child: ListView(
                 children: [
                   m_treeview == null ?  SizedBox(
                     height: 430,

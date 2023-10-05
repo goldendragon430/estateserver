@@ -20,7 +20,7 @@ class  _TenantSettings extends State<TenantSettings> {
 
   int hoveredIndex = -1;
   Tenant tenant_data = Tenant(name: '', email: '', active: false,   address: '', phone: '', fax: '', landline: '', office: '', renewal_date: DateTime(2023,1,1),   user_id: '',logo : 'https://coinscipher.com/wp-content/uploads/2023/07/file-48.jpg');
-  String userid = 'DHIKw96a6xWlS8K1DKxl';
+  String userid = 'yC1ntHsOuPgVS4yGhjqG';
   String group = '';
   String folder = '';
   Uint8List? logo_image = null;
@@ -88,11 +88,11 @@ class  _TenantSettings extends State<TenantSettings> {
     // TODO: implement initState
     super.initState();
 
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     loadData();
 
   }
@@ -149,10 +149,10 @@ class  _TenantSettings extends State<TenantSettings> {
                   child: ListView(
                     children: [
                       Row(children: [
-                        Container(child: Text('First Name:'),margin: EdgeInsets.only(top:10,right : 31)),
+                        Container(child: Text('First Name:'),margin: EdgeInsets.only(top:10,right : 154)),
                         SizedBox(
                             height: 40,
-                            width: textfield_width - 143,
+                            width: textfield_width - 255,
                             child:
                             Container(
                                 margin:EdgeInsets.only(left:20),
@@ -171,10 +171,10 @@ class  _TenantSettings extends State<TenantSettings> {
                         ),
                       ]),
                       Row(children: [
-                        Container(child: Text('Last Name:'),margin: EdgeInsets.only(top:10,right:32)),
+                        Container(child: Text('Last Name:'),margin: EdgeInsets.only(top:10,right:155)),
                         SizedBox(
                           height: 40,
-                          width: textfield_width - 143,
+                          width: textfield_width - 256,
                           child:  Container(
                               margin:EdgeInsets.only(left:20),
                               child: TextFormField(
@@ -191,10 +191,10 @@ class  _TenantSettings extends State<TenantSettings> {
                       ]),
                       SizedBox(height: 5),
                       Row(children: [
-                        Container(child: Text('Tenant Name:'),margin: EdgeInsets.only(top:10,right: 16)),
+                        Container(child: Text('Tenant Name:'),margin: EdgeInsets.only(top:10,right: 139)),
                         SizedBox(
                             height: 40,
-                            width: textfield_width - 140,
+                            width: textfield_width - 255,
                             child:
                             Container(
                                 margin:EdgeInsets.only(left:20),
@@ -212,10 +212,10 @@ class  _TenantSettings extends State<TenantSettings> {
 
                       ]),
                       Row(children: [
-                        Container(child: Text('Tenant Email:'),margin: EdgeInsets.only(top:10,right : 20)),
+                        Container(child: Text('Tenant Email:'),margin: EdgeInsets.only(top:10,right : 143)),
                         SizedBox(
                             height: 40,
-                            width: textfield_width - 138,
+                            width: textfield_width - 255,
                             child:
                             Container(
                                 margin:EdgeInsets.only(left:20),
@@ -231,43 +231,60 @@ class  _TenantSettings extends State<TenantSettings> {
 
                         ),
                       ]),
-                      Row(
-                          children: [
+                      Row(children: [
+                        Container(child: Text('Tenant Mobile:'),margin: EdgeInsets.only(top:10,right:133)),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 255,
+                            child:
                             Container(
-                                margin: EdgeInsets.only(top:0),
-                                child: Text('Cut Off Level:')
-                            ),
-                            SizedBox(width : 35),
-                            SizedBox(
-                                width: textfield_width - 154 ,
-                                child: DropdownButton<String>(
-                                  value: tenant_data.cut_off_level,
-                                  isExpanded: true,
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      tenant_data.cut_off_level = newValue!;
-                                    });
-                                  },
-                                  items: level_list.map<DropdownMenuItem<String>>((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                    controller: phoneEditController,
+
+                                    onChanged: (value){
+                                      setState(() {
+                                        tenant_data.phone = value;
+                                      });
+                                    }
                                 )
                             )
-                          ]),
+
+                        ),
+                      ]),
+                      Row(children: [
+                        Container(child: Text('Tenant Landline:'),margin: EdgeInsets.only(top:10,right:123)),
+                        SizedBox(
+                            height: 40,
+                            width: textfield_width - 253,
+                            child:
+                            Container(
+                                margin:EdgeInsets.only(left:20),
+                                child: TextFormField(
+                                  controller: landlineEditController,
+
+                                  onChanged: (value){
+                                    setState(() {
+                                      tenant_data.landline = value;
+                                    });
+                                  },
+
+                                )
+                            )
+
+                        ),
+                      ]),
                       Row(
                         children: [
                           Container(
                               margin: EdgeInsets.only(top:5),
                               child: Text('Country:')
                           ),
-                          SizedBox(width : 65),
+                          SizedBox(width : 190),
                           Column(
                             children: [
                               SizedBox(
-                                  width: textfield_width - 152 ,
+                                  width: textfield_width - 275 ,
                                   child: DropdownButton<String>(
                                     value: tenant_data.country,
                                     isExpanded: true,
@@ -288,75 +305,64 @@ class  _TenantSettings extends State<TenantSettings> {
                           )
                         ],
                       ),
-
                       Row(children: [
-                        Container(child: Text('Tenant Mobile:'),margin: EdgeInsets.only(top:10,right:10)),
+                        Container(child: Text('Branches in more than 1 location:'),margin: EdgeInsets.only(top:10,right:15)),
                         SizedBox(
                             height: 40,
-                            width: textfield_width - 132,
+                            width: textfield_width - 300,
                             child:
                             Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextFormField(
-                                    controller: phoneEditController,
-
-                                    onChanged: (value){
-                                      setState(() {
-                                        tenant_data.phone = value;
-                                      });
-                                    }
+                                margin: EdgeInsets.only(left:10,top:15),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                        width:5
+                                    ),
+                                    Checkbox(
+                                      value: tenant_data == null ? false : tenant_data.hasOffice,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          tenant_data.hasOffice = value!;
+                                        });
+                                      },
+                                    )
+                                  ],
                                 )
                             )
-
                         ),
                       ]),
-                      Row(children: [
-                        Container(child: Text('Tenant Landline:'),margin: EdgeInsets.only(top:10)),
-                        SizedBox(
-                            height: 40,
-                            width: textfield_width - 130,
-                            child:
+                      SizedBox(height: 13),
+                      Row(
+                          children: [
                             Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextFormField(
-                                  controller: landlineEditController,
-
-                                  onChanged: (value){
+                                margin: EdgeInsets.only(top:0),
+                                child: Text('Geo Structure Cut Off Level:')
+                            ),
+                            SizedBox(width : 70),
+                            SizedBox(
+                                width: textfield_width - 270 ,
+                                child: DropdownButton<String>(
+                                  value: tenant_data.cut_off_level,
+                                  isExpanded: true,
+                                  onChanged: (String? newValue) {
                                     setState(() {
-                                      tenant_data.landline = value;
+                                      tenant_data.cut_off_level = newValue!;
                                     });
                                   },
-
+                                  items: level_list.map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
                                 )
                             )
-
-                        ),
-                      ]),
+                          ]),
                       Row(children: [
-                        Container(child: Text('Office Location:'),margin: EdgeInsets.only(top:10,right:5)),
+                        Container(child: Text('Show Asset Type in Asset Tree View:'),margin: EdgeInsets.only(top:10)),
                         SizedBox(
                             height: 40,
-                            width: textfield_width - 130,
-                            child:
-                            Container(
-                                margin:EdgeInsets.only(left:20,top:0),
-                                child: TextFormField(
-                                    controller: officeEditController,
-                                    onChanged: (value){
-                                      setState(() {
-                                        tenant_data.office = value;
-                                      });
-                                    }
-                                )
-                            )
-
-                        ),
-                      ]),
-                      Row(children: [
-                        Container(child: Text('Show Asset Type:'),margin: EdgeInsets.only(top:10)),
-                        SizedBox(
-                            height: 40,
-                            width: textfield_width - 150,
+                            width: textfield_width - 300,
                             child:
                             Container(
                                 margin: EdgeInsets.only(left:10,top:15),
@@ -382,14 +388,14 @@ class  _TenantSettings extends State<TenantSettings> {
                       Row(
                         children: [
                           Text('Account Active:'),
-                          SizedBox(width : 30),
+                          SizedBox(width : 146),
                           Text(tenant_data.active == true? 'Yes' : 'No')
                         ],
                       ),
                       SizedBox(height: 15),
                       Row(children: [
                         Text('Renewal Date:'),
-                        SizedBox(width : 30),
+                        SizedBox(width : 155),
                         Text(tenant_data.created_date == null ? '' : DateFormat('yyyy-MM-dd').format(tenant_data.created_date!))
                       ]),
                       SizedBox(height: 10),

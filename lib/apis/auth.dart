@@ -2,6 +2,8 @@ import 'dart:html';
 
 import 'package:assetmamanger/apis/countries.dart';
 import 'package:assetmamanger/apis/tenants.dart';
+import 'package:assetmamanger/models/assetTypes.dart';
+import 'package:assetmamanger/models/category.dart';
 import 'package:assetmamanger/models/tenants.dart';
 import 'package:assetmamanger/models/users.dart';
 import 'package:assetmamanger/utils/global.dart';
@@ -78,6 +80,23 @@ class LoginService {
         'username' : username,
         'password' : password
       });
+
+      CollectionReference assetTypeCollection = firestore.collection('assettypes');
+      await assetTypeCollection.add(AssetType(id:generateID(),type:'Default',userid: newDocumentRef.id));
+
+      CollectionReference categoryCollection = firestore.collection('categories');
+      await categoryCollection.add(Category(id:generateID(),name:'Default',userid: newDocumentRef.id));
+
+      CollectionReference orgCollection = firestore.collection('organizations');
+      await orgCollection.add({
+        'id' : generateID(),
+        'text' : 'Default',
+        'children' :[],
+        'level' : 0,
+        'owner' : newDocumentRef.id,
+        'depth' : 3
+      });
+
       CollectionReference tenantsCollection = firestore.collection('tenants');
 
       Tenant new_user = Tenant(

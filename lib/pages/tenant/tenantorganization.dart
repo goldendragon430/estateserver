@@ -155,11 +155,11 @@ class  _OrganizationView extends State<OrganizationView> {
     // TODO: implement initState
     super.initState();
 
-    String? userDataString =  getStorage('user');
-    Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    setState(() {
-      userid = data?['id'];
-    });
+    // String? userDataString =  getStorage('user');
+    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    // setState(() {
+    //   userid = data?['id'];
+    // });
     fetchData();
   }
 

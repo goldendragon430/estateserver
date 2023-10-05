@@ -41,7 +41,7 @@ class  _TenantAdminView extends State<TenantAdminView> {
   Widget getTabContentWidget(int index){
     switch(index){
       case 0:
-        return TenantSettings();
+        return AssetDetail();
       case 1:
         return TenantAssets();
       case 2:
@@ -99,7 +99,7 @@ class  _TenantAdminView extends State<TenantAdminView> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    bool is_Mobile_Mode = screenWidth < 1260 || tab_index == 3;
+    bool is_Mobile_Mode = screenWidth < 1260 || tab_index == 0;
     return   Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
