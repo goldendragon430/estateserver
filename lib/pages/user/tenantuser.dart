@@ -34,7 +34,7 @@ class UserDetail extends StatefulWidget {
 class  _UserDetail extends State<UserDetail> {
   //-------------Main variable------------------//
 
-  String userid = 'bdMg1tPZwEUZA1kimr8b';
+  String userid = 'yC1ntHsOuPgVS4yGhjqG';
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
   Tenant? cur_tenant = null;
@@ -54,7 +54,11 @@ class  _UserDetail extends State<UserDetail> {
         title: 'ID',
         field: 'id',
         type: PlutoColumnType.text(),
-        hide :true
+    ),
+    PlutoColumn(
+      title: 'Code',
+      field: 'code',
+      type: PlutoColumnType.text(),
     ),
     PlutoColumn(
       title: 'Name',
@@ -235,6 +239,10 @@ class  _UserDetail extends State<UserDetail> {
   String cur_node_id_2 = '';
   String cur_node_id_3 = '';
 
+  bool show_inspection_box = false;
+  //---------------Inspection Status List------------------------------//
+  List<String> inspectionStatus = ['ACTIVE', 'MISSING', 'DISPOSED', 'IN-ACTIVE', ''];
+
   void findRootNode(Map data){
     int level = data['id'].split('-').length - 1;
     if(data['id'] == user_node_id) {
@@ -269,7 +277,7 @@ class  _UserDetail extends State<UserDetail> {
       );
     }
 
-     if (level.toString()  == cut_off_level) {
+     if (data['children'].length == 0) {
        if(cur_tenant!.show_asset_types == true) {
            return TreeNodeData(
              extra: data,
@@ -297,7 +305,7 @@ class  _UserDetail extends State<UserDetail> {
   }
   void fetchData() async{
 //-----------------------Load Country, Tenant, Category and AssetTypes --------------------//
-    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+
     Tenant? tenant = await TenantService().getTenantDetails(userid);
 
     setState(() {
@@ -335,15 +343,27 @@ class  _UserDetail extends State<UserDetail> {
 //---------------------------Generate Tree Data-----------------------------//
 
     List<TreeNodeData> treeData = [];
-    for(Map<String,dynamic> data in serverData){
-      if(data['id'] == cur_tenant!.country) {
-        findRootNode(data);
-        break;
+    if(cur_tenant!.hasOffice == true) {
+      List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+      for(Map<String,dynamic> data in serverData){
+        if(data['id'] == cur_tenant!.country) {
+          findRootNode(data);
+          break;
+        }
       }
-    }
 
-    if(root_data['id'] != null)
-      treeData = [mapServerDataToTreeData(root_data)];
+      if(root_data['id'] != null)
+        treeData = [mapServerDataToTreeData(root_data)];
+
+    }else{
+
+      List<Map<String, dynamic>> serverData = await OrganizationService().getOrganizations(userid);
+      for(Map<String,dynamic> data in serverData){
+          findRootNode(data);
+      }
+      if(root_data['id'] != null)
+        treeData = [mapServerDataToTreeData(root_data)];
+    }
 
     setState(() {
       m_treeview = TreeView(
@@ -355,7 +375,8 @@ class  _UserDetail extends State<UserDetail> {
         onTap: (node) {
           setState(() {
             pageMode = 1;
-            if(node.extra['id'].split('-').length - 1 == int.parse(cut_off_level) && cur_tenant!.show_asset_types == false) {
+
+            if(node.children.length == 0 && cur_tenant!.show_asset_types == false) {
               cur_node_id = node.extra['id'];
               cur_asset_type_id = '0';
               LoadAssets();
@@ -481,7 +502,8 @@ class  _UserDetail extends State<UserDetail> {
           'status'  : PlutoCell(value: asset.status),
           'registred_date'  : PlutoCell(value: DateFormat('yyyy-MM-dd').format(asset.registered_date!)),
           'registred_by'  : PlutoCell(value: asset.registered_by),
-          'id' : PlutoCell(value: asset.id)
+          'id' : PlutoCell(value: asset.id),
+          'code' : PlutoCell(value: asset.code),
         }));
       }
       stateManager!.appendRows(m_rows);
@@ -511,6 +533,11 @@ class  _UserDetail extends State<UserDetail> {
       user_node_id = data?['node_id'];
       user_role = data!['role'].toString();
     });
+
+    // setState(() {
+    //   user_node_id = '7x4-cx9';
+    //   user_role = '0';
+    // });
     LoadOwnerList();
     fetchData();
   }
@@ -591,11 +618,13 @@ class  _UserDetail extends State<UserDetail> {
   }
   void onAddNewAsset(){
     setState(() {
-      cur_asset = Asset(owner_id: cur_tenant!.user_id, node_id: cur_node_id, id:generateID(),code : generateAssetID(default_type_id,default_category_id),name : 'New',description: '',address : '',contact: '',phone:'',acquired_date: DateTime(2022,2,2),acquired_value: '',cost_center: '',asset_type_id: default_type_id,category_id: default_category_id,status: '',comment: '',registered_date: DateTime(2022,2,2),registered_by: '',inspections: [],images: []);
+      cur_asset = Asset(owner_id: cur_tenant!.user_id, node_id: cur_node_id, id:'',code : '',name : 'New',description: '',address : '',contact: '',phone:'',acquired_date: DateTime(2022,2,2),acquired_value: '',cost_center: '',asset_type_id: default_type_id,category_id: default_category_id,status: '',comment: '',registered_date: DateTime(2022,2,2),registered_by: '',inspections: [],images: []);
       m_images = [];
       m_inspections = [];
       if(stateManager_2 != null)
         stateManager_2!.removeAllRows();
+      show_inspection_box = false;
+
     });
     assetIDController.text = cur_asset!.id!;
     assetCodeController.text = cur_asset!.code!;
@@ -607,7 +636,7 @@ class  _UserDetail extends State<UserDetail> {
     acquiredDateController.text = DateFormat('yyyy-MM-dd').format(cur_asset!.acquired_date!);
     acquiredValueController.text = cur_asset!.acquired_value!;
     costCenterController.text = cur_asset!.cost_center!;
-    assetStatusController.text = cur_asset!.status!;
+    assetStatusController.text = cur_asset!.status == '' ? 'Acquired' : cur_asset!.status!;
     registredDateController.text = DateFormat('yyyy-MM-dd').format(cur_asset!.registered_date!);
     registeredByController.text = cur_asset!.registered_by!;
     commentController.text  = cur_asset!.comment!;
@@ -628,6 +657,7 @@ class  _UserDetail extends State<UserDetail> {
   void onAssetDetails(){
     setState(() {
       pageMode = 2;
+      show_inspection_box = true;
     });
     if(cur_asset == null) return;
     assetIDController.text = cur_asset!.id!;
@@ -649,6 +679,9 @@ class  _UserDetail extends State<UserDetail> {
     bool isOk =  await AssetService().changeAsset(cur_asset!);
     if(isOk){
       showSuccess('Success');
+      setState(() {
+        show_inspection_box = true;
+      });
     }else{
       showError('Error');
     }
@@ -1213,21 +1246,31 @@ class  _UserDetail extends State<UserDetail> {
                     if (constraint.maxWidth == 0) {
                       return Container();
                     }
-                    return PlutoGrid(
-                      columns: columns,
-                      rows: rows,
-                      onLoaded: (PlutoGridOnLoadedEvent event) {
-                        if(stateManager == null){
-                          stateManager = event.stateManager;
-                          stateManager!.setShowColumnFilter(true);
-                        }
-                      },
-                      onSelected: (PlutoGridOnSelectedEvent event){
-                        String selected_cell_id = event.row!.cells['id']!.value;
-                        updateAssetDetailInfo(selected_cell_id);
-                      },
-                      mode: PlutoGridMode.selectWithOneTap,
-                    );
+                    return
+                      GestureDetector(
+                          onDoubleTap : (){
+                            if(cur_asset == null)
+                              return;
+                            onAssetDetails();
+                          } ,
+                          child: PlutoGrid(
+                            columns: columns,
+                            rows: rows,
+                            onLoaded: (PlutoGridOnLoadedEvent event) {
+                              if(stateManager == null){
+                                stateManager = event.stateManager;
+                                stateManager!.setShowColumnFilter(true);
+                              }
+                            },
+                            onSelected: (PlutoGridOnSelectedEvent event){
+                              String selected_cell_id = event.row!.cells['id']!.value;
+                              updateAssetDetailInfo(selected_cell_id);
+                            },
+                            mode: PlutoGridMode.selectWithOneTap,
+                          )
+                      );
+
+
                   },
                 ),
 
@@ -1245,19 +1288,29 @@ class  _UserDetail extends State<UserDetail> {
                     Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset ID')),
                     SizedBox(
                         height: 40,
-                        width: textfield_width - 100,
+                        width: textfield_width - 200,
                         child:
                         Container(
                             margin:EdgeInsets.only(left:20),
                             child: TextFormField(
-                                controller: assetIDController,
-
-                                readOnly: true,
-                                onChanged: (value){
-                                }
+                              controller: assetIDController,
+                              onChanged: (value){
+                                cur_asset!.id = value;
+                              },
                             )
                         )
                     ),
+                    SizedBox(width:20),
+                    ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Colors.black),
+                            padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                            textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                        onPressed:   (){
+                          cur_asset!.id = generateID();
+                          assetIDController.text = cur_asset!.id!;
+                        },
+                        child: const Text('Autofill'))
                   ]),
                   Row(children: [
                     Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset Name')),
@@ -1304,25 +1357,38 @@ class  _UserDetail extends State<UserDetail> {
                     ),
 
                   ]),
+                  SizedBox(
+                      height : 10
+                  ),
                   Row(children: [
                     Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Asset Code')),
                     SizedBox(
                         height: 40,
-                        width: textfield_width - 100,
+                        width: textfield_width - 200,
                         child:
                         Container(
                             margin:EdgeInsets.only(left:20),
                             child: TextFormField(
                                 controller: assetCodeController,
-
-                                readOnly: true,
                                 onChanged: (value){
-
+                                  setState(() {
+                                    cur_asset!.code = value;
+                                  });
                                 }
                             )
                         )
                     ),
-
+                    SizedBox(width:20),
+                    ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Colors.black),
+                            padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                            textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                        onPressed:   (){
+                          cur_asset!.code =  generateAssetID(default_type_id,default_category_id);
+                          assetCodeController.text = cur_asset!.code!;
+                        },
+                        child: const Text('Autofill'))
                   ]),
                   Row(children: [
                     Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Address')),
@@ -1425,7 +1491,7 @@ class  _UserDetail extends State<UserDetail> {
                     ),
                   ]),
                   Row(children: [
-                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Value')),
+                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Acquired Value')),
                     SizedBox(
                         height: 40,
                         width: textfield_width - 100,
@@ -1555,14 +1621,8 @@ class  _UserDetail extends State<UserDetail> {
                             margin:EdgeInsets.only(left:20),
                             child: TextFormField(
                                 controller: assetStatusController,
-
-
+                                readOnly: true,
                                 onChanged: (value){
-                                  if(cur_asset != null) {
-                                    setState(() {
-                                      cur_asset!.status = value;
-                                    });
-                                  }
                                 }
                             )
                         )
@@ -1645,7 +1705,7 @@ class  _UserDetail extends State<UserDetail> {
                     ),
                   ]),
                   Row(children: [
-                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Organization:')),
+                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Level1 Org:')),
                     SizedBox(
                       width : textfield_width - 100,
                       child:
@@ -1680,7 +1740,7 @@ class  _UserDetail extends State<UserDetail> {
                     ),
                   ]),
                   Row(children: [
-                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('')),
+                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Level2 Org:')),
                     SizedBox(
                       width : textfield_width - 100,
                       child:
@@ -1715,7 +1775,7 @@ class  _UserDetail extends State<UserDetail> {
                     ),
                   ]),
                   Row(children: [
-                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('')),
+                    Container(width : 100, padding: EdgeInsets.only(left : 10,top : 20), child : Text('Level3 Org:')),
                     SizedBox(
                       width : textfield_width - 100,
                       child:
@@ -1778,7 +1838,7 @@ class  _UserDetail extends State<UserDetail> {
                       child: const Text('Back'))
                 ]),
             SizedBox(height: 10),
-            TitledContainer(titleText: 'Asset Images',
+            if(show_inspection_box)  TitledContainer(titleText: 'Asset Images',
                 child:  SizedBox(height: 200,
                     child: Column(
                       children: [
@@ -1836,8 +1896,8 @@ class  _UserDetail extends State<UserDetail> {
                 )
 
             ),
-            SizedBox(height: 10),
-            TitledContainer(
+            if(show_inspection_box)  SizedBox(height: 10),
+            if(show_inspection_box)  TitledContainer(
                 titleText: 'Asset Inspection',
                 child :
                 Column(
@@ -1910,122 +1970,22 @@ class  _UserDetail extends State<UserDetail> {
     else{
       return ListView(
           children: [
-            TitledContainer(titleText: 'Inspection Details', child: Column(
-              children: [
-                Row(children: [
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                            controller: inspectionDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Inspection Date',
-                            ),
-                            readOnly: true,
-                            onTap: () async{
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(), //get today's date
-                                  firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
-                                  lastDate: DateTime(2101)
-                              );
-                              if(pickedDate!= null)
-                                setState(() {
-                                  inspectionDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                  cur_inspection!.inspection_date = pickedDate;
-                                });
-                            },
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: inspectionByController,
+            TitledContainer(titleText: 'Inspection Details', child: Row(children:[
+              Column(
+                  children: [
+                    SizedBox(
+                        height: 50,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                              controller: inspectionDateController,
                               decoration: InputDecoration(
-                                labelText: 'Inspection By',
-                              ),
-                              readOnly: int.parse(user_role) > 1,
-                              onChanged: (value){
-
-                                setState(() {
-                                  cur_inspection!.inspection_by = value;
-                                });
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: inspectionStatusController,
-                              decoration: InputDecoration(
-                                labelText: 'Inspection Status',
-                              ),
-                              readOnly: int.parse(user_role) > 1,
-
-                              onChanged: (value){
-                                setState(() {
-
-                                  cur_inspection!.status = value;
-                                });
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: inspectionValueController,
-                              decoration: InputDecoration(
-                                labelText: 'Inspection Value',
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              readOnly: int.parse(user_role) > 1,
-
-                              onChanged: (value){
-                                setState(() {
-
-                                  cur_inspection!.value = value;
-                                });
-                              }
-                          )
-                      )
-                  ),
-                ]),
-                Row(children: [
-                  SizedBox(
-                      height: 50,
-                      width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: inspectionNextDateController,
-                              decoration: InputDecoration(
-                                labelText: 'Next Inspection Date',
+                                labelText: 'Inspection Date',
                               ),
                               readOnly: true,
                               onTap: () async{
-                                if(int.parse(user_role) > 1) return;
                                 DateTime? pickedDate = await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now(), //get today's date
@@ -2034,46 +1994,141 @@ class  _UserDetail extends State<UserDetail> {
                                 );
                                 if(pickedDate!= null)
                                   setState(() {
-                                    inspectionNextDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
-                                    cur_inspection!.next_inspect_date = pickedDate;
+                                    inspectionDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                    cur_inspection!.inspection_date = pickedDate;
                                   });
-                              }
+                              },
+                            )
+                        )
+                    ),
+                    SizedBox(
+                        height: 50,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: inspectionByController,
+                                decoration: InputDecoration(
+                                  labelText: 'Inspection By',
+                                ),
+                                onChanged: (value){
+
+                                  setState(() {
+                                    cur_inspection!.inspection_by = value;
+
+                                  });
+                                }
+                            )
+                        )
+                    ),
+                    Row(children: [
+                      SizedBox(width : 20),
+                      SizedBox(
+                          width: textfield_width - 20 ,
+                          child: DropdownButton<String>(
+                            value: cur_inspection!.status,
+                            isExpanded: true,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                cur_inspection!.status = newValue;
+                                cur_asset!.status = newValue;
+                                assetStatusController.text = newValue!;
+                              });
+                            },
+                            items: inspectionStatus.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
                           )
                       )
-                  ),
-                  SizedBox(
+                    ]),
+
+                    SizedBox(
+                        height: 50,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: inspectionValueController,
+                                decoration: InputDecoration(
+                                  labelText: 'Inspection Value',
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                onChanged: (value){
+                                  setState(() {
+
+                                    cur_inspection!.value = value;
+                                  });
+                                }
+                            )
+                        )
+                    ),
+                    SizedBox(
+                        height: 50,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: inspectionNextDateController,
+                                decoration: InputDecoration(
+                                  labelText: 'Next Inspection Date',
+                                ),
+                                readOnly: true,
+                                onTap: () async{
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(), //get today's date
+                                      firstDate:DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                                      lastDate: DateTime(2101)
+                                  );
+                                  if(pickedDate!= null)
+                                    setState(() {
+                                      inspectionNextDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);//set foratted date to TextField value.
+                                      cur_inspection!.next_inspect_date = pickedDate;
+                                    });
+                                }
+                            )
+                        )
+                    ),
+                    SizedBox(
+                        height: 50,
+                        width: textfield_width,
+                        child:
+                        Container(
+                            margin:EdgeInsets.only(left:20),
+                            child: TextFormField(
+                                controller: inspectionCommentController,
+                                decoration: InputDecoration(
+                                  labelText: 'Asset Inspection Comment',
+                                ),
+                                onChanged: (value){
+                                  setState(() {
+                                    cur_inspection!.comment = value;
+                                  });
+                                }
+                            )
+                        )
+                    ),
+                    SizedBox(
                       height: 50,
                       width: textfield_width,
-                      child:
-                      Container(
-                          margin:EdgeInsets.only(left:20),
-                          child: TextFormField(
-                              controller: inspectionCommentController,
-                              decoration: InputDecoration(
-                                labelText: 'Asset Inspection Comment',
-                              ),
-                              readOnly: int.parse(user_role) > 1,
-                              onChanged: (value){
-                                setState(() {
-                                  cur_inspection!.comment = value;
-                                });
-                              }
-                          )
-                      )
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: textfield_width,
 
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: textfield_width,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: textfield_width,
 
-                  ),
-                ]),
-              ],
-            )),
+                    ),
+                  ]
+              )] )),
             SizedBox(height: 10),
             Row(
                 mainAxisAlignment: MainAxisAlignment.end,

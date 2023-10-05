@@ -22,7 +22,7 @@ class  _OrganizationView extends State<OrganizationView> {
   TreeView? m_treeview = null;
   final _key = GlobalKey<TreeViewState>();
   String current_node_title = '';
-  String userid = 'DHIKw96a6xWlS8K1DKxl';
+  String userid = 'yC1ntHsOuPgVS4yGhjqG';
   void deleteNode(TreeNodeData node, BuildContext context) async{
        _key.currentState?.remove(node);
     Navigator.pop(context);
@@ -155,11 +155,11 @@ class  _OrganizationView extends State<OrganizationView> {
     // TODO: implement initState
     super.initState();
 
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     fetchData();
   }
 

@@ -82,10 +82,10 @@ class LoginService {
       });
 
       CollectionReference assetTypeCollection = firestore.collection('assettypes');
-      await assetTypeCollection.add(AssetType(id:generateID(),type:'Default',userid: newDocumentRef.id));
+      await assetTypeCollection.add(AssetType(id:generateID(),type:'Default',userid: newDocumentRef.id).toJson());
 
       CollectionReference categoryCollection = firestore.collection('categories');
-      await categoryCollection.add(Category(id:generateID(),name:'Default',userid: newDocumentRef.id));
+      await categoryCollection.add(Category(id:generateID(),name:'Default',userid: newDocumentRef.id).toJson());
 
       CollectionReference orgCollection = firestore.collection('organizations');
       await orgCollection.add({
@@ -122,6 +122,7 @@ class LoginService {
       await tenantsCollection.add(new_user.toJson());
       return true;
     } catch (e) {
+      print(e);
       return false;
       throw Exception('$e');
     }

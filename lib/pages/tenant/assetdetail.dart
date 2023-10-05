@@ -256,8 +256,9 @@ class  _AssetItem extends State<AssetDetail> {
           )
       );
     }
+    // if (level.toString()  == cut_off_level) {
+      if(data['children'].length == 0) {
 
-    if (level.toString()  == cut_off_level) {
       if(cur_tenant!.show_asset_types == true) {
 
         return TreeNodeData(
@@ -286,7 +287,7 @@ class  _AssetItem extends State<AssetDetail> {
   }
   void fetchData() async{
 //-----------------------Load Country, Tenant, Category and AssetTypes --------------------//
-    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+
     Tenant? tenant = await TenantService().getTenantDetails(userid);
     setState(() {
       cur_tenant = tenant;
@@ -322,12 +323,24 @@ class  _AssetItem extends State<AssetDetail> {
     });
 //---------------------------Generate Tree Data-----------------------------//
     List<TreeNodeData> treeData = [];
-    for(Map<String,dynamic> data in serverData){
-      if(data['id'] == cur_tenant!.country) {
-        treeData  = [mapServerDataToTreeData(data)];
-        break;
+
+    //--------------------Check if current tenant has offices over the countries----------------//
+    if(cur_tenant!.hasOffice == true) {
+      List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+      for(Map<String,dynamic> data in serverData){
+        if(data['id'] == cur_tenant!.country) {
+          treeData  = [mapServerDataToTreeData(data)];
+          break;
+        }
       }
     }
+    else {
+      List<Map<String, dynamic>?> data = await OrganizationService().getOrganizations(userid);
+      for (Map<String, dynamic>? item in data) {
+        treeData.add(mapServerDataToTreeData(item!));
+      }
+    }
+
     setState(() {
       m_treeview = TreeView(
         key : _key,
@@ -338,10 +351,11 @@ class  _AssetItem extends State<AssetDetail> {
         onTap: (node) {
           setState(() {
             pageMode = 1;
-            if(node.extra['id'].split('-').length - 1 == int.parse(cut_off_level) && cur_tenant!.show_asset_types == false) {
+            if(node.children.length == 0 && cur_tenant!.show_asset_types == false) {
               cur_node_id = node.extra['id'];
               cur_asset_type_id = '0';
               LoadAssets();
+
             }
             if(cur_tenant!.show_asset_types == true && node.children.length == 0) {
               cur_asset_type_id = node.extra['id'];
@@ -484,11 +498,11 @@ class  _AssetItem extends State<AssetDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     LoadOwnerList();
     fetchData();
   }
@@ -1936,7 +1950,8 @@ class  _AssetItem extends State<AssetDetail> {
     else{
       return ListView(
           children: [
-            TitledContainer(titleText: 'Inspection Details', child: Row(children:[
+            TitledContainer(titleText: 'Inspection Details', child:
+            Row(children:[
               Column(
                 children: [
                 SizedBox(

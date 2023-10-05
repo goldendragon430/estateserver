@@ -71,9 +71,7 @@ class  _MyApp extends State<MyApp>{
                           builder: (context) {
                             return Scaffold(
                               appBar: CustomAppBar(title: '',title2 : '', context : context),
-                              body: TenantAdminView(onTitleSelect : (String val){
-                                setTitle(val);
-                              }),
+                              body: LoginView(),
                               backgroundColor: Colors.white,
                             );
                           });

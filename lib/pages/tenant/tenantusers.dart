@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:html';
 
+import 'package:assetmamanger/apis/organizations.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:assetmamanger/apis/countries.dart';
@@ -62,16 +63,26 @@ class  _TenantUser extends State<TenantUser> {
       if(t != null)
         cur_tenant  = t!;
     });
-
-    List<Map<String, dynamic>> serverData = await CountryService().getCountries();
-
+//---------------------------Generate Tree Data-----------------------------//
     List<TreeNodeData> treeData = [];
-    for(Map<String,dynamic> data in serverData){
-      if(data['id'] == cur_tenant!.country) {
-        treeData  = [mapServerDataToTreeData(data)];
-        break;
+
+    //--------------------Check if current tenant has offices over the countries----------------//
+    if(cur_tenant!.hasOffice == true) {
+      List<Map<String, dynamic>> serverData = await CountryService().getCountries();
+      for(Map<String,dynamic> data in serverData){
+        if(data['id'] == cur_tenant!.country) {
+          treeData  = [mapServerDataToTreeData(data)];
+          break;
+        }
       }
     }
+    else {
+      List<Map<String, dynamic>?> data = await OrganizationService().getOrganizations(userid);
+      for (Map<String, dynamic>? item in data) {
+        treeData.add(mapServerDataToTreeData(item!));
+      }
+    }
+
     setState(() {
       m_treeview = TreeView(
         key : _key,
@@ -118,6 +129,7 @@ class  _TenantUser extends State<TenantUser> {
     });
 
     List<SubUser> users =  await UserService().getSubUsers(userid);
+    print(users.length);
     setState(() {
       subusers = users;
     });
@@ -212,11 +224,11 @@ class  _TenantUser extends State<TenantUser> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // String? userDataString =  getStorage('user');
-    // Map<String, dynamic>? data =  jsonDecode(userDataString!);
-    // setState(() {
-    //   userid = data?['id'];
-    // });
+    String? userDataString =  getStorage('user');
+    Map<String, dynamic>? data =  jsonDecode(userDataString!);
+    setState(() {
+      userid = data?['id'];
+    });
     fetchData();
   }
   StatefulBuilder changeDialog() {
@@ -237,8 +249,9 @@ class  _TenantUser extends State<TenantUser> {
           title: Text('Create Subuser'),
           content:
           Container(
-              height: 750,
-              child: Column(
+              height: screenHeight - 250,
+              width: 400,
+              child: ListView(
                 children: [
                   m_treeview == null ?  SizedBox(
                     height: 430,
