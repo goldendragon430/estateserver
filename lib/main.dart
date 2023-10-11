@@ -70,7 +70,7 @@ class  _MyApp extends State<MyApp>{
                       return MaterialPageRoute(
                           builder: (context) {
                             return Scaffold(
-                              appBar: CustomAppBar(title: '',title2 : '', context : context),
+
                               body: LoginView(),
                               backgroundColor: Colors.white,
                             );
@@ -140,43 +140,43 @@ class  _MyApp extends State<MyApp>{
               )
                 )
                   ),
-                Container(
-                  // color:Colors.orange.withOpacity(0.3),
-                  decoration: BoxDecoration(
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 8.0,
-                            offset: Offset(0.0, 0.75)
-                        )
-                      ],
-                      color: Colors.orange.withOpacity(0.8)
-                  ),
-                  height: 25,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('Version : 1.0',
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white
-                            )),
-                        Text(
-                            'Date : 2023-7-18',
-                            style : TextStyle(
-                                fontSize: 14,
-                                color: Colors.white
-                            )
-                        ),
-                        Text(
-                            'Dataset : Folder/Group',
-                            style : TextStyle(
-                                fontSize: 14,
-                                color: Colors.white
-                            )
-                        )
-                      ]),
-                )
+                // Container(
+                //   // color:Colors.orange.withOpacity(0.3),
+                //   decoration: BoxDecoration(
+                //       boxShadow: <BoxShadow>[
+                //         BoxShadow(
+                //             color: Colors.black54,
+                //             blurRadius: 8.0,
+                //             offset: Offset(0.0, 0.75)
+                //         )
+                //       ],
+                //       color: Colors.orange.withOpacity(0.8)
+                //   ),
+                //   height: 25,
+                //   child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //       children: [
+                //         Text('Version : 1.0',
+                //             style: TextStyle(
+                //                 fontSize: 14,
+                //                 color: Colors.white
+                //             )),
+                //         Text(
+                //             'Date : 2023-7-18',
+                //             style : TextStyle(
+                //                 fontSize: 14,
+                //                 color: Colors.white
+                //             )
+                //         ),
+                //         Text(
+                //             'Dataset : Folder/Group',
+                //             style : TextStyle(
+                //                 fontSize: 14,
+                //                 color: Colors.white
+                //             )
+                //         )
+                //       ]),
+                // )
               ],
             ),
             DropdownAlert()
