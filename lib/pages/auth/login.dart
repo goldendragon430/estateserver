@@ -5,6 +5,7 @@ import 'package:assetmamanger/utils/global.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert'; // for the utf8.encode method
 import '../../apis/tenants.dart';
 import '../../models/tenants.dart';
@@ -84,144 +85,176 @@ class  _LoginView extends State<LoginView> {
   }
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/logo.png"), fit: BoxFit.cover)),
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Stack(
         children: [
-          const Text('Sign in',
-              style: TextStyle(
-                fontSize: 32,
-                color: Colors.black,
-                decoration: TextDecoration.none,
-              )),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                  child: Column(children: [
-
-                    Row(children: [
-                      Text('Email          ',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            decoration: TextDecoration.none,
-                          )
-
-                      ),
-                      Container(
-                          margin: EdgeInsets.only(top: 10,bottom:10),
-                          child: SizedBox(
-                              height: 45,
-                              width: 400,
-                              child:
-                              Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      this.email = value;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                      hintText: 'example@gmail.com',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true
-                                  ),
-                                ),
-                              )
-
-                          )
-                      ),
-                    ]),
-                    Row(children: [
-                      Text('Password    ',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            decoration: TextDecoration.none,
-                          )
-                      ),
-                      Container(
-                          margin: EdgeInsets.only(top: 10,bottom:10),
-                          child: SizedBox(
-                              height: 45,
-                              width: 400,
-                              child:
-                              Container(
-                                margin:EdgeInsets.only(left:20),
-                                child: TextField(
-                                  obscureText: true,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      this.password = value;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                      hintText: '******',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true
-                                  ),
-                                ),
-                              )
-
-                          )
-                      ),
-                    ]),
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            'register',
-                          );
-                        },
-                        child:  Container(
-                            alignment: Alignment.centerRight,
-                            width:470,
-                            child: Text(
-                              'Register Me?',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.blue,
-                                decoration: TextDecoration.none,
-                              ),
-                            )
-                        ),
-                      ) ,
+          screenWidth > 1200 ? Image.asset("assets/images/rect.png", width: screenWidth,fit: BoxFit.fitWidth) : Image.asset("assets/images/rect.png", height: screenHeight,fit: BoxFit.fitHeight),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: SvgPicture.asset("assets/images/ellipse.svg", width: screenWidth,fit: BoxFit.cover)
+          ),
+          Center(child:Container(
+              width: 350,
+              height : 400,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
                     ),
-                    SizedBox(height: 20),
-                    Container(
-                        margin: EdgeInsets.only(left:105),
-                        width: 380, // Set the desired width here
-                        child: ElevatedButton(
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Colors.green),
-                                padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                  ]
 
-                                textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
-                            onPressed: onLogin,
-                            child: const Text('Sign in'))
-                    )
+              ),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 30),
+                    const Text('Sign in to Your Tenant Account',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.none,
+                        )),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            child: Column(children: [
+                              SizedBox(width: 300,child: Text('Email',style: TextStyle(fontWeight: FontWeight.w500))),
+                              Row(children: [
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 300,
+                                        child:
+                                        Container(
+                                          child: TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.email = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter Email',
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                    borderSide: BorderSide(color: Color.fromRGBO(0, 0, 36, 0.12), width: 1.0)),
+                                                enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                    borderSide: BorderSide(color: Color.fromRGBO(0, 0, 36, 0.12), width: 1.0)),
+                                                focusedBorder:OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                    borderSide: BorderSide(color: Color.fromRGBO(0, 0, 36, 0.3), width: 1.0)) ,
+                                                fillColor: Colors.white,
+                                                filled: true
+                                            ),
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+                              SizedBox(width: 300,child: Text('Password',style: TextStyle(fontWeight: FontWeight.w500))),
+                              Row(children: [
+                                Container(
+                                    margin: EdgeInsets.only(top: 10,bottom:10),
+                                    child: SizedBox(
+                                        height: 45,
+                                        width: 300,
+                                        child:
+                                        Container(
+                                          child: TextField(
+                                            obscureText: true,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                this.password = value;
+                                              });
+                                            },
+                                              decoration: InputDecoration(
+                                                  hintText: 'Enter Password',
+                                                  border: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                      borderSide: BorderSide(color: Color.fromRGBO(0, 0, 36, 0.12), width: 1.0)),
+                                                  enabledBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                      borderSide: BorderSide(color: Color.fromRGBO(0, 0, 36, 0.12), width: 1.0)),
+                                                  focusedBorder:OutlineInputBorder(
+                                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                      borderSide: BorderSide(color: Color.fromRGBO(0, 0, 36, 0.3), width: 1.0)) ,
+                                                  fillColor: Colors.white,
+                                                  filled: true
+                                              )
+
+                                          ),
+                                        )
+
+                                    )
+                                ),
+                              ]),
+
+                              SizedBox(height: 20),
+                              Container(
+                                  width: 300, // Set the desired width here
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Color.fromRGBO(60, 121, 245, 1)),
+                                          padding:MaterialStateProperty.all(const EdgeInsets.all(20)),
+                                          textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, color: Colors.white))),
+                                      onPressed: onLogin,
+                                      child: const Text('Sign in'))
+                              ),
+                              SizedBox(height : 30),
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      'register',
+                                    );
+                                  },
+                                  child:  Container(
+                                      alignment: Alignment.centerRight,
+                                      width:300,
+                                      child: Row(children:[
+                                        SizedBox(width : 20),
+                                        Text("Don't  Have An Account?"),
+                                        SizedBox(width : 5),
+                                        Text(
+                                          'Register Now',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.blue,
+                                            decoration: TextDecoration.none,
+                                          ),
+                                        )
+                                      ])
+
+                                  ),
+                                ) ,
+                              ),
+
+                            ])
+                        )
+                      ],
+                    ),
 
                   ])
-              )
-            ],
-          ),
-          SizedBox(height: 70),
+          ))
 
-        ])
+
+        ],
+
     );
   }
 }

@@ -70,7 +70,6 @@ class  _MyApp extends State<MyApp>{
                       return MaterialPageRoute(
                           builder: (context) {
                             return Scaffold(
-
                               body: LoginView(),
                               backgroundColor: Colors.white,
                             );
