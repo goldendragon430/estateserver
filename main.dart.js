@@ -62681,8 +62681,8 @@ case 5:return new A.Hk(s)
 case 6:return new A.Ky(s)
 case 7:return new A.Kz(s)
 default:return A.p("Not Found Page",s,s,s,s,s,s,s)}},
-aah(a6){var s=this,r="Satoshi",q=null,p=s.e,o=A.p("Dashboard",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),n=A.bn(B.Mn,B.j,q,20),m=s.e,l=A.p("Settings",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),k=A.bn(B.MB,B.j,q,20),j=s.e,i=A.p("Asset Types",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),h=A.bn(B.q_,B.j,q,20),g=s.e,f=A.p("Asset Categories",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),e=A.bn(B.MM,B.j,q,20),d=s.e,c=A.p("Asset Organization",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),b=A.bn(B.MJ,B.j,q,20),a=s.e,a0=A.p("Coordinaters",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),a1=A.bn(B.ML,B.j,q,20),a2=s.e,a3=A.p("Assets",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),a4=A.bn(B.ME,B.j,q,20),a5=s.e
-return A.dR(A.a([new A.kv(o,n,new A.aUu(s),a6,p===7,q),new A.kv(l,k,new A.aUv(s),a6,m===0,q),new A.kv(i,h,new A.aUw(s),a6,j===1,q),new A.kv(f,e,new A.aUx(s),a6,g===2,q),new A.kv(c,b,new A.aUy(s),a6,d===5,q),new A.kv(a0,a1,new A.aUz(s),a6,a===6,q),new A.kv(a3,a4,new A.aUA(s),a6,a2===3,q),new A.kv(A.p("Sub Users",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),A.bn(B.Mu,B.j,q,20),new A.aUB(s),a6,a5===4,q)],t.p),q,q,!1)},
+aah(a6){var s=this,r="Satoshi",q=null,p=s.e,o=A.p("Dashboard",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),n=A.bn(B.Mn,B.j,q,20),m=s.e,l=A.p("Settings",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),k=A.bn(B.MB,B.j,q,20),j=s.e,i=A.p("Types",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),h=A.bn(B.q_,B.j,q,20),g=s.e,f=A.p("Categories",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),e=A.bn(B.MM,B.j,q,20),d=s.e,c=A.p("Organization",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),b=A.bn(B.MJ,B.j,q,20),a=s.e,a0=A.p("Coordinaters",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),a1=A.bn(B.ML,B.j,q,20),a2=s.e,a3=A.p("Assets",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),a4=A.bn(B.ME,B.j,q,20),a5=s.e
+return A.dR(A.a([new A.kv(o,n,new A.aUu(s),a6,p===7,q),new A.kv(l,k,new A.aUv(s),a6,m===0,q),new A.kv(i,h,new A.aUw(s),a6,j===1,q),new A.kv(f,e,new A.aUx(s),a6,g===2,q),new A.kv(c,b,new A.aUy(s),a6,d===5,q),new A.kv(a0,a1,new A.aUz(s),a6,a===6,q),new A.kv(a3,a4,new A.aUA(s),a6,a2===3,q),new A.kv(A.p("Users",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,r,q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q),A.bn(B.Mu,B.j,q,20),new A.aUB(s),a6,a5===4,q)],t.p),q,q,!1)},
 H(a){var s,r=this,q=null,p="Satoshi",o="assets/images/profile.png",n=A.ag(a,q,t.w).w.a.a<1260||r.e===3,m=n?80:250,l=A.j(0,0,36,1),k=t.p,j=A.a([],k)
 if(!n)j.push(A.l(q,A.ab(A.a([A.cb("assets/images/location.png",q,B.eg,q,q,q),A.L(A.a([A.p("Geo      ",q,q,q,q,A.v(q,q,B.j,q,q,q,q,q,p,q,q,18,q,q,B.T,q,q,!0,q,q,q,q,q,q,q,q),q,q),A.p("    Asset Manager",q,q,q,q,A.v(q,q,B.ks,q,q,q,q,q,q,q,q,12,q,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q)],k),B.k,B.i,B.d)],k),B.k,B.i,B.d),B.c,q,q,q,q,q,q,new A.x(0,10,0,20),q,q,q,q))
 j.push(A.ck(r.aah(n),1))
@@ -62721,7 +62721,7 @@ $0(){this.a.e=0},
 $S:0}
 A.aUw.prototype={
 $0(){var s=this.a
-s.a.po("Asset Types")
+s.a.po("Types")
 s.p(new A.aUr(s))},
 $S:0}
 A.aUr.prototype={
@@ -62729,7 +62729,7 @@ $0(){this.a.e=1},
 $S:0}
 A.aUx.prototype={
 $0(){var s=this.a
-s.a.po("Asset Categories")
+s.a.po("Categories")
 s.p(new A.aUq(s))},
 $S:0}
 A.aUq.prototype={
@@ -62761,7 +62761,7 @@ $0(){this.a.e=3},
 $S:0}
 A.aUB.prototype={
 $0(){var s=this.a
-s.a.po("Subusers")
+s.a.po("Users")
 s.p(new A.aUm(s))},
 $S:0}
 A.aUm.prototype={
